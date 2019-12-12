@@ -21,35 +21,24 @@
 // SOFTWARE.
 #pragma once
 
-#include <algorithm>
-#include <iostream>
-#include <memory>
-#include <vector>
+#include <min-ray/camera.h>
+#include <min-ray/film.h>
+#include <min-ray/integrator.h>
+#include <min-ray/intersection.h>
+#include <min-ray/sampler.h>
+#include <min-ray/scene.h>
 
 namespace min::ray {
 
-using Float = float;
-constexpr Float Pi = 3.1415926535f;
-constexpr Float Pi2 = Pi * 0.5f;
-constexpr Float Pi4 = Pi * 0.25f;
-constexpr Float InvPi = 1.0f / Pi;
-constexpr Float Inv4Pi = 1.0f / (4.0f * Pi);
-constexpr Float MaxFloat = std::numeric_limits<Float>::max();
-constexpr Float MinFloat = std::numeric_limits<Float>::lowest();
-constexpr Float MachineEpsilon = std::numeric_limits<Float>::epsilon();
+class ROIntegrator {
+ public:
+  virtual void Render(const std::shared_ptr<Scene> &scene,
+                      const std::shared_ptr<Camera> &camera,
+                      const std::shared_ptr<Sampler> &sampler,
+                      Film &film);
 
-constexpr Float gamma(int n) {
-  return n * MachineEpsilon / (1 - n * MachineEpsilon);
-}
-
-template <class T>
-inline T RadiansToDegrees(T x) {
-  return x * InvPi * 180.0f;
-}
-
-template <class T>
-inline T DegreesToRadians(T x) {
-  return x / 180.0f * Pi;
-}
-
+ private:
+  int spp_;
+  Float occlude_distance_ = 100000;
+};
 }  // namespace min::ray

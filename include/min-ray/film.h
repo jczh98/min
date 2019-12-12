@@ -21,35 +21,47 @@
 // SOFTWARE.
 #pragma once
 
-#include <algorithm>
-#include <iostream>
-#include <memory>
-#include <vector>
+#include "defs.h"
+#include "math.h"
 
 namespace min::ray {
+class Film {
+ public:
+  struct Pixels {
+    explicit Pixels(int n) : color(n) {}
+    std::vector<Vector4> color;
+    std::vector<Float> weight;
+  };
+  struct Pixel {
+    Pixel(Vector4 color, Float weight) : color(color), weight(weight) {}
+    Vector4 color;
+    Float weight;
+  };
 
-using Float = float;
-constexpr Float Pi = 3.1415926535f;
-constexpr Float Pi2 = Pi * 0.5f;
-constexpr Float Pi4 = Pi * 0.25f;
-constexpr Float InvPi = 1.0f / Pi;
-constexpr Float Inv4Pi = 1.0f / (4.0f * Pi);
-constexpr Float MaxFloat = std::numeric_limits<Float>::max();
-constexpr Float MinFloat = std::numeric_limits<Float>::lowest();
-constexpr Float MachineEpsilon = std::numeric_limits<Float>::epsilon();
+  explicit Film(const Vector2i &dim) : Film(dim.x(), dim.y()) {
+  }
 
-constexpr Float gamma(int n) {
-  return n * MachineEpsilon / (1 - n * MachineEpsilon);
-}
+  Film(size_t w, size_t h) : width(w), height(h), pixels(w * h) {}
 
-template <class T>
-inline T RadiansToDegrees(T x) {
-  return x * InvPi * 180.0f;
-}
+  Pixel operator()(const Vector2 &p) { return (*this)(p.x, p.y); }
 
-template <class T>
-inline T DegreesToRadians(T x) {
-  return x / 180.0f * Pi;
-}
+  Pixel operator()(Float x, Float y) {
+    int px = std::clamp<int>(std::lround(x * width), 0, width - 1);
+    int py = std::clamp<int>(std::lround(y * height), 0, height - 1);
+    return Pixel(pixels.color.at(px + py * width), pixels.weight.at(px + py * width));
+  }
 
+  Pixel operator()(int px, int py) { return Pixel(pixels.color.at(px + py * width), pixels.weight.at(px + py * width)); }
+
+  void AddSample(const Vector2 &p, const Vector3 &color, Float weight) {
+    auto pixel = (*this)(p);
+    pixel.color += Vector4(color * weight, 0);
+    pixel.weight += weight;
+  }
+
+  void WriteImage(const std::string &filename);
+
+  Pixels pixels;
+  const size_t width, height;
+};
 }  // namespace min::ray

@@ -21,35 +21,16 @@
 // SOFTWARE.
 #pragma once
 
-#include <algorithm>
-#include <iostream>
-#include <memory>
-#include <vector>
+#include "math.h"
 
 namespace min::ray {
 
-using Float = float;
-constexpr Float Pi = 3.1415926535f;
-constexpr Float Pi2 = Pi * 0.5f;
-constexpr Float Pi4 = Pi * 0.25f;
-constexpr Float InvPi = 1.0f / Pi;
-constexpr Float Inv4Pi = 1.0f / (4.0f * Pi);
-constexpr Float MaxFloat = std::numeric_limits<Float>::max();
-constexpr Float MinFloat = std::numeric_limits<Float>::lowest();
-constexpr Float MachineEpsilon = std::numeric_limits<Float>::epsilon();
-
-constexpr Float gamma(int n) {
-  return n * MachineEpsilon / (1 - n * MachineEpsilon);
-}
-
-template <class T>
-inline T RadiansToDegrees(T x) {
-  return x * InvPi * 180.0f;
-}
-
-template <class T>
-inline T DegreesToRadians(T x) {
-  return x / 180.0f * Pi;
-}
-
+class Ray {
+ public:
+  Ray() : tmin(-1), tmax(-1) {}
+  Ray(const Point3 &o, const Point3 &d, Float tmin, Float tmax = MaxFloat) : o(o), d(d), tmin(tmin), tmax(tmax) {}
+  Point3 o;
+  Vector3 d;
+  Float tmin, tmax;
+};
 }  // namespace min::ray

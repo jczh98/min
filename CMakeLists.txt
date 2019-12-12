@@ -11,10 +11,13 @@ set(EXECUTABLE_NAME min-ray-cli)
 add_subdirectory(external/fmt)
 
 file(GLOB MIN_RAY_API
-	"include/min-ray/*.defs.h"
+	"include/min-ray/*.h"
 	)
 
-add_executable(${EXECUTABLE_NAME} src/standalone/main.cc)
+file(GLOB MIN_RAY_CORE
+	"src/core/integrators/*.cc"
+	)
+add_executable(${EXECUTABLE_NAME} src/standalone/main.cc ${MIN_RAY_API})
 
 target_include_directories(${EXECUTABLE_NAME} 
 	PUBLIC

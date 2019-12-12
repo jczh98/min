@@ -19,37 +19,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-#pragma once
-
-#include <algorithm>
-#include <iostream>
-#include <memory>
-#include <vector>
+#include "defs.h"
+#include "spectrum.h"
 
 namespace min::ray {
 
-using Float = float;
-constexpr Float Pi = 3.1415926535f;
-constexpr Float Pi2 = Pi * 0.5f;
-constexpr Float Pi4 = Pi * 0.25f;
-constexpr Float InvPi = 1.0f / Pi;
-constexpr Float Inv4Pi = 1.0f / (4.0f * Pi);
-constexpr Float MaxFloat = std::numeric_limits<Float>::max();
-constexpr Float MinFloat = std::numeric_limits<Float>::lowest();
-constexpr Float MachineEpsilon = std::numeric_limits<Float>::epsilon();
+class Scene;
+class Sampler;
+class Camera;
+struct Film;
 
-constexpr Float gamma(int n) {
-  return n * MachineEpsilon / (1 - n * MachineEpsilon);
-}
-
-template <class T>
-inline T RadiansToDegrees(T x) {
-  return x * InvPi * 180.0f;
-}
-
-template <class T>
-inline T DegreesToRadians(T x) {
-  return x / 180.0f * Pi;
-}
+class Integrator {
+ public:
+  virtual void Render(const std::shared_ptr<Scene> &scene,
+                      const std::shared_ptr<Camera> &camera,
+                      const std::shared_ptr<Sampler> &sampler,
+                      Film &film) = 0;
+};
 
 }  // namespace min::ray

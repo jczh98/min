@@ -21,35 +21,22 @@
 // SOFTWARE.
 #pragma once
 
-#include <algorithm>
-#include <iostream>
-#include <memory>
-#include <vector>
+#include "math.h"
 
 namespace min::ray {
-
-using Float = float;
-constexpr Float Pi = 3.1415926535f;
-constexpr Float Pi2 = Pi * 0.5f;
-constexpr Float Pi4 = Pi * 0.25f;
-constexpr Float InvPi = 1.0f / Pi;
-constexpr Float Inv4Pi = 1.0f / (4.0f * Pi);
-constexpr Float MaxFloat = std::numeric_limits<Float>::max();
-constexpr Float MinFloat = std::numeric_limits<Float>::lowest();
-constexpr Float MachineEpsilon = std::numeric_limits<Float>::epsilon();
-
-constexpr Float gamma(int n) {
-  return n * MachineEpsilon / (1 - n * MachineEpsilon);
-}
-
-template <class T>
-inline T RadiansToDegrees(T x) {
-  return x * InvPi * 180.0f;
-}
-
-template <class T>
-inline T DegreesToRadians(T x) {
-  return x / 180.0f * Pi;
-}
-
+struct Intersection {
+  Vector3 LocalToWorld(const Vector3 &vec) const {
+    return localframe.LocalToWorld(vec);
+  }
+  Vector3 WorldToLocal(const Vector3 &vec) const {
+    return localframe.WorldToLocal(vec);
+  }
+  Ray SpawnRay(const Vector3 &w) {
+  }
+  Float distance = MaxFloat;
+  Point3 p;
+  Normal3 n;
+  Point2 uv;
+  CoordinateSystem localframe;
+};
 }  // namespace min::ray
