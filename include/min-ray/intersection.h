@@ -24,7 +24,12 @@
 #include "math.h"
 
 namespace min::ray {
+
+struct MeshTriangle;
 struct Intersection {
+  void ComputeLocalFrame() {
+    localframe = CoordinateSystem(n);
+  }
   Vector3 LocalToWorld(const Vector3 &vec) const {
     return localframe.LocalToWorld(vec);
   }
@@ -33,6 +38,7 @@ struct Intersection {
   }
   Ray SpawnRay(const Vector3 &w) {
   }
+  const MeshTriangle *shape = nullptr;
   Float distance = MaxFloat;
   Point3 p;
   Normal3 n;

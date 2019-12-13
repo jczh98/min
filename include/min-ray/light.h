@@ -25,9 +25,30 @@
 
 namespace min::ray {
 
+struct VisibilityTester;
+struct ShadingPoint;
+
+struct LightSample {
+  Vector3 wi;
+  Spectrum Li;
+  float pdf;
+};
+
+struct LightRaySample {
+  Ray ray;
+  Spectrum Le;
+  float pdfPos, pdfDir;
+};
+
 class Light {
  public:
-  virtual Spectrum Le(const Ray &ray) = 0;
+  virtual Spectrum Li(ShadingPoint &sp) const = 0;
+
+  virtual void SampleLi(const Point2 &u, Intersection &isect, LightSample &sample, VisibilityTester &test) const = 0;
+
+  virtual Float PdfLi(const Intersection &isect, const Vector3 &wi) const = 0;
+
+  virtual void SampleLe(const Point2 &u1, const Point2 &u2, LightRaySample &sample) = 0;
 };
 
 }  // namespace min::ray

@@ -38,12 +38,13 @@ class Film {
     Float weight;
   };
 
-  explicit Film(const Vector2i &dim) : Film(dim.x(), dim.y()) {
-  }
+  explicit Film(const Vector2i &dim) : Film(dim.x, dim.y) {}
 
   Film(size_t w, size_t h) : width(w), height(h), pixels(w * h) {}
 
-  Pixel operator()(const Vector2 &p) { return (*this)(p.x, p.y); }
+  Pixel operator()(const Vector2 &p) {
+    return (*this)(p.x, p.y);
+  }
 
   Pixel operator()(Float x, Float y) {
     int px = std::clamp<int>(std::lround(x * width), 0, width - 1);
@@ -51,7 +52,9 @@ class Film {
     return Pixel(pixels.color.at(px + py * width), pixels.weight.at(px + py * width));
   }
 
-  Pixel operator()(int px, int py) { return Pixel(pixels.color.at(px + py * width), pixels.weight.at(px + py * width)); }
+  Pixel operator()(int px, int py) {
+    return Pixel(pixels.color.at(px + py * width), pixels.weight.at(px + py * width));
+  }
 
   void AddSample(const Vector2 &p, const Vector3 &color, Float weight) {
     auto pixel = (*this)(p);
