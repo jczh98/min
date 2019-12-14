@@ -22,7 +22,6 @@
 #pragma once
 
 #include <min-ray/camera.h>
-#include <glm/gtc/matrix_transform.hpp>
 
 namespace min::ray {
 
@@ -33,6 +32,19 @@ class PerspectiveCamera : public Camera {
     transform_ = Transform(glm::lookAt(eye, center, Vector3(0, 1, 0)));
     inv_transform_ = transform_.Inverse();
   }
+
+  PerspectiveCamera(const Vector3 &translate, const Vector3 &rotate) {
+    auto rotation = DegreesToRadians(rotate);
+    auto m = glm::identity<Matrix4>();
+    m = glm::rotate(rotation.z, Vector3(0, 0, 1)) * m;
+    m = glm::rotate(rotation.y, Vector3(1, 0, 0)) * m;
+    m = glm::rotate(rotation.x, Vector3(0, 1, 0)) * m;
+    m = glm::translate(translate) * m;
+    transform_ = Transform(m);
+    transforms_ = {Radians<Vector3>(rotation), translate};
+    inv_transform_ = transform_.Inverse();
+  }
+
   virtual void GenerateRay(const Point2 &eye,
                            const Point2 &center,
                            const Point2i &raster,
@@ -41,6 +53,7 @@ class PerspectiveCamera : public Camera {
 
  private:
   Transform transform_, inv_transform_;
-  Float fov_;
+  Radians<float> fov_ = Radians<float>(Degrees<float>(80.0));
+  TransformManipulator transforms_;
 };
 }  // namespace min::ray

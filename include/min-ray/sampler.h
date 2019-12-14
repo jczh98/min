@@ -27,7 +27,6 @@ namespace min::ray {
 
 class Sampler {
  public:
-  Sampler(int spp);
   virtual void StartPixel(const Point2i &p, const Point2i &film_demension) = 0;
   virtual Float Get1D() = 0;
   virtual Point2 Get2D() = 0;

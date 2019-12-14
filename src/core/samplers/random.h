@@ -26,7 +26,7 @@
 
 namespace min::ray {
 
-class RandomSampler {
+class RandomSampler : public Sampler {
  public:
   RandomSampler(uint32_t seed = 0) : rng(seed) {}
   virtual void StartPiexl(const Point2i &p, const Point2i &file_demension);

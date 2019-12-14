@@ -21,36 +21,22 @@
 // SOFTWARE.
 #pragma once
 
+#include "intersection.h"
 #include "math.h"
+#include "ray.h"
+#include "spectrum.h"
 
 namespace min::ray {
-
-const Float RayBias = 0.01f;
-
 struct MeshTriangle;
-struct Intersection {
-  void ComputeLocalFrame() {
-    localframe = CoordinateSystem(ns);
-  }
-  Vector3 LocalToWorld(const Vector3 &vec) const {
-    return localframe.LocalToWorld(vec);
-  }
-  Vector3 WorldToLocal(const Vector3 &vec) const {
-    return localframe.WorldToLocal(vec);
-  }
-  Ray SpawnRay(const Vector3 &w) {
-    auto t = RayBias / abs(glm::dot(w, ng));
-    return Ray(p, w, t, MaxFloat);
-  }
-
-  Ray SpawnTo(const Point3 &p) const {
-    return Ray(this->p, (p - this->p), RayBias, 1);
-  }
-  const MeshTriangle *shape = nullptr;
-  Float distance = MaxFloat;
+struct SurfaceSample {
   Point3 p;
-  Normal3 ns, ng;
+  Float pdf;
+  Normal3 normal;
   Point2 uv;
-  CoordinateSystem localframe;
+};
+class Shape {
+ public:
+  virtual bool Intersect(const Ray &ray, Intersection &isect) const = 0;
+  virtual BoundingBox3 GetBoundingBox() const = 0;
 };
 }  // namespace min::ray

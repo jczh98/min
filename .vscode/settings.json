@@ -79,6 +79,8 @@
 		"xtr1common": "cpp",
 		"xtree": "cpp",
 		"xutility": "cpp",
-		"format": "cpp"
+		"format": "cpp",
+		"__bit_reference": "cpp",
+		"filesystem": "cpp"
 	}
 }

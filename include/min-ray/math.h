@@ -31,11 +31,13 @@ using Vector3 = glm::tvec3<Float>;
 using Vector2 = glm::tvec2<Float>;
 using Vector4 = glm::tvec4<Float>;
 using Vector2i = glm::ivec2;
+using Vector3i = glm::ivec3;
 using Matrix3 = glm::tmat3x3<Float>;
 using Matrix4 = glm::tmat4x4<Float>;
 using Point3 = Vector3;
 using Point2 = Vector2;
 using Point2i = Vector2i;
+using Point3i = Vector3i;
 using Normal3 = Vector3;
 
 inline void ComputeLocalFrame(const Vector3 &v1, Vector3 *v2, Vector3 *v3) {
@@ -101,6 +103,48 @@ class BoundingBox {
 
 using BoundingBox3 = BoundingBox<3, Float, glm::qualifier::defaultp>;
 
+template <class T>
+struct Radians;
+
+template <class T>
+struct Degrees {
+  Degrees() = default;
+  explicit Degrees(T v) : value(v) {}
+
+  explicit operator T() const {
+    return value;
+  }
+
+  inline explicit Degrees(const Radians<T> &);
+
+  T &get() { return value; }
+
+  const T &get() const { return value; }
+
+ private:
+  T value = T();
+};
+
+template <class T>
+struct Radians {
+  Radians() = default;
+  explicit Radians(T v) : value(v) {}
+
+  explicit Radians(const Degrees<T> &degrees) {
+    value = DegreesToRadians(T(degrees));
+  }
+
+  explicit operator T() const {
+    return value;
+  }
+
+  T &get() { return value; }
+
+  [[nodiscard]] const T &get() const { return value; }
+
+  private : T value = T();
+};
+
 class Transform {
  public:
   Transform() = default;
@@ -122,7 +166,15 @@ class Transform {
   }
 
   Vector3 TransformVector3(const Vector3 &v) const {
-    return mat3_ *v;
+    return mat3_ * v;
+  }
+
+  Vector3 TransformPoint3(const Vector3 &v) const {
+    auto x = mat4_ * Vector4(v, 1);
+    if (x.w == 1) {
+      return x;
+    }
+    return Vector3(x) / x.w;
   }
 
  private:
@@ -130,9 +182,24 @@ class Transform {
   Matrix3 mat3_, inv_mat3_, inv_mat3_t_;
 };
 
-class TransformManipulator 
-{
-  public:
+class TransformManipulator {
+ public:
+  Radians<Vector3> rotation;
+  Vector3 translation;
 
+  Transform toTransform() const {
+    Matrix4 m = glm::identity<Matrix4>();
+    m = glm::rotate(rotation.get().z, Vector3(0, 0, 1)) * m;
+    m = glm::rotate(rotation.get().y, Vector3(1, 0, 0)) * m;
+    m = glm::rotate(rotation.get().x, Vector3(0, 1, 0)) * m;
+    m = glm::translate(translation) * m;
+    return Transform(m);
+  }
 };
+
+template <class T>
+inline Degrees<T>::Degrees(const Radians<T> &r) {
+  value = RadiansToDegrees(T(r));
+}
+
 }  // namespace min::ray

@@ -21,36 +21,16 @@
 // SOFTWARE.
 #pragma once
 
-#include "math.h"
+#include "material.h"
 
 namespace min::ray {
-
-const Float RayBias = 0.01f;
-
-struct MeshTriangle;
-struct Intersection {
-  void ComputeLocalFrame() {
-    localframe = CoordinateSystem(ns);
-  }
-  Vector3 LocalToWorld(const Vector3 &vec) const {
-    return localframe.LocalToWorld(vec);
-  }
-  Vector3 WorldToLocal(const Vector3 &vec) const {
-    return localframe.WorldToLocal(vec);
-  }
-  Ray SpawnRay(const Vector3 &w) {
-    auto t = RayBias / abs(glm::dot(w, ng));
-    return Ray(p, w, t, MaxFloat);
-  }
-
-  Ray SpawnTo(const Point3 &p) const {
-    return Ray(this->p, (p - this->p), RayBias, 1);
-  }
-  const MeshTriangle *shape = nullptr;
-  Float distance = MaxFloat;
-  Point3 p;
-  Normal3 ns, ng;
-  Point2 uv;
-  CoordinateSystem localframe;
+class Mesh;
+struct MeshImportResult {
+  std::vector<std::shared_ptr<Material>> materials;
+  std::shared_ptr<Mesh> mesh;
+};
+class MeshImporter {
+ public:
+  virtual MeshImportResult Import(const fs::path &) = 0;
 };
 }  // namespace min::ray

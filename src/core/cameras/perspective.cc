@@ -44,6 +44,6 @@ void PerspectiveCamera::GenerateRay(const Point2 &eye,
   Vector3 d = Vector3(x, y, 0) - Vector3(0, 0, -z);
   d = glm::normalize(d);
   Point3 o = Vector3(sample.plens.x, sample.plens.y, 0);
-  sample.ray = Ray(o, d, 0);
+  sample.ray = Ray(o, d, 0.00001);
 }
 }  // namespace min::ray

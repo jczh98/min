@@ -25,14 +25,13 @@
 #include "integrator.h"
 #include "sampler.h"
 #include "scene.h"
-#include "object.h"
 
 namespace min::ray {
 
-class SceneGraph : public Object{
+class SceneGraph {
  public:
   void Render();
-  virtual void Initialize(const nlohmann::json &json);
+  void Initialize();
 
  private:
   std::shared_ptr<Camera> camera_;

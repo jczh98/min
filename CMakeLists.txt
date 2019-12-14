@@ -19,7 +19,14 @@ file(GLOB MIN_RAY_CORE
 	"src/core/integrators/*.cc"
 	"src/core/*.cc"
 	"src/core/samplers/*.h"
+	"src/core/samplers/*.cc"
 	"src/core/cameras/*.h"
+	"src/core/cameras/*.cc"
+	"src/core/importers/*.h"
+	"src/core/importers/*.cc"
+	"src/core/shaders/*.h"
+	"src/core/shaders/*.cc"
+	"external/tinyobjloader/tiny_obj_loader.cc"
 	)
 
 add_executable(${EXECUTABLE_NAME} 
@@ -39,6 +46,7 @@ target_include_directories(min_test
 target_include_directories(${EXECUTABLE_NAME} 
 	PUBLIC
 	"include"
+	external/tinyobjloader
 	external/cereal/include
 	external/json/include
 	external/glm

@@ -4,7 +4,7 @@
 
 namespace min::ray {
 
-void ROIntegrator::Render(const std::shared_ptr<Scene> &scene,
+void AOIntegrator::Render(const std::shared_ptr<Scene> &scene,
                           const std::shared_ptr<Camera> &camera,
                           const std::shared_ptr<Sampler> &sampler,
                           Film &film) {

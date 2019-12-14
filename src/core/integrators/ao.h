@@ -30,8 +30,10 @@
 
 namespace min::ray {
 
-class ROIntegrator {
+class AOIntegrator : public Integrator {
  public:
+  AOIntegrator(int spp, Float occlude) : spp_(spp), occlude_distance_(occlude) {}
+
   virtual void Render(const std::shared_ptr<Scene> &scene,
                       const std::shared_ptr<Camera> &camera,
                       const std::shared_ptr<Sampler> &sampler,

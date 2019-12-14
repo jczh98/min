@@ -22,11 +22,15 @@
 #pragma once
 
 #include <algorithm>
+#include <filesystem>
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 namespace min::ray {
+
+namespace fs = std::filesystem;
 
 using Float = float;
 constexpr Float Pi = 3.1415926535f;
