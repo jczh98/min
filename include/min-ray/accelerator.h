@@ -23,6 +23,7 @@
 
 #include "intersection.h"
 #include "ray.h"
+#include "scene.h"
 
 namespace min::ray {
 class Scene;

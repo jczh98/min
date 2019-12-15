@@ -24,6 +24,7 @@
 #include "accelerator.h"
 #include "intersection.h"
 #include "light.h"
+#include "mesh.h"
 #include "ray.h"
 
 namespace min::ray {
@@ -31,9 +32,11 @@ class Scene {
  public:
   void Preprocess();
   bool Intersect(const Ray &ray, Intersection &isect);
+  std::vector<std::shared_ptr<Mesh>> meshes() { return meshes_; }
   std::vector<std::shared_ptr<Light>> lights;
 
  private:
   std::shared_ptr<Accelerator> accelerator_;
+  std::vector<std::shared_ptr<Mesh>> meshes_;
 };
 }  // namespace min::ray

@@ -21,17 +21,5 @@
 // SOFTWARE.
 #pragma once
 
-#include <min-ray/accelerator.h>
-
 namespace min::ray {
-class BVHAccelerator : public Accelerator {
- public:
-  ~BVHAccelerator();
-  virtual void Build(Scene &scene);
-  virtual bool Intersect(const Ray &ray, Intersection &isect);
-
- private:
-  class BVHAcceleratorInternal;
-  std::vector<BVHAccelerator *> internal_;
-};
-}  // namespace min::ray
+}

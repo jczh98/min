@@ -16,6 +16,9 @@ file(GLOB MIN_RAY_API
 	)
 
 file(GLOB MIN_RAY_CORE
+	"src/core/accelerators/*.h"
+	"src/core/accelerators/*.cc"
+	"src/core/integrators/*.h"
 	"src/core/integrators/*.cc"
 	"src/core/*.cc"
 	"src/core/samplers/*.h"

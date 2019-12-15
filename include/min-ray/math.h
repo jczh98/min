@@ -104,6 +104,34 @@ class BoundingBox {
 using BoundingBox3 = BoundingBox<3, Float, glm::qualifier::defaultp>;
 
 template <class T>
+T Lerp3(const T &v1, const T &v2, const T &v3, float u, float v) {
+  return (1 - u - v) * v1 + u * v2 + v * v3;
+}
+
+template <int N, typename T, glm::qualifier Q>
+T MinComp(const glm::vec<N, T, Q> &v) {
+  auto x = v[0];
+  for (int i = 1; i < N; i++) {
+    x = min(x, v[i]);
+  }
+  return x;
+}
+
+template <int N, typename T, glm::qualifier Q>
+T MaxComp(const glm::vec<N, T, Q> &v) {
+  auto x = v[0];
+  for (int i = 1; i < N; i++) {
+    x = max(x, v[i]);
+  }
+  return x;
+}
+
+template <class T>
+T Lerp(const T &x, const T &y, const T &a) {
+  return x * T(1.0f - a) + y * a;
+}
+
+template <class T>
 struct Radians;
 
 template <class T>

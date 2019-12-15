@@ -37,7 +37,7 @@ struct VertexData {
 struct MeshTriangle {
   const Point3 &vertex(size_t) const;
   const Normal3 &normal(size_t) const;
-  const Point2 &texCoord(size_t) const;
+  const Point2 &texcoord(size_t) const;
   bool Intersect(const Ray &ray, Intersection &isect) const {
     Vector3 e1 = (vertex(1) - vertex(0));
     Vector3 e2 = (vertex(2) - vertex(0));
@@ -70,8 +70,11 @@ struct MeshTriangle {
       return false;
     }
   }
-  BoundingBox3 getBoundingBox() const {
-    return BoundingBox3{std::min(vertex(0), std::min(vertex(1), vertex(2))), std::max(vertex(0), std::max(vertex(1), vertex(2)))};
+  BoundingBox3 GetBoundingBox() const {
+    return BoundingBox3{glm::min(vertex(0), glm::min(vertex(1), vertex(2))), glm::max(vertex(0), glm::max(vertex(1), vertex(2)))};
+  }
+  Normal3 NormalAt(const Point2 &uv) const {
+    return glm::normalize(Lerp3(normal(0), normal(1), normal(2), uv[0], uv[1]));
   }
   Light *light = nullptr;
   Mesh *mesh = nullptr;
