@@ -19,40 +19,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-#pragma once
 
-#include "accelerator.h"
-#include "intersection.h"
-#include "light.h"
-#include "primitive.h"
-#include "ray.h"
+#include "random.h"
 
 namespace min::ray {
-class Scene {
- public:
-  void Preprocess();
-  bool Intersect(const Ray &ray, Intersection &isect);
-  size_t GetRayCounter() const { return ray_counter_; }
-  std::vector<std::shared_ptr<Primitive>> &primitives() {
-    return primitives_;
-  }
-  std::shared_ptr<Accelerator> &accelerator() { return accelerator_; }
-
- private:
-  std::atomic<size_t> ray_counter_ = 0;
-  std::shared_ptr<Accelerator> accelerator_;
-  std::vector<std::shared_ptr<Primitive>> primitives_;
-  std::vector<Light *> lights_;
-};
-
-struct VisibilityTester {
-  bool Visible(Scene &scene) {
-    Intersection isect;
-    if (!scene.Intersect(shadow_ray, isect) || isect.distance >= shadow_ray.tmax - RayBias) {
-      return true;
-    }
-    return false;
-  }
-  Ray shadow_ray;
-};
+void RandomSampler::StartPixel(const Point2i &i, const Point2i &dimension) {
+  rng_ = Rng(i.x + i.y * dimension.x);
+}
 }  // namespace min::ray

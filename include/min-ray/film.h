@@ -23,18 +23,14 @@
 
 #include "defs.h"
 #include "math.h"
+#include "spectrum.h"
 
 namespace min::ray {
 class Film {
  public:
-  struct Pixels {
-    explicit Pixels(int n) : color(n) {}
-    std::vector<Vector4> color;
-    std::vector<Float> weight;
-  };
   struct Pixel {
-    Pixel(Vector4 color, Float weight) : color(color), weight(weight) {}
-    Vector4 color;
+    Pixel(Spectrum color = Spectrum(0), Float weight = 0) : color(color), weight(weight) {}
+    Spectrum color;
     Float weight;
   };
 
@@ -49,22 +45,22 @@ class Film {
   Pixel operator()(Float x, Float y) {
     int px = std::clamp<int>(std::lround(x * width), 0, width - 1);
     int py = std::clamp<int>(std::lround(y * height), 0, height - 1);
-    return Pixel(pixels.color.at(px + py * width), pixels.weight.at(px + py * width));
+    return pixels.at(px + py * width);
   }
 
   Pixel operator()(int px, int py) {
-    return Pixel(pixels.color.at(px + py * width), pixels.weight.at(px + py * width));
+    return pixels.at(px + py * width);
   }
 
-  void AddSample(const Vector2 &p, const Vector3 &color, Float weight) {
+  void AddSample(const Vector2 &p, const Spectrum &color, Float weight) {
     auto pixel = (*this)(p);
-    pixel.color += Vector4(color * weight, 0);
+    pixel.color += color;
     pixel.weight += weight;
   }
 
   void WriteImage(const std::string &filename);
 
-  Pixels pixels;
+  std::vector<Pixel> pixels;
   const size_t width, height;
 };
 }  // namespace min::ray

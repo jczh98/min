@@ -21,38 +21,23 @@
 // SOFTWARE.
 #pragma once
 
-#include "accelerator.h"
-#include "intersection.h"
 #include "light.h"
-#include "primitive.h"
-#include "ray.h"
 
 namespace min::ray {
-class Scene {
+
+struct SurfaceSample {
+  Point3 p;
+  Float pdf;
+  Normal3 normal;
+};
+
+class Primitive {
  public:
-  void Preprocess();
-  bool Intersect(const Ray &ray, Intersection &isect);
-  size_t GetRayCounter() const { return ray_counter_; }
-  std::vector<std::shared_ptr<Primitive>> &primitives() {
-    return primitives_;
-  }
-  std::shared_ptr<Accelerator> &accelerator() { return accelerator_; }
-
- private:
-  std::atomic<size_t> ray_counter_ = 0;
-  std::shared_ptr<Accelerator> accelerator_;
-  std::vector<std::shared_ptr<Primitive>> primitives_;
-  std::vector<Light *> lights_;
+  virtual bool Intersect(const Ray &ray, Intersection &isect) const = 0;
+  virtual BoundingBox3 GetBoundingBox() const = 0;
+  virtual AreaLight *GetAreaLight() const { return nullptr; }
+  virtual void Sample(const Point2 &u, SurfaceSample &sample) const = 0;
+  virtual Float Area() const = 0;
 };
 
-struct VisibilityTester {
-  bool Visible(Scene &scene) {
-    Intersection isect;
-    if (!scene.Intersect(shadow_ray, isect) || isect.distance >= shadow_ray.tmax - RayBias) {
-      return true;
-    }
-    return false;
-  }
-  Ray shadow_ray;
-};
 }  // namespace min::ray

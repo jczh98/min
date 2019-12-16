@@ -19,40 +19,49 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-#pragma once
 
-#include "accelerator.h"
-#include "intersection.h"
-#include "light.h"
-#include "primitive.h"
-#include "ray.h"
+#include "sphere.h"
 
 namespace min::ray {
-class Scene {
- public:
-  void Preprocess();
-  bool Intersect(const Ray &ray, Intersection &isect);
-  size_t GetRayCounter() const { return ray_counter_; }
-  std::vector<std::shared_ptr<Primitive>> &primitives() {
-    return primitives_;
-  }
-  std::shared_ptr<Accelerator> &accelerator() { return accelerator_; }
-
- private:
-  std::atomic<size_t> ray_counter_ = 0;
-  std::shared_ptr<Accelerator> accelerator_;
-  std::vector<std::shared_ptr<Primitive>> primitives_;
-  std::vector<Light *> lights_;
-};
-
-struct VisibilityTester {
-  bool Visible(Scene &scene) {
-    Intersection isect;
-    if (!scene.Intersect(shadow_ray, isect) || isect.distance >= shadow_ray.tmax - RayBias) {
-      return true;
-    }
+void Sphere::Sample(const Point2& u, SurfaceSample& sample) const {
+  Float theta = 2 * Pi * u[0];
+  Float v = 2 * u[1] - 1;
+  auto t = std::sqrt(1 - v * v);
+  sample.p = Point3(v * std::sin(theta), v * std::cos(theta), v) * radius_ + center_;
+  sample.pdf = 1.0 / Area();
+  sample.normal = glm::normalize(sample.p - center_);
+}
+bool Sphere::Intersect(const Ray& ray, Intersection& isect) const {
+  auto oc = ray.o - center_;
+  auto a = glm::dot(ray.d, ray.d);
+  auto b = glm::dot(ray.d, oc);
+  auto c = glm::dot(oc, oc) - radius_ * radius_;
+  auto delta = b * b - 4 * a * c;
+  if (delta < 0) {
     return false;
   }
-  Ray shadow_ray;
-};
+  auto t1 = (-b - std::sqrt(delta)) / (2 * a);
+  if (t1 >= ray.tmin) {
+    if (t1 < isect.distance) {
+      isect.distance = t1;
+      auto p = ray.o + t1 * ray.d;
+      isect.ng = glm::normalize(p - center_);
+      isect.ns = isect.ng;
+      isect.shape = this;
+      return true;
+    }
+  }
+  auto t2 = (-b - std::sqrt(delta)) / (2 * a);
+  if (t2 >= ray.tmin) {
+    if (t2 < isect.distance) {
+      isect.distance = t2;
+      auto p = ray.o + t2 * ray.d;
+      isect.ng = glm::normalize(p - center_);
+      isect.ns = isect.ng;
+      isect.shape = this;
+      return true;
+    }
+  }
+  return false;
+}
 }  // namespace min::ray

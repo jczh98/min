@@ -28,7 +28,7 @@ class FloatShader : public Shader {
  public:
   FloatShader(Float v) : value_(v) {}
   virtual Spectrum Evaluate(const ShadingPoint &sp) const {
-    return Spectrum(value);
+    return Spectrum(value_);
   }
 
  private:
@@ -36,9 +36,9 @@ class FloatShader : public Shader {
 };
 class RGBShader : public Shader {
  public:
-  RGBShader(Vector3 v) : value_(v) {}
+  RGBShader(const Vector3 &v) : value_(v) {}
   virtual Spectrum Evaluate(const ShadingPoint &sp) const {
-    return Spectrum(value);
+    return Spectrum(value_);
   }
 
  private:

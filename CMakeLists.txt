@@ -12,15 +12,18 @@ add_subdirectory(external/fmt)
 
 file(GLOB MIN_RAY_API
 	"include/min-ray/*.h"
-	"include/min.ray/*.h"
 	)
 
 file(GLOB MIN_RAY_CORE
 	"src/core/accelerators/*.h"
 	"src/core/accelerators/*.cc"
+	"src/core/bsdfs/*.h"
+	"src/core/bsdfs/*.cc"
 	"src/core/integrators/*.h"
 	"src/core/integrators/*.cc"
 	"src/core/*.cc"
+	"src/core/lights/*.h"
+	"src/core/lights/*.cc"
 	"src/core/samplers/*.h"
 	"src/core/samplers/*.cc"
 	"src/core/cameras/*.h"
@@ -29,6 +32,8 @@ file(GLOB MIN_RAY_CORE
 	"src/core/importers/*.cc"
 	"src/core/shaders/*.h"
 	"src/core/shaders/*.cc"
+	"src/core/shapes/*.h"
+	"src/core/shapes/*.cc"
 	"external/tinyobjloader/tiny_obj_loader.cc"
 	)
 
@@ -37,14 +42,6 @@ add_executable(${EXECUTABLE_NAME}
 	${MIN_RAY_API}
 	${MIN_RAY_CORE}
 	)
-
-add_executable(min_test tests/test.cc)
-
-target_include_directories(min_test
-	PUBLIC
-	external/cereal/include
-	external/json/include
-)
 
 target_include_directories(${EXECUTABLE_NAME} 
 	PUBLIC
@@ -55,3 +52,8 @@ target_include_directories(${EXECUTABLE_NAME}
 	external/glm
 	external/fmt/include
 	)
+
+target_link_libraries(${EXECUTABLE_NAME}
+	PUBLIC 
+	fmt
+)

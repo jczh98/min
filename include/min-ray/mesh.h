@@ -21,6 +21,8 @@
 // SOFTWARE.
 #pragma once
 
+#if 0
+
 #include "intersection.h"
 #include "material.h"
 #include "ray.h"
@@ -95,3 +97,5 @@ class Mesh {
 };
 
 }  // namespace min::ray
+
+#endif

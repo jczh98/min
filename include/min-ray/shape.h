@@ -21,22 +21,14 @@
 // SOFTWARE.
 #pragma once
 
-#include "intersection.h"
-#include "math.h"
-#include "ray.h"
-#include "spectrum.h"
+#include "bsdf.h"
+#include "primitive.h"
 
 namespace min::ray {
-struct MeshTriangle;
-struct SurfaceSample {
-  Point3 p;
-  Float pdf;
-  Normal3 normal;
-  Point2 uv;
-};
-class Shape {
+
+class Shape : public Primitive {
  public:
-  virtual bool Intersect(const Ray &ray, Intersection &isect) const = 0;
-  virtual BoundingBox3 GetBoundingBox() const = 0;
+  virtual BSDF *GetBSDF() const = 0;
+  virtual bool Split(Float coord, int axis, std::vector<std::shared_ptr<Shape>> &split_results) const { return false; }
 };
 }  // namespace min::ray

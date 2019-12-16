@@ -45,6 +45,8 @@ class PerspectiveCamera : public Camera {
     inv_transform_ = transform_.Inverse();
   }
 
+  virtual void WorldToCamera(const Vector3 &v) const {}
+  virtual void CameraToWorld(const Vector3 &v) const {}
   virtual void GenerateRay(const Point2 &eye,
                            const Point2 &center,
                            const Point2i &raster,

@@ -81,6 +81,9 @@
 		"xutility": "cpp",
 		"format": "cpp",
 		"__bit_reference": "cpp",
-		"filesystem": "cpp"
+		"filesystem": "cpp",
+		"optional": "cpp",
+		"stack": "cpp",
+		"typeindex": "cpp"
 	}
 }

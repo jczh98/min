@@ -69,16 +69,16 @@ struct CoordinateSystem {
 template <int N, class T, glm::qualifier Q>
 class BoundingBox {
  public:
-  BoundingBox UnionOf(const BoundingBox &box) const { return BoundingBox{min(pmin, box.pmin), max(pmax, box.pmax)}; }
+  BoundingBox UnionOf(const BoundingBox &box) const { return BoundingBox{glm::min(pmin, box.pmin), glm::max(pmax, box.pmax)}; }
 
-  BoundingBox UnionOf(const glm::vec<N, T, Q> &rhs) const { return BoundingBox{min(pmin, rhs), max(pmax, rhs)}; }
+  BoundingBox UnionOf(const glm::vec<N, T, Q> &rhs) const { return BoundingBox{glm::min(pmin, rhs), glm::max(pmax, rhs)}; }
 
   glm::vec<N, T, Q> Centroid() const { return (pmin + pmax) * 0.5f; }
 
   glm::vec<N, T, Q> Size() const { return pmax - pmin; }
 
   T Area() const {
-    auto a = (size()[0] * size()[1] + size()[0] * size()[2] + size()[1] * size()[2]);
+    auto a = (Size()[0] * Size()[1] + Size()[0] * Size()[2] + Size()[1] * Size()[2]);
     return a + a;
   }
 
@@ -112,7 +112,7 @@ template <int N, typename T, glm::qualifier Q>
 T MinComp(const glm::vec<N, T, Q> &v) {
   auto x = v[0];
   for (int i = 1; i < N; i++) {
-    x = min(x, v[i]);
+    x = glm::min(x, v[i]);
   }
   return x;
 }
@@ -121,7 +121,7 @@ template <int N, typename T, glm::qualifier Q>
 T MaxComp(const glm::vec<N, T, Q> &v) {
   auto x = v[0];
   for (int i = 1; i < N; i++) {
-    x = max(x, v[i]);
+    x = glm::max(x, v[i]);
   }
   return x;
 }

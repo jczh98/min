@@ -25,11 +25,14 @@
 #include "spectrum.h"
 
 namespace min::ray {
+
 struct ShadingPoint {
   Point2 tex_coords;
   Normal3 ns, ng;
 };
+
 class Shader {
+ public:
   virtual Spectrum Evaluate(const ShadingPoint &sp) const = 0;
 };
 

@@ -22,9 +22,7 @@
 #pragma once
 
 #include <min-ray/camera.h>
-#include <min-ray/film.h>
 #include <min-ray/integrator.h>
-#include <min-ray/intersection.h>
 #include <min-ray/sampler.h>
 #include <min-ray/scene.h>
 
@@ -32,7 +30,7 @@ namespace min::ray {
 
 class AOIntegrator : public Integrator {
  public:
-  AOIntegrator(int spp, Float occlude) : spp_(spp), occlude_distance_(occlude) {}
+  AOIntegrator(int spp, Float occlude = 30) : spp_(spp), occlude_distance_(occlude) {}
 
   virtual void Render(const std::shared_ptr<Scene> &scene,
                       const std::shared_ptr<Camera> &camera,

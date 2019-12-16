@@ -43,6 +43,9 @@ class BSDF {
   virtual Spectrum Evaluate(const ShadingPoint &p, const Vector3 &wo, const Vector3 &wi) const = 0;
   virtual Float EvaluatePdf(const ShadingPoint &p, const Vector3 &wo, const Vector3 &wi) const = 0;
   virtual void Sample(Point2 u, const ShadingPoint &p, BSDFSample &sample) const = 0;
+  virtual bool IsSpecular() const {
+    return GetBSDFType() & ESpecular;
+  }
 };
 struct BSDFSample {
   Vector3 wi;

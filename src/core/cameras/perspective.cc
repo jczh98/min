@@ -29,21 +29,18 @@ void PerspectiveCamera::GenerateRay(const Point2 &eye,
                                     Point2i dimension,
                                     CameraSample &sample) const {
   Float x = Float(raster.x) / dimension.x;
-  Float y = Float(raster.y) / dimension.y;
+  Float y = 1 - Float(raster.y) / dimension.y;
   Point2 pixel_width(1.0 / dimension.x, 1.0 / dimension.y);
-  sample.pfilm = Point2(x, y);
-  sample.pfilm += eye * pixel_width - 0.5 * pixel_width;
-  sample.plens = {0, 0};
-  x = sample.pfilm.x;
-  y = sample.pfilm.y;
-  y = 1 - y;
-  x = -(2 * x - 1);
+  sample.film = Point2(x, y);
+  sample.film += eye * pixel_width - 0.5f * pixel_width;
+  sample.lens = {0, 0};
+  x = 2 * x - 1;
   y = 2 * y - 1;
   y *= Float(dimension.y) / Float(dimension.x);
-  Float z = 1.0 / std::atan(fov_ / 2);
+  Float z = 1.0 / std::atan(fov_.get() / 2);
   Vector3 d = Vector3(x, y, 0) - Vector3(0, 0, -z);
   d = glm::normalize(d);
-  Point3 o = Vector3(sample.plens.x, sample.plens.y, 0);
-  sample.ray = Ray(o, d, 0.00001);
+  Point3 o = Vector3(sample.lens.x, sample.lens.y, 0);
+  sample.ray = Ray(o, d, RayBias);
 }
 }  // namespace min::ray

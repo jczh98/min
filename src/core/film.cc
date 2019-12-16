@@ -19,24 +19,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-#pragma once
 
-#include "camera.h"
-#include "integrator.h"
-#include "sampler.h"
-#include "scene.h"
+#include <min-ray/film.h>
 
 namespace min::ray {
 
-class SceneGraph {
- public:
-  void Render();
-  void Initialize();
+static int toInt(float x) {
+  return std::max<uint32_t>(0, std::min<uint32_t>(255, std::lroundf(gamma(x) * 255)));
+}
 
- private:
-  std::shared_ptr<Camera> camera_;
-  std::shared_ptr<Sampler> sampler_;
-  std::shared_ptr<Integrator> integrator_;
-  Point2i file_dimension;
-};
+void Film::WriteImage(const std::string &filename) {
+  auto f = fopen(filename.c_str(), "w");
+  fprintf(f, "P3\n%d %d\n%d\n", width, height, 255);
+  for (int i = 0; i < width * height; i++)
+    fprintf(f, "%d %d %d ",
+            toInt(pixels[i].color[0] * pixels[i].weight),
+            toInt(pixels[i].color[1] * pixels[i].weight),
+            toInt(pixels[i].color[2] * pixels[i].weight));
+}
 }  // namespace min::ray

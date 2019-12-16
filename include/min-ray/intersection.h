@@ -22,15 +22,18 @@
 #pragma once
 
 #include "math.h"
+#include "ray.h"
 
 namespace min::ray {
 
-const Float RayBias = 0.01f;
+class Shape;
 
-struct MeshTriangle;
+class BSDF;
+
 struct Intersection {
   void ComputeLocalFrame() {
-    localframe = CoordinateSystem(ns);
+    localframe = CoordinateSystem(ng);
+    auto v = WorldToLocal(ng);
   }
   Vector3 LocalToWorld(const Vector3 &vec) const {
     return localframe.LocalToWorld(vec);
@@ -46,7 +49,8 @@ struct Intersection {
   Ray SpawnTo(const Point3 &p) const {
     return Ray(this->p, (p - this->p), RayBias, 1);
   }
-  const MeshTriangle *shape = nullptr;
+  const Shape *shape = nullptr;
+  const BSDF *bsdf = nullptr;
   Float distance = MaxFloat;
   Point3 p;
   Normal3 ns, ng;

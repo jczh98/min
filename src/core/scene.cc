@@ -1,17 +1,19 @@
 #include <min-ray/scene.h>
-#include "accelerators/sahbvh.h"
 
 namespace min::ray {
 void Scene::Preprocess() {
-  accelerator_ = std::make_shared<BVHAccelerator>();
-  accelerator_->Build(*this);
+  for (auto &i : primitives_) {
+    if (i->GetAreaLight()) {
+      lights_.emplace_back(i->GetAreaLight());
+    }
+  }
 }
 bool Scene::Intersect(const Ray &ray, Intersection &isect) {
-  if (accelerator_->Intersect(ray, isect)) {
-    isect.ns = isect.shape->NormalAt(isect.uv);
-    isect.ComputeLocalFrame();
-    return true;
+  ray_counter_++;
+  auto hit = accelerator_->Intersect(ray, isect);
+  if (hit) {
+    isect.p = ray.o + ray.d * isect.distance;
   }
-  return false;
+  return hit;
 }
 }  // namespace min::ray

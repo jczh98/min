@@ -19,40 +19,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-#pragma once
-
-#include "accelerator.h"
-#include "intersection.h"
-#include "light.h"
-#include "primitive.h"
-#include "ray.h"
+#include "diffuse_area.h"
 
 namespace min::ray {
-class Scene {
- public:
-  void Preprocess();
-  bool Intersect(const Ray &ray, Intersection &isect);
-  size_t GetRayCounter() const { return ray_counter_; }
-  std::vector<std::shared_ptr<Primitive>> &primitives() {
-    return primitives_;
+Float DiffuseAreaLight::PdfLi(const Intersection &isect, const Vector3 &wi) const {
+  Intersection isect_;
+  Ray ray(isect.p, wi, RayBias);
+  if (!shape->Intersect(ray, isect_)) {
+    return 0.0f;
   }
-  std::shared_ptr<Accelerator> &accelerator() { return accelerator_; }
+  Float SA = shape->Area() * std::abs(glm::dot(wi, isect_.ng)) / (isect_.distance * isect_.distance);
+  return 1.0f / SA;
+}
 
- private:
-  std::atomic<size_t> ray_counter_ = 0;
-  std::shared_ptr<Accelerator> accelerator_;
-  std::vector<std::shared_ptr<Primitive>> primitives_;
-  std::vector<Light *> lights_;
-};
+void DiffuseAreaLight::SetShape(Shape *shape) {
+  this->shape = shape;
+}
 
-struct VisibilityTester {
-  bool Visible(Scene &scene) {
-    Intersection isect;
-    if (!scene.Intersect(shadow_ray, isect) || isect.distance >= shadow_ray.tmax - RayBias) {
-      return true;
-    }
-    return false;
-  }
-  Ray shadow_ray;
-};
+Spectrum DiffuseAreaLight::Li(ShadingPoint &sp) const {
+  return color_;
+}
+
+void DiffuseAreaLight::SampleLi(const Point2 &u, Intersection &isect, LightSample &sample, VisibilityTester &tester) const {
+  SurfaceSample surface_sample;
+  shape->Sample(u, surface_sample);
+  auto wi = surface_sample.p - isect.p;
+  tester.shadow_ray = Ray(isect.p, wi, RayBias, 1);
+  sample.li = color_;
+  sample.wi = glm::normalize(wi);
+  sample.pdf = glm::dot(wi, wi) / std::abs(glm::dot(surface_sample.normal, sample.wi)) * surface_sample.pdf;
+}
+
+void DiffuseAreaLight::SampleLe(const Point2 &u1, const Point2 &u2, LightRaySample &sample) {
+}
 }  // namespace min::ray

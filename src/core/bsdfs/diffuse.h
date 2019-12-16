@@ -21,38 +21,43 @@
 // SOFTWARE.
 #pragma once
 
-#include "accelerator.h"
-#include "intersection.h"
-#include "light.h"
-#include "primitive.h"
-#include "ray.h"
+#include <min-ray/bsdf.h>
+#include <min-ray/sampling.h>
+#include <min-ray/shader.h>
 
 namespace min::ray {
-class Scene {
+
+class DiffuseBSDF : public BSDF {
  public:
-  void Preprocess();
-  bool Intersect(const Ray &ray, Intersection &isect);
-  size_t GetRayCounter() const { return ray_counter_; }
-  std::vector<std::shared_ptr<Primitive>> &primitives() {
-    return primitives_;
+  DiffuseBSDF(const std::shared_ptr<Shader> &shader) : shader_(shader) {}
+  virtual Spectrum Evaluate(const ShadingPoint &sp, const Vector3 &wo, const Vector3 &wi) const {
+    if (wo.y * wi.y > 0) {
+      return shader_->Evaluate(sp) * InvPi;
+    }
+    return Spectrum(0);
   }
-  std::shared_ptr<Accelerator> &accelerator() { return accelerator_; }
+  virtual void Sample(Point2 u, const ShadingPoint &sp, BSDFSample &sample) const {
+    sample.wi = CosineHeisphereSampling(u);
+    sample.sample_type = BSDF::Type(sample.sample_type | GetBSDFType());
+    if (sample.wo.y * sample.wi.y < 0) {
+      sample.wi.y = -sample.wi.y;
+    }
+    sample.pdf = std::abs(sample.wi.y) * InvPi;
+    sample.s = Evaluate(sp, sample.wo, sample.wi);
+  }
+
+  virtual Float EvaluatePdf(const ShadingPoint &sp, const Vector3 &wo, const Vector3 &wi) const {
+    if (wo.y * wi.y > 0) {
+      return std::abs(wi.y) * InvPi;
+    }
+    return 0;
+  }
+
+  virtual Type GetBSDFType() const {
+    return Type(EDiffuse | EReflection);
+  }
 
  private:
-  std::atomic<size_t> ray_counter_ = 0;
-  std::shared_ptr<Accelerator> accelerator_;
-  std::vector<std::shared_ptr<Primitive>> primitives_;
-  std::vector<Light *> lights_;
-};
-
-struct VisibilityTester {
-  bool Visible(Scene &scene) {
-    Intersection isect;
-    if (!scene.Intersect(shadow_ray, isect) || isect.distance >= shadow_ray.tmax - RayBias) {
-      return true;
-    }
-    return false;
-  }
-  Ray shadow_ray;
+  std::shared_ptr<Shader> shader_;
 };
 }  // namespace min::ray

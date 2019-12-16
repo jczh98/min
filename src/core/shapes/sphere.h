@@ -21,38 +21,35 @@
 // SOFTWARE.
 #pragma once
 
-#include "accelerator.h"
-#include "intersection.h"
-#include "light.h"
-#include "primitive.h"
-#include "ray.h"
+#include <min-ray/shape.h>
 
 namespace min::ray {
-class Scene {
+
+class Sphere : public Shape {
  public:
-  void Preprocess();
-  bool Intersect(const Ray &ray, Intersection &isect);
-  size_t GetRayCounter() const { return ray_counter_; }
-  std::vector<std::shared_ptr<Primitive>> &primitives() {
-    return primitives_;
+  Sphere(Float r, const Vector3 &center, const std::shared_ptr<BSDF> &bsdf, const std::shared_ptr<AreaLight> &light = nullptr)
+      : radius_(r), center_(center), bsdf_(bsdf), light_(light) {
+    if (light) {
+      light->SetShape(this);
+    }
   }
-  std::shared_ptr<Accelerator> &accelerator() { return accelerator_; }
+  virtual BSDF *GetBSDF() const {
+    return bsdf_.get();
+  }
+
+  virtual void Sample(const Point2 &, SurfaceSample &) const;
+  virtual Float Area() const {
+    return 4 * Pi * radius_ * radius_;
+  }
+  virtual bool Intersect(const Ray &ray, Intersection &isect) const;
+  virtual BoundingBox3 GetBoundingBox() const {
+    return BoundingBox3{center_ - radius_, center_ + radius_};
+  }
 
  private:
-  std::atomic<size_t> ray_counter_ = 0;
-  std::shared_ptr<Accelerator> accelerator_;
-  std::vector<std::shared_ptr<Primitive>> primitives_;
-  std::vector<Light *> lights_;
-};
-
-struct VisibilityTester {
-  bool Visible(Scene &scene) {
-    Intersection isect;
-    if (!scene.Intersect(shadow_ray, isect) || isect.distance >= shadow_ray.tmax - RayBias) {
-      return true;
-    }
-    return false;
-  }
-  Ray shadow_ray;
+  std::shared_ptr<BSDF> bsdf_;
+  Float radius_;
+  Vector3 center_;
+  std::shared_ptr<AreaLight> light_;
 };
 }  // namespace min::ray

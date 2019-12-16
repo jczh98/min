@@ -31,6 +31,6 @@ class Sampler {
   virtual Float Get1D() = 0;
   virtual Point2 Get2D() = 0;
   virtual void StartNextSample() = 0;
-  const int sampler_per_pixel;
+  virtual std::shared_ptr<Sampler> Clone() const = 0;
 };
 }  // namespace min::ray

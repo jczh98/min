@@ -21,23 +21,28 @@
 // SOFTWARE.
 #pragma once
 
+#include "intersection.h"
+#include "ray.h"
 #include "spectrum.h"
 
 namespace min::ray {
+
+class Shape;
+class Primitive;
 
 struct VisibilityTester;
 struct ShadingPoint;
 
 struct LightSample {
   Vector3 wi;
-  Spectrum Li;
+  Spectrum li;
   float pdf;
 };
 
 struct LightRaySample {
   Ray ray;
-  Spectrum Le;
-  float pdfPos, pdfDir;
+  Spectrum le;
+  float pdf_pos, pdf_dir;
 };
 
 class Light {
@@ -49,6 +54,11 @@ class Light {
   virtual Float PdfLi(const Intersection &isect, const Vector3 &wi) const = 0;
 
   virtual void SampleLe(const Point2 &u1, const Point2 &u2, LightRaySample &sample) = 0;
+};
+
+class AreaLight : public Light {
+ public:
+  virtual void SetShape(Shape *shape) = 0;
 };
 
 }  // namespace min::ray

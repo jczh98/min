@@ -1,8 +1,9 @@
 #include "wavefront.h"
-#include <fmt/format.h>
 #include <min-ray/mesh.h>
 #include <tiny_obj_loader.h>
 #include "../shaders/common.h"
+
+#if 0
 
 namespace min::ray {
 
@@ -156,3 +157,5 @@ MeshImportResult WavefrontImporter::Import(const fs::path &path) {
   result.mesh = mesh;
 }
 }  // namespace min::ray
+
+#endif

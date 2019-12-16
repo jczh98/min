@@ -24,14 +24,38 @@
 #include <min-ray/accelerator.h>
 
 namespace min::ray {
+
 class BVHAccelerator : public Accelerator {
  public:
-  ~BVHAccelerator();
-  virtual void Build(Scene &scene);
-  virtual bool Intersect(const Ray &ray, Intersection &isect);
+  BVHAccelerator(const std::vector<std::shared_ptr<Primitive>> &primitives) : primitives_(primitives) {
+    RecursiveBuild(0, static_cast<int>(primitives_.size()), 0);
+    fmt::print("BVH nodes : {}\n", nodes_.size());
+  }
+  virtual bool Intersect(const Ray &ray, Intersection &isect) const;
+  virtual BoundingBox3 GetBoundingBox() const {
+    return boundbox_;
+  }
+  virtual void Sample(const Point2 &p, SurfaceSample &sample) const;
+  virtual Float Area() const { return 0; }
 
  private:
-  class BVHAcceleratorInternal;
-  std::vector<BVHAccelerator *> internal_;
+  struct BVHNode {
+    BoundingBox3 box;
+    uint32_t first, count;
+    int left, right;
+    bool IsLeaf() const {
+      return left < 0 && right < 0;
+    }
+  };
+  struct Bucket {
+    size_t count = 0;
+    BoundingBox3 bound;
+    Bucket() : bound{{MaxFloat, MaxFloat, MaxFloat},
+                     {MinFloat, MinFloat, MinFloat}} {}
+  };
+  int RecursiveBuild(int begin, int end, int depth);
+  std::vector<std::shared_ptr<Primitive>> primitives_;
+  std::vector<BVHNode> nodes_;
+  BoundingBox3 boundbox_;
 };
 }  // namespace min::ray

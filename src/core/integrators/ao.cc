@@ -10,6 +10,7 @@ void AOIntegrator::Render(const std::shared_ptr<Scene> &scene,
                           Film &film) {
   for (int j = 0; j < film.height; j++) {
     for (int i = 0; i < film.width; i++) {
+      fmt::print("{} {}\n", i, j);
       sampler->StartPixel(Point2i(i, j), Point2i(film.width, film.height));
       for (int s = 0; s < spp_; s++) {
         CameraSample camera_sample;
@@ -17,19 +18,18 @@ void AOIntegrator::Render(const std::shared_ptr<Scene> &scene,
         camera->GenerateRay(sampler->Get2D(), sampler->Get2D(), Point2i(i, j), Point2i(film.width, film.height), camera_sample);
         Intersection isect;
         if (scene->Intersect(camera_sample.ray, isect)) {
+          isect.ComputeLocalFrame();
           auto wo = isect.WorldToLocal(-camera_sample.ray.d);
           auto w = CosineHeisphereSampling(sampler->Get2D());
           if (wo.y * w.y < 0) {
             w = -w;
           }
-          w = isect.LocalToWorld(w);
           auto ray = isect.SpawnRay(w);
-          ray.tmax = occlude_distance_;
           isect = Intersection();
           if (!scene->Intersect(ray, isect) || isect.distance >= occlude_distance_) {
-            film.AddSample(camera_sample.pfilm, Spectrum(1), 1);
+            film.AddSample(camera_sample.film, Spectrum(1), 1.0 / spp_);
           } else {
-            film.AddSample(camera_sample.pfilm, Spectrum(0), 0);
+            film.AddSample(camera_sample.film, Spectrum(0), 0);
           }
         }
       }

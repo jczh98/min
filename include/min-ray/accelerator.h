@@ -21,15 +21,11 @@
 // SOFTWARE.
 #pragma once
 
-#include "intersection.h"
-#include "ray.h"
-#include "scene.h"
+#include "primitive.h"
 
 namespace min::ray {
-class Scene;
-class Accelerator {
+
+class Accelerator : public Primitive {
  public:
-  virtual void Build(Scene &scene) = 0;
-  virtual bool Intersect(const Ray &ray, Intersection &isect) = 0;
 };
 }  // namespace min::ray

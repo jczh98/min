@@ -28,16 +28,21 @@ namespace min::ray {
 
 class RandomSampler : public Sampler {
  public:
-  RandomSampler(uint32_t seed = 0) : rng(seed) {}
-  virtual void StartPiexl(const Point2i &p, const Point2i &file_demension);
-  virtual Float Get1D() {
-    return rng.uniformFloat();
+  RandomSampler(uint32_t seed = 0) : rng_(seed) {}
+  void StartPixel(const Point2i &p, const Point2i &file_demension) override;
+  void StartNextSample() override{}
+  Float Get1D() override {
+    return rng_.uniformFloat();
   }
-  virtual Point2 Get2D() {
+  Point2 Get2D() override {
     return Point2(Get1D(), Get1D());
   }
 
+  std::shared_ptr<Sampler> Clone() const override {
+    return std::make_shared<RandomSampler>();
+  }
+
  private:
-  Rng rng;
+  Rng rng_;
 };
 }  // namespace min::ray
