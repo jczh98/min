@@ -11,7 +11,7 @@ void AOIntegrator::Render(const std::shared_ptr<Scene> &scene,
   for (int j = 0; j < film.height; j++) {
     for (int i = 0; i < film.width; i++) {
       fmt::print("{} {}\n", i, j);
-      sampler->StartPixel(Point2i(i, j), Point2i(film.width, film.height));
+      //sampler->StartPixel(Point2i(i, j), Point2i(film.width, film.height));
       for (int s = 0; s < spp_; s++) {
         CameraSample camera_sample;
         sampler->StartNextSample();
@@ -27,15 +27,11 @@ void AOIntegrator::Render(const std::shared_ptr<Scene> &scene,
           auto ray = isect.SpawnRay(w);
           isect = Intersection();
           if (!scene->Intersect(ray, isect) || isect.distance >= occlude_distance_) {
-            //film.AddSample(camera_sample.film, Spectrum(1), 1.0 / spp_);
-            film(camera_sample.film) += Spectrum(1);
-          } else {
-            //film.AddSample(camera_sample.film, Spectrum(0), 0);
+            film.AddSample(camera_sample.film, Spectrum(1), 1.0 / spp_);
           }
         }
       }
     }
   }
-  film.weight = 1.0f / spp_;
 }
 }  // namespace min::ray

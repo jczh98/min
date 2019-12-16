@@ -31,8 +31,8 @@ struct CameraSample {
 };
 class Camera {
  public:
-  virtual void WorldToCamera(const Vector3 &v) const = 0;
-  virtual void CameraToWorld(const Vector3 &v) const = 0;
+  virtual Vector3 WorldToCamera(const Vector3 &v) const = 0;
+  virtual Vector3 CameraToWorld(const Vector3 &v) const = 0;
   virtual void GenerateRay(const Point2 &eye,
                            const Point2 &center,
                            const Point2i &raster,

@@ -27,26 +27,42 @@ namespace min::ray {
 
 class PerspectiveCamera : public Camera {
  public:
+  static Matrix4 lookAt(const Vector3 &from, const Vector3 &to) {
+    Vector3 up(0, 1, 0);
+    Vector3 d = glm::normalize(to - from);
+    Vector3 xAxis = glm::normalize(glm::cross(up, d));
+    Vector3 yAxis = glm::normalize(glm::cross(xAxis, d));
+    Matrix4 Result(1);
+    Result[0][0] = xAxis.x;
+    Result[1][0] = xAxis.y;
+    Result[2][0] = xAxis.z;
+    Result[0][1] = yAxis.x;
+    Result[1][1] = yAxis.y;
+    Result[2][1] = yAxis.z;
+    Result[0][2] = d.x;
+    Result[1][2] = d.y;
+    Result[2][2] = d.z;
+    Result[3][0] = 0;
+    Result[3][1] = 0;
+    Result[3][2] = 0;
+    Result[3][3] = 1;
+    return Result;
+  }
   PerspectiveCamera() = default;
   PerspectiveCamera(const Vector3 &eye, const Vector3 &center, Float fov) : fov_(fov) {
-    transform_ = Transform(glm::lookAt(eye, center, Vector3(0, 1, 0)));
-    inv_transform_ = transform_.Inverse();
+    viewpoint_ = eye;
+    transform_ = lookAt(eye, center);
+    inv_transform_ = glm::inverse(transform_);
   }
 
-  PerspectiveCamera(const Vector3 &translate, const Vector3 &rotate) {
-    auto rotation = DegreesToRadians(rotate);
-    auto m = glm::identity<Matrix4>();
-    m = glm::rotate(rotation.z, Vector3(0, 0, 1)) * m;
-    m = glm::rotate(rotation.y, Vector3(1, 0, 0)) * m;
-    m = glm::rotate(rotation.x, Vector3(0, 1, 0)) * m;
-    m = glm::translate(translate) * m;
-    transform_ = Transform(m);
-    transforms_ = {Radians<Vector3>(rotation), translate};
-    inv_transform_ = transform_.Inverse();
+  virtual Vector3 WorldToCamera(const Vector3 &v) const {
+    auto r = inv_transform_ * Vector4(v.x, v.y, v.z, 1);
+    return {r.x, r.y, r.z};
   }
-
-  virtual void WorldToCamera(const Vector3 &v) const {}
-  virtual void CameraToWorld(const Vector3 &v) const {}
+  virtual Vector3 CameraToWorld(const Vector3 &v) const {
+    auto r = transform_ * Vector4(v.x, v.y, v.z, 1);
+    return {r.x, r.y, r.z};
+  }
   virtual void GenerateRay(const Point2 &eye,
                            const Point2 &center,
                            const Point2i &raster,
@@ -54,8 +70,10 @@ class PerspectiveCamera : public Camera {
                            CameraSample &sample) const;
 
  private:
-  Transform transform_, inv_transform_;
+  Matrix4 transform_, inv_transform_;
+  Vector3 viewpoint_;
+  //Transform transform_, inv_transform_;
   Radians<float> fov_ = Radians<float>(Degrees<float>(80.0));
-  TransformManipulator transforms_;
+  //TransformManipulator transforms_;
 };
 }  // namespace min::ray

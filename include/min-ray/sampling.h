@@ -46,7 +46,8 @@ inline Point2 ConcentricSampleDisk(const Point2 &u) {
 
 inline Vector3 CosineHeisphereSampling(const Point2 &u) {
   Point2 d = ConcentricSampleDisk(u);
-  Float z = std::sqrt(std::max((Float)0, 1 - d.x * d.x - d.y * d.y));
-  return Vector3(d.x, d.y, z);
+  auto r = glm::dot(d, d);
+  auto h = std::sqrt(std::max((Float)0, 1 - r));
+  return Vector3(d.x, h, d.y);
 }
 }  // namespace min::ray

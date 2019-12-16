@@ -21,47 +21,45 @@
 // SOFTWARE.
 #pragma once
 
+#include <glm/gtx/string_cast.hpp>
 #include "defs.h"
 #include "math.h"
 #include "spectrum.h"
-
 namespace min::ray {
 class Film {
  public:
   struct Pixel {
-    Pixel(Spectrum color = Spectrum(0), Float weight = 0) : color(color), weight(weight) {}
-    Spectrum color;
-    Float weight;
+    Spectrum color = Spectrum(0);
+    Float weight = 0.0;
   };
 
   explicit Film(const Vector2i &dim) : Film(dim.x, dim.y) {}
 
   Film(size_t w, size_t h) : width(w), height(h), pixels(w * h) {}
 
-  Spectrum operator()(const Vector2 &p) {
+  Pixel &operator()(const Vector2 &p) {
     return (*this)(p.x, p.y);
   }
 
-  Spectrum operator()(Float x, Float y) {
+  Pixel &operator()(Float x, Float y) {
     int px = std::clamp<int>(std::lround(x * width), 0, width - 1);
     int py = std::clamp<int>(std::lround(y * height), 0, height - 1);
     return pixels.at(px + py * width);
   }
 
-  Spectrum operator()(int px, int py) {
+  Pixel &operator()(int px, int py) {
     return pixels.at(px + py * width);
   }
 
-  void AddSample(const Vector2 &p, const Spectrum &color, Float weight) {
-    auto pixel = (*this)(p);
-    pixel += color;
-    //pixel.weight += weight;
+  void AddSample(const Vector2 &p, Spectrum color, Float weight) {
+    auto &pixel = (*this)(p);
+    pixel.color += color;
+    pixel.weight += weight;
   }
 
   void WriteImage(const std::string &filename);
 
-  Float weight;
-  std::vector<Spectrum> pixels;
+  std::vector<Pixel> pixels;
   const size_t width, height;
 };
 }  // namespace min::ray

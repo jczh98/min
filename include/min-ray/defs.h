@@ -29,6 +29,7 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <glm/gtx/string_cast.hpp>
 
 namespace min::ray {
 
@@ -43,7 +44,7 @@ constexpr Float Inv4Pi = 1.0f / (4.0f * Pi);
 constexpr Float MaxFloat = std::numeric_limits<Float>::max();
 constexpr Float MinFloat = std::numeric_limits<Float>::lowest();
 constexpr Float MachineEpsilon = std::numeric_limits<Float>::epsilon();
-const Float RayBias = 0.01f;
+const Float RayBias = 0.05f;
 
 constexpr Float gamma(int n) {
   return n * MachineEpsilon / (1 - n * MachineEpsilon);
