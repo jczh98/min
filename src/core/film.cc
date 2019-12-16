@@ -31,10 +31,11 @@ static int toInt(float x) {
 void Film::WriteImage(const std::string &filename) {
   auto f = fopen(filename.c_str(), "w");
   fprintf(f, "P3\n%d %d\n%d\n", width, height, 255);
-  for (int i = 0; i < width * height; i++)
+  for (int i = 0; i < width * height; i++) {
     fprintf(f, "%d %d %d ",
-            toInt(pixels[i].color[0] * pixels[i].weight),
-            toInt(pixels[i].color[1] * pixels[i].weight),
-            toInt(pixels[i].color[2] * pixels[i].weight));
+            toInt(pixels[i][0] * weight),
+            toInt(pixels[i][1] * weight),
+            toInt(pixels[i][2] * weight));
+  }
 }
 }  // namespace min::ray

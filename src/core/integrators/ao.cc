@@ -27,13 +27,15 @@ void AOIntegrator::Render(const std::shared_ptr<Scene> &scene,
           auto ray = isect.SpawnRay(w);
           isect = Intersection();
           if (!scene->Intersect(ray, isect) || isect.distance >= occlude_distance_) {
-            film.AddSample(camera_sample.film, Spectrum(1), 1.0 / spp_);
+            //film.AddSample(camera_sample.film, Spectrum(1), 1.0 / spp_);
+            film(camera_sample.film) += Spectrum(1);
           } else {
-            film.AddSample(camera_sample.film, Spectrum(0), 0);
+            //film.AddSample(camera_sample.film, Spectrum(0), 0);
           }
         }
       }
     }
   }
+  film.weight = 1.0f / spp_;
 }
 }  // namespace min::ray
