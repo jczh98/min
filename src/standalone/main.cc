@@ -15,7 +15,7 @@ using namespace min::ray;
 int main(int, char**) {
   ParallelInit(4);
   std::shared_ptr<Camera> camera(new PerspectiveCamera(Vector3(50.0, 40.8, 220.0), Vector3(50.0, 40.8, 0.0), DegreesToRadians<Float>(60)));
-  Film film{1080 / 2, 720 / 2};
+  Film film{1080 / 4, 720 / 4};
   std::shared_ptr<Scene> scene = std::make_shared<Scene>();
   scene->primitives() = {
       std::make_shared<Sphere>(6.0, Vector3(10, 70, 51.6), nullptr, std::make_shared<DiffuseAreaLight>(Vector3(100., 100., 100.))),
