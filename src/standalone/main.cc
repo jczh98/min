@@ -1,4 +1,5 @@
 #include <min-ray/film.h>
+#include <min-ray/parallel.h>
 #include <iostream>
 #include "../core/accelerators/sahbvh.h"
 #include "../core/bsdfs/diffuse.h"
@@ -12,8 +13,9 @@
 using namespace min::ray;
 
 int main(int, char**) {
+  ParallelInit(4);
   std::shared_ptr<Camera> camera(new PerspectiveCamera(Vector3(50.0, 40.8, 220.0), Vector3(50.0, 40.8, 0.0), DegreesToRadians<Float>(60)));
-  Film film{1080 / 6, 720 / 6};
+  Film film{1080 / 2, 720 / 2};
   std::shared_ptr<Scene> scene = std::make_shared<Scene>();
   scene->primitives() = {
       std::make_shared<Sphere>(6.0, Vector3(10, 70, 51.6), nullptr, std::make_shared<DiffuseAreaLight>(Vector3(100., 100., 100.))),
@@ -41,5 +43,6 @@ int main(int, char**) {
   std::shared_ptr<Integrator> integrator(new AOIntegrator(64));
   integrator->Render(scene, camera, sampler, film);
   film.WriteImage("out.ppm");
+  ParallelCleanUp();
   return 0;
 }

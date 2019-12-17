@@ -28,6 +28,7 @@
 #include <iostream>
 #include <memory>
 #include <unordered_map>
+#include <functional>
 #include <vector>
 #include <glm/gtx/string_cast.hpp>
 
