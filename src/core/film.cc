@@ -24,12 +24,12 @@
 #include <glm/gtx/string_cast.hpp>
 namespace min::ray {
 
-static float gamma(float x, float k = 1.0f / 2.2f) {
+static float Gamma(float x, float k = 1.0f / 2.2f) {
   return std::pow(std::clamp(x, 0.0f, 1.0f), k);
 }
 
-static int toInt(float x) {
-  return std::max<uint32_t>(0, std::min<uint32_t>(255, std::lroundf(gamma(x) * 255)));
+static int ToInt(float x) {
+  return std::max<uint32_t>(0, std::min<uint32_t>(255, std::lroundf(Gamma(x) * 255)));
 }
 
 void Film::WriteImage(const std::string &filename) {
@@ -37,9 +37,9 @@ void Film::WriteImage(const std::string &filename) {
   fprintf(f, "P3\n%d %d\n%d\n", width, height, 255);
   for (int i = 0; i < width * height; i++) {
     fprintf(f, "%d %d %d ",
-            toInt(pixels[i].color[0] * pixels[i].weight),
-            toInt(pixels[i].color[1] * pixels[i].weight),
-            toInt(pixels[i].color[2] * pixels[i].weight));
+            ToInt(pixels[i].color[0]),
+            ToInt(pixels[i].color[1]),
+            ToInt(pixels[i].color[2]));
   }
 }
 }  // namespace min::ray

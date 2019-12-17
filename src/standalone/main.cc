@@ -12,7 +12,7 @@
 using namespace min::ray;
 
 int main(int, char**) {
-  std::shared_ptr<Camera> camera(new PerspectiveCamera(Vector3(50.0, 40.8, 220.0), Vector3(50.0, 40.8, 0.0), DegreesToRadians(60)));
+  std::shared_ptr<Camera> camera(new PerspectiveCamera(Vector3(50.0, 40.8, 220.0), Vector3(50.0, 40.8, 0.0), DegreesToRadians<Float>(60)));
   Film film{1080 / 6, 720 / 6};
   std::shared_ptr<Scene> scene = std::make_shared<Scene>();
   scene->primitives() = {

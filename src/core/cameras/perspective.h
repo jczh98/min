@@ -27,31 +27,22 @@ namespace min::ray {
 
 class PerspectiveCamera : public Camera {
  public:
-  static Matrix4 lookAt(const Vector3 &from, const Vector3 &to) {
+  static Matrix4 LookAt(const Vector3 &from, const Vector3 &to) {
     Vector3 up(0, 1, 0);
     Vector3 d = glm::normalize(to - from);
     Vector3 xAxis = glm::normalize(glm::cross(up, d));
     Vector3 yAxis = glm::normalize(glm::cross(xAxis, d));
-    Matrix4 Result(1);
-    Result[0][0] = xAxis.x;
-    Result[1][0] = xAxis.y;
-    Result[2][0] = xAxis.z;
-    Result[0][1] = yAxis.x;
-    Result[1][1] = yAxis.y;
-    Result[2][1] = yAxis.z;
-    Result[0][2] = d.x;
-    Result[1][2] = d.y;
-    Result[2][2] = d.z;
-    Result[3][0] = 0;
-    Result[3][1] = 0;
-    Result[3][2] = 0;
-    Result[3][3] = 1;
+    Matrix4 Result = {
+        {xAxis.x, yAxis.x, d.x, 0},
+        {xAxis.y, yAxis.y, d.y, 0},
+        {xAxis.z, yAxis.z, d.z, 0},
+        {0, 0, 0, 1}};
     return Result;
   }
   PerspectiveCamera() = default;
   PerspectiveCamera(const Vector3 &eye, const Vector3 &center, Float fov) : fov_(fov) {
     viewpoint_ = eye;
-    transform_ = lookAt(eye, center);
+    transform_ = LookAt(eye, center);
     inv_transform_ = glm::inverse(transform_);
   }
 
@@ -63,8 +54,8 @@ class PerspectiveCamera : public Camera {
     auto r = transform_ * Vector4(v.x, v.y, v.z, 1);
     return {r.x, r.y, r.z};
   }
-  virtual void GenerateRay(const Point2 &eye,
-                           const Point2 &center,
+  virtual void GenerateRay(const Point2 &u1,
+                           const Point2 &u2,
                            const Point2i &raster,
                            Point2i dimension,
                            CameraSample &sample) const;
@@ -72,8 +63,6 @@ class PerspectiveCamera : public Camera {
  private:
   Matrix4 transform_, inv_transform_;
   Vector3 viewpoint_;
-  //Transform transform_, inv_transform_;
   Radians<float> fov_ = Radians<float>(Degrees<float>(80.0));
-  //TransformManipulator transforms_;
 };
 }  // namespace min::ray

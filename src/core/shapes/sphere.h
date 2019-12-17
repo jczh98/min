@@ -37,6 +37,9 @@ class Sphere : public Shape {
     return bsdf_.get();
   }
 
+  virtual AreaLight *GetAreaLight() const {
+    return light_.get();
+  }
   virtual void Sample(const Point2 &, SurfaceSample &) const;
   virtual Float Area() const {
     return 4 * Pi * radius_ * radius_;

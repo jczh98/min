@@ -23,17 +23,16 @@
 
 namespace min::ray {
 
-void PerspectiveCamera::GenerateRay(const Point2 &eye,
-                                    const Point2 &center,
+void PerspectiveCamera::GenerateRay(const Point2 &u1,
+                                    const Point2 &u2,
                                     const Point2i &raster,
                                     Point2i dimension,
                                     CameraSample &sample) const {
-  float x = float(raster.x) / dimension.x;
-  float y = 1 - float(raster.y) / dimension.y;
-
+  float x = Float(raster.x) / dimension.x;
+  float y = 1 - Float(raster.y) / dimension.y;
   Point2 pixel_width(1.0 / dimension.x, 1.0 / dimension.y);
   sample.film = {x, y};
-  sample.film += eye * pixel_width - 0.5f * pixel_width;
+  sample.film += u1 * pixel_width - 0.5f * pixel_width;
   sample.lens = {0, 0};
   x = 2 * x - 1;
   y = 2 * y - 1;

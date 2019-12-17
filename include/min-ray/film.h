@@ -53,8 +53,7 @@ class Film {
 
   void AddSample(const Vector2 &p, Spectrum color, Float weight) {
     auto &pixel = (*this)(p);
-    pixel.color += color;
-    pixel.weight += weight;
+    pixel.color += color * weight;
   }
 
   void WriteImage(const std::string &filename);

@@ -34,7 +34,7 @@ void Sphere::Sample(const Point2& u, SurfaceSample& sample) const {
 bool Sphere::Intersect(const Ray& ray, Intersection& isect) const {
   auto oc = ray.o - center_;
   auto a = glm::dot(ray.d, ray.d);
-  auto b = glm::dot(ray.d, oc);
+  auto b = 2 * glm::dot(ray.d, oc);
   auto c = glm::dot(oc, oc) - radius_ * radius_;
   auto delta = b * b - 4 * a * c;
   if (delta < 0) {
@@ -51,7 +51,7 @@ bool Sphere::Intersect(const Ray& ray, Intersection& isect) const {
       return true;
     }
   }
-  auto t2 = (-b - std::sqrt(delta)) / (2 * a);
+  auto t2 = (-b + std::sqrt(delta)) / (2 * a);
   if (t2 >= ray.tmin) {
     if (t2 < isect.distance) {
       isect.distance = t2;

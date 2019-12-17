@@ -8,9 +8,9 @@ void AOIntegrator::Render(const std::shared_ptr<Scene> &scene,
                           const std::shared_ptr<Camera> &camera,
                           const std::shared_ptr<Sampler> &sampler,
                           Film &film) {
-  for (int j = 0; j < film.height; j++) {
-    for (int i = 0; i < film.width; i++) {
-      fmt::print("{} {}\n", i, j);
+  for (int i = 0; i < film.width; i++) {
+    for (int j = 0; j < film.height; j++) {
+      //fmt::print("{} {}\n", i, j);
       //sampler->StartPixel(Point2i(i, j), Point2i(film.width, film.height));
       for (int s = 0; s < spp_; s++) {
         CameraSample camera_sample;
