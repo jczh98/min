@@ -28,6 +28,8 @@ file(GLOB MIN_RAY_CORE
 	"src/core/samplers/*.cc"
 	"src/core/cameras/*.h"
 	"src/core/cameras/*.cc"
+	"src/core/materials/*.h"
+	"src/core/materials/*.cc"
 	"src/core/importers/*.h"
 	"src/core/importers/*.cc"
 	"src/core/shaders/*.h"

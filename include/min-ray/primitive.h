@@ -21,23 +21,59 @@
 // SOFTWARE.
 #pragma once
 
+#include "intersection.h"
 #include "light.h"
+#include "material.h"
+#include "shape.h"
 
 namespace min::ray {
 
-struct SurfaceSample {
-  Point3 p;
-  Float pdf;
-  Normal3 normal;
-};
+class Shape;
 
 class Primitive {
  public:
   virtual bool Intersect(const Ray &ray, Intersection &isect) const = 0;
   virtual BoundingBox3 GetBoundingBox() const = 0;
   virtual AreaLight *GetAreaLight() const { return nullptr; }
-  virtual void Sample(const Point2 &u, SurfaceSample &sample) const = 0;
-  virtual Float Area() const = 0;
+  virtual Material *GetMaterial() const { return nullptr; }
+  virtual void ComputeScatteringFunctions(Intersection *isect) const = 0;
+};
+
+class GeometricPrimitive : public Primitive {
+ public:
+  GeometricPrimitive(const std::shared_ptr<Shape> &shape,
+                     const std::shared_ptr<Material> &material,
+                     const std::shared_ptr<AreaLight> &area_light = nullptr)
+      : shape(shape), material(material), area_light(area_light) {
+        if (area_light) {
+          area_light->SetShape(shape.get());
+        }
+      }
+
+  virtual bool Intersect(const Ray &ray, Intersection &isect) const {
+    if (!shape->Intersect(ray, isect)) return false;
+    isect.primitive = this;
+    return true;
+  }
+  virtual BoundingBox3 GetBoundingBox() const {
+    return shape->GetBoundingBox();
+  }
+  virtual AreaLight *GetAreaLight() const {
+    return area_light.get();
+  }
+  virtual Material *GetMaterial() const {
+    return material.get();
+  }
+  void ComputeScatteringFunctions(Intersection *isect) const {
+    if (material) {
+      material->ComputeScatteringFunctions(isect);
+    }
+  }
+
+ private:
+  std::shared_ptr<Shape> shape;
+  std::shared_ptr<Material> material;
+  std::shared_ptr<AreaLight> area_light;
 };
 
 }  // namespace min::ray

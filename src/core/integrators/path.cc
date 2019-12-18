@@ -35,8 +35,8 @@ static Float MISWeight(Float p1, Float p2) {
 }
 
 Spectrum PathIntegrator::Li(const std::shared_ptr<Scene> &scene, const Ray &ray,
-            const std::shared_ptr<Sampler> &sampler,
-            Intersection *isect) {
+                            const std::shared_ptr<Sampler> &sampler,
+                            Intersection *isect) {
   Spectrum L(0);
   Spectrum beta(1);
   const int max_depth = 4;
@@ -52,8 +52,7 @@ Spectrum PathIntegrator::Li(const std::shared_ptr<Scene> &scene, const Ray &ray,
   while (true) {
     if (nisect.shape == nullptr) break;
     nisect.ComputeLocalFrame();
-    auto shape = nisect.shape;
-    auto light = shape->GetAreaLight();
+    auto light = nisect.primitive->GetAreaLight();
     ShadingPoint sp;
     sp.tex_coords = nisect.uv;
     sp.ng = nisect.ng;
@@ -71,13 +70,13 @@ Spectrum PathIntegrator::Li(const std::shared_ptr<Scene> &scene, const Ray &ray,
     if (++depth > max_depth) {
       break;
     }
-    auto bsdf = shape->GetBSDF();
-    if (!bsdf) {
+    nisect.ComputeScatteringFunctions();
+    if (!nisect.bsdf) {
       break;
     }
     sample = BSDFSample();
     sample.wo = -glm::normalize(nisect.WorldToLocal(nray.d));
-    bsdf->Sample(sampler->Get2D(), sp, sample);
+    nisect.bsdf->Sample(sampler->Get2D(), sp, sample);
     if (sample.pdf <= 0) break;
 
     is_specular = sample.sample_type & BSDF::ESpecular;
@@ -88,9 +87,9 @@ Spectrum PathIntegrator::Li(const std::shared_ptr<Scene> &scene, const Ray &ray,
       VisibilityTester visibilityTester;
       sampled_light->SampleLi(sampler->Get2D(), nisect, lightSample, visibilityTester);
       auto wi = nisect.WorldToLocal(lightSample.wi);
-      auto f = bsdf->Evaluate(sp, sample.wo, wi) * glm::abs(glm::dot(lightSample.wi, nisect.ns));
+      auto f = nisect.bsdf->Evaluate(sp, sample.wo, wi) * glm::abs(glm::dot(lightSample.wi, nisect.ns));
       Float light_pdf = lightSample.pdf / scene->lights().size();
-      Float scattering_pdf = bsdf->EvaluatePdf(sp, sample.wo, wi);
+      Float scattering_pdf = nisect.bsdf->EvaluatePdf(sp, sample.wo, wi);
       if (!IsBlack(f) && visibilityTester.Visible(scene)) {
         if (is_specular) {
           L += beta * f * lightSample.li / light_pdf;

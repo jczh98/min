@@ -21,26 +21,18 @@
 // SOFTWARE.
 #pragma once
 
-#include <min-ray/shape.h>
+#include <min-ray/material.h>
+#include "../bsdfs/diffuse.h"
 
 namespace min::ray {
-
-class Sphere : public Shape {
+class Diffuse : public Material {
  public:
-  Sphere(Float r, const Vector3 &center)
-      : radius_(r), center_(center) {}
-
-  virtual void Sample(const Point2 &, SurfaceSample &) const;
-  virtual Float Area() const {
-    return 4 * Pi * radius_ * radius_;
-  }
-  virtual bool Intersect(const Ray &ray, Intersection &isect) const;
-  virtual BoundingBox3 GetBoundingBox() const {
-    return BoundingBox3{center_ - radius_, center_ + radius_};
+  Diffuse(const std::shared_ptr<Shader> &shader) : shader_(shader) {}
+  virtual void ComputeScatteringFunctions(Intersection *isect) const {
+    isect->bsdf = new DiffuseBSDF(shader_);
   }
 
  private:
-  Float radius_;
-  Vector3 center_;
+  std::shared_ptr<Shader> shader_;
 };
 }  // namespace min::ray

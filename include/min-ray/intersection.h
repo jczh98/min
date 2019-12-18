@@ -30,6 +30,8 @@ class Shape;
 
 class BSDF;
 
+class Primitive;
+
 struct Intersection {
   void ComputeLocalFrame() {
     localframe = CoordinateSystem(ng);
@@ -46,10 +48,13 @@ struct Intersection {
     return Ray(p, w, t, MaxFloat);
   }
 
+  void ComputeScatteringFunctions();
+
   Ray SpawnTo(const Point3 &p) const {
     return Ray(this->p, (p - this->p), RayBias, 1);
   }
   const Shape *shape = nullptr;
+  const Primitive *primitive = nullptr;
   const BSDF *bsdf = nullptr;
   Float distance = MaxFloat;
   Point3 p;
