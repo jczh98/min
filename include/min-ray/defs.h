@@ -37,6 +37,7 @@ namespace min::ray {
 namespace fs = std::filesystem;
 
 using Float = float;
+using uint = unsigned int;
 constexpr Float Pi = 3.1415926535f;
 constexpr Float Pi2 = Pi * 0.5f;
 constexpr Float Pi4 = Pi * 0.25f;

@@ -16,4 +16,11 @@ bool Scene::Intersect(const Ray &ray, Intersection &isect) {
   }
   return hit;
 }
+Light *Scene::SampleLight(const std::shared_ptr<Sampler> &sampler) const {
+  auto i = std::min<int>(sampler->Get1D() * lights_.size(), lights_.size() - 1);
+  if (i >= 0) {
+    return lights_[i];
+  }
+  return nullptr;
+}
 }  // namespace min::ray

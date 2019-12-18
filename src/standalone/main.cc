@@ -4,7 +4,7 @@
 #include "../core/accelerators/sahbvh.h"
 #include "../core/bsdfs/diffuse.h"
 #include "../core/cameras/perspective.h"
-#include "../core/integrators/ao.h"
+#include "../core/integrators/path.h"
 #include "../core/lights/diffuse_area.h"
 #include "../core/samplers/random.h"
 #include "../core/shaders/common.h"
@@ -40,7 +40,7 @@ int main(int, char**) {
   scene->Preprocess();
   scene->accelerator() = std::make_shared<BVHAccelerator>(scene->primitives());
   std::shared_ptr<Sampler> sampler(new RandomSampler());
-  std::shared_ptr<Integrator> integrator(new AOIntegrator(64));
+  std::shared_ptr<Integrator> integrator(new PathIntegrator(32));
   integrator->Render(scene, camera, sampler, film);
   film.WriteImage("out.ppm");
   ParallelCleanUp();

@@ -26,6 +26,7 @@
 #include "light.h"
 #include "primitive.h"
 #include "ray.h"
+#include "sampler.h"
 
 namespace min::ray {
 class Scene {
@@ -36,7 +37,10 @@ class Scene {
   std::vector<std::shared_ptr<Primitive>> &primitives() {
     return primitives_;
   }
+  Light *SampleLight(const std::shared_ptr<Sampler> &sampler) const;
+
   std::shared_ptr<Accelerator> &accelerator() { return accelerator_; }
+  std::vector<Light *> &lights() { return lights_; }
 
  private:
   std::atomic<size_t> ray_counter_ = 0;
@@ -46,9 +50,9 @@ class Scene {
 };
 
 struct VisibilityTester {
-  bool Visible(Scene &scene) {
+  bool Visible(const std::shared_ptr<Scene> &scene) {
     Intersection isect;
-    if (!scene.Intersect(shadow_ray, isect) || isect.distance >= shadow_ray.tmax - RayBias) {
+    if (!scene->Intersect(shadow_ray, isect) || isect.distance >= shadow_ray.tmax - RayBias) {
       return true;
     }
     return false;

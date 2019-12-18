@@ -23,14 +23,92 @@
 #include "path.h"
 #include <min-ray/parallel.h>
 #include <min-ray/progress.h>
-#include "../core/bsdfs/diffuse.h"
+#include <min-ray/shape.h>
+#include "../bsdfs/diffuse.h"
 
 namespace min::ray {
 
-Spectrum Li(const std::shared_ptr<Scene> &scene,
-            const Ray &ray,
+static Float MISWeight(Float p1, Float p2) {
+  p1 *= p1;
+  p2 *= p2;
+  return p1 / (p1 + p2);
+}
+
+Spectrum PathIntegrator::Li(const std::shared_ptr<Scene> &scene, const Ray &ray,
             const std::shared_ptr<Sampler> &sampler,
             Intersection *isect) {
+  Spectrum L(0);
+  Spectrum beta(1);
+  const int max_depth = 4;
+  Intersection nisect;
+  if (isect) {
+    nisect = *isect;
+  }
+  int depth = 0;
+  Ray nray = ray;
+  Intersection prevIsct;
+  BSDFSample sample;
+  bool is_specular = false;
+  while (true) {
+    if (nisect.shape == nullptr) break;
+    nisect.ComputeLocalFrame();
+    auto shape = nisect.shape;
+    auto light = shape->GetAreaLight();
+    ShadingPoint sp;
+    sp.tex_coords = nisect.uv;
+    sp.ng = nisect.ng;
+    sp.ns = nisect.ns;
+    if (light) {
+      if (depth == 0 || is_specular) {
+        L += beta * light->Li(sp);
+      } else {
+        Float scattering_pdf = sample.pdf;
+        Float light_pdf = 1.0f / scene->lights().size() * light->PdfLi(prevIsct, nray.d);
+        auto w = MISWeight(scattering_pdf, light_pdf);
+        L += beta * light->Li(sp) * w;
+      }
+    }
+    if (++depth > max_depth) {
+      break;
+    }
+    auto bsdf = shape->GetBSDF();
+    if (!bsdf) {
+      break;
+    }
+    sample = BSDFSample();
+    sample.wo = -glm::normalize(nisect.WorldToLocal(nray.d));
+    bsdf->Sample(sampler->Get2D(), sp, sample);
+    if (sample.pdf <= 0) break;
+
+    is_specular = sample.sample_type & BSDF::ESpecular;
+
+    auto sampled_light = scene->SampleLight(sampler);
+    if (sampled_light) {
+      LightSample lightSample;
+      VisibilityTester visibilityTester;
+      sampled_light->SampleLi(sampler->Get2D(), nisect, lightSample, visibilityTester);
+      auto wi = nisect.WorldToLocal(lightSample.wi);
+      auto f = bsdf->Evaluate(sp, sample.wo, wi) * glm::abs(glm::dot(lightSample.wi, nisect.ns));
+      Float light_pdf = lightSample.pdf / scene->lights().size();
+      Float scattering_pdf = bsdf->EvaluatePdf(sp, sample.wo, wi);
+      if (!IsBlack(f) && visibilityTester.Visible(scene)) {
+        if (is_specular) {
+          L += beta * f * lightSample.li / light_pdf;
+        } else {
+          auto w = MISWeight(light_pdf, scattering_pdf);
+          L += beta * f * lightSample.li / light_pdf * w;
+        }
+      }
+    }
+
+    auto wi = nisect.LocalToWorld(sample.wi);
+    beta *= sample.s / sample.pdf * std::abs(glm::dot(wi, nisect.ng));
+    nray = nisect.SpawnRay(wi);
+    prevIsct = nisect;
+    nisect = Intersection();
+    scene->Intersect(nray, nisect);
+  }
+  return L;
 }
 
 void PathIntegrator::Render(const std::shared_ptr<Scene> &scene,
