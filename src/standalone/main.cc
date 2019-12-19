@@ -5,7 +5,7 @@
 #include "../core/bsdfs/lambertian.h"
 #include "../core/bsdfs/oren_nayar.h"
 #include "../core/cameras/perspective.h"
-#include "../core/integrators/ao.h"
+#include "../core/integrators/path.h"
 #include "../core/lights/diffuse_area.h"
 #include "../core/materials/matte.h"
 #include "../core/samplers/random.h"
@@ -18,7 +18,7 @@ using namespace min::ray;
 int main(int, char**) {
   ParallelInit(4);
   std::shared_ptr<Camera> camera(new PerspectiveCamera(Vector3(50.0, 40.8, 220.0), Vector3(50.0, 40.8, 0), DegreesToRadians<Float>(60)));
-  Film film{1080 / 4, 720 / 4};
+  Film film{1080, 720};
 
   std::shared_ptr<Scene> scene = std::make_shared<Scene>();
   //auto importer = WavefrontImporter();
@@ -67,7 +67,7 @@ int main(int, char**) {
   scene->Preprocess();
   scene->accelerator() = std::make_shared<BVHAccelerator>(scene->primitives());
   std::shared_ptr<Sampler> sampler(new RandomSampler());
-  std::shared_ptr<Integrator> integrator(new AOIntegrator(32));
+  std::shared_ptr<Integrator> integrator(new PathIntegrator(1000));
   integrator->Render(scene, camera, sampler, film);
   film.WriteImage("out.ppm");
   ParallelCleanUp();

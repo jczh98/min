@@ -21,11 +21,11 @@
 // SOFTWARE.
 #pragma once
 
-#include "defs.h"
 #include <atomic>
 #include <chrono>
 #include <iostream>
 #include <mutex>
+#include "defs.h"
 
 namespace min::ray {
 class ProgressBar {
@@ -61,7 +61,7 @@ class ProgressBar {
     *s++ = ']';
     *s++ = ' ';
     *s++ = '\0';
-    auto message = fmt::format("{}%%  {}s\r", int(progress * 100.0), float(time_elapsed) / 1000.0);
+    auto message = fmt::format("{}%%  {}s [{:.3}s/it | {}s]\r", int(progress * 100.0), float(time_elapsed) / 1000.0, float(time_elapsed) / 1000.0 / ticks_, int(float(time_elapsed) / 1000.0 / ticks_ * total_ticks_));
     snprintf(end_buf.get(), total_ticks_, message.c_str());
     fputs(buf.get(), stdout);
     fputs(end_buf.get(), stdout);
