@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 #include "sahbvh.h"
-#include <min-ray/mesh.h>
 
 namespace min::ray {
 

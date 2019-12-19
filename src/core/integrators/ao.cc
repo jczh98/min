@@ -14,8 +14,6 @@ void AOIntegrator::Render(const std::shared_ptr<Scene> &scene,
   ProgressBar progress(film.width * film.height, 70);
   ParallelFor2D([&](Point2i p) {
     int i = p.x, j = p.y;
-    //fmt::print("{} {}\n", i, j);
-    //sampler->StartPixel(Point2i(i, j), Point2i(film.width, film.height));
     for (int s = 0; s < spp_; s++) {
       CameraSample camera_sample;
       sampler->StartNextSample();

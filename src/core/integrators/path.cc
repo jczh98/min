@@ -24,7 +24,6 @@
 #include <min-ray/parallel.h>
 #include <min-ray/progress.h>
 #include <min-ray/shape.h>
-#include "../bsdfs/diffuse.h"
 
 namespace min::ray {
 

@@ -59,3 +59,20 @@ target_link_libraries(${EXECUTABLE_NAME}
 	PUBLIC 
 	fmt
 )
+
+add_executable(test_importer tests/test_importer.cc ${MIN_RAY_API} ${MIN_RAY_CORE})
+
+target_include_directories(test_importer
+	PUBLIC
+	"include"
+	external/tinyobjloader
+	external/glm
+	external/fmt/include
+	external/cereal/include
+	external/json/includ
+)
+
+target_link_libraries(test_importer
+	PUBLIC
+	fmt
+)

@@ -24,8 +24,8 @@
 #include <min-ray/mesh_importer.h>
 
 namespace min::ray {
-class WavefrontImporter {
+class WavefrontImporter : public MeshImporter{
  public:
-  virtual MeshImportResult Import(const fs::path &path);
+  MeshImportResult Import(const fs::path &path) override;
 };
 }  // namespace min::ray
