@@ -35,7 +35,7 @@ class ObjectFactory final {
   Object* Create(const std::string& key) {
     auto it = func_map_.find(key);
     if (it == func_map_.end()) {
-      printf("Missing key for %s.\n", key);
+      fmt::print("Missing key for {}.\n", key);
       return nullptr;
     }
     auto* p = it->second.create_func();

@@ -45,7 +45,7 @@ class ProgressBar {
 
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
     auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_time_).count();
-    auto time_elapsed_seconds = std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time_) / ticks_ * total_ticks_;
+    auto time_elapsed_seconds = std::chrono::duration_cast<std::chrono::nanoseconds>(now - start_time_) / static_cast<long long>(ticks_) * static_cast<long long>(total_ticks_);
 
     std::unique_ptr<char[]> buf(new char[total_ticks_]);
     std::unique_ptr<char[]> end_buf(new char[total_ticks_]);
