@@ -21,27 +21,19 @@
 // SOFTWARE.
 #pragma once
 
-#include <min-ray/shader.h>
+#include "math.h"
+#include "spectrum.h"
 
 namespace min::ray {
-class FloatShader : public Shader {
- public:
-  FloatShader(Float v) : value_(v) {}
-  virtual Spectrum Evaluate(const ShadingPoint &sp) const {
-    return Spectrum(value_);
-  }
 
- private:
-  Float value_ = 0.1;
+struct ShadingPoint {
+  Point2 tex_coords;
+  Normal3 ns, ng;
 };
-class RGBShader : public Shader {
- public:
-  RGBShader(const Vector3 &v) : value_(v) {}
-  virtual Spectrum Evaluate(const ShadingPoint &sp) const {
-    return Spectrum(value_);
-  }
 
- private:
-  Vector3 value_ = Vector3(0.1);
+class Texture {
+ public:
+  virtual Spectrum Evaluate(const ShadingPoint &sp) const = 0;
 };
+
 }  // namespace min::ray

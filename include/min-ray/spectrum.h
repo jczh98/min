@@ -31,4 +31,11 @@ inline bool IsBlack(const Spectrum &s) {
   return s.x <= 0 || s.y <= 0 || s.z <= 0;
 }
 
+inline Spectrum RemoveNaN(const Spectrum &s) {
+  auto remove_nan = [=](float x) { return std::isnan(x) ? 0 : x; };
+  return Spectrum(remove_nan(s.x),
+                  remove_nan(s.y),
+                  remove_nan(s.z));
+}
+
 }  // namespace min::ray

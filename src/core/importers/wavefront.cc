@@ -2,7 +2,7 @@
 #include <tiny_obj_loader.h>
 #include "../bsdfs/lambertian.h"
 #include "../materials/matte.h"
-#include "../shaders/common.h"
+#include "../textures/constant.h"
 #include "../shapes/triangle.h"
 
 namespace min::ray {
@@ -30,7 +30,7 @@ std::shared_ptr<Material> ConvertFromMTL(const tinyobj::material_t &mat) {
   auto kd = Vector3(mat.diffuse[0], mat.diffuse[1], mat.diffuse[2]);
   auto ks = Vector3(mat.specular[0], mat.specular[1], mat.specular[2]);
   auto emission = Vector3(mat.emission[0], mat.emission[1], mat.emission[2]);
-  auto material = std::make_shared<Matte>(std::make_shared<RGBShader>(kd));
+  auto material = std::make_shared<Matte>(std::make_shared<ConstantTexture>(kd));
   //auto diffuse = std::make_shared<DiffuseBSDF>(std::make_shared<RGBShader>(kd));
   //auto specular = std::make_shared<DiffuseBSDF>(std::make_shared<RGBShader>(ks));
   //auto mixed = std::make_shared<MixBSDF>(std::make_shared<FloatShader>(0.5f), diffuse, specular);

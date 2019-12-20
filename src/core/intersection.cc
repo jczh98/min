@@ -26,6 +26,6 @@
 namespace min::ray {
 
 void Intersection::ComputeScatteringFunctions() {
-  primitive->ComputeScatteringFunctions(this);
+  primitive->ComputeScatteringFunctions(this, sp);
 }
 }  // namespace min::ray

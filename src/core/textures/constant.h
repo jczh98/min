@@ -21,19 +21,19 @@
 // SOFTWARE.
 #pragma once
 
-#include "math.h"
-#include "spectrum.h"
+#include <min-ray/texture.h>
 
 namespace min::ray {
 
-struct ShadingPoint {
-  Point2 tex_coords;
-  Normal3 ns, ng;
-};
-
-class Shader {
+class ConstantTexture : public Texture {
  public:
-  virtual Spectrum Evaluate(const ShadingPoint &sp) const = 0;
+  ConstantTexture(const Vector3 &v) : value_(v) {}
+  Spectrum Evaluate(const ShadingPoint &sp) const override{
+    return Spectrum(value_);
+  }
+
+ private:
+  Vector3 value_ = Vector3(0.0);
 };
 
 }  // namespace min::ray

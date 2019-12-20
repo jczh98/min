@@ -23,6 +23,7 @@
 
 #include "math.h"
 #include "ray.h"
+#include "texture.h"
 
 namespace min::ray {
 
@@ -56,6 +57,7 @@ struct Intersection {
   const Shape *shape = nullptr;
   const Primitive *primitive = nullptr;
   const BSDF *bsdf = nullptr;
+  ShadingPoint sp;
   Float distance = MaxFloat;
   Point3 p;
   Normal3 ns, ng;

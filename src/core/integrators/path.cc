@@ -69,13 +69,14 @@ Spectrum PathIntegrator::Li(const std::shared_ptr<Scene> &scene, const Ray &ray,
     if (++depth > max_depth) {
       break;
     }
+    nisect.sp = sp;
     nisect.ComputeScatteringFunctions();
     if (!nisect.bsdf) {
       break;
     }
     sample = BSDFSample();
     sample.wo = -glm::normalize(nisect.WorldToLocal(nray.d));
-    nisect.bsdf->Sample(sampler->Get2D(), sp, sample);
+    nisect.bsdf->Sample(sampler->Get2D(), sample);
     if (sample.pdf <= 0) break;
 
     is_specular = sample.sample_type & BSDF::ESpecular;
@@ -86,9 +87,9 @@ Spectrum PathIntegrator::Li(const std::shared_ptr<Scene> &scene, const Ray &ray,
       VisibilityTester visibilityTester;
       sampled_light->SampleLi(sampler->Get2D(), nisect, lightSample, visibilityTester);
       auto wi = nisect.WorldToLocal(lightSample.wi);
-      auto f = nisect.bsdf->Evaluate(sp, sample.wo, wi) * glm::abs(glm::dot(lightSample.wi, nisect.ns));
+      auto f = nisect.bsdf->Evaluate(sample.wo, wi) * glm::abs(glm::dot(lightSample.wi, nisect.ns));
       Float light_pdf = lightSample.pdf / scene->lights().size();
-      Float scattering_pdf = nisect.bsdf->EvaluatePdf(sp, sample.wo, wi);
+      Float scattering_pdf = nisect.bsdf->EvaluatePdf(sample.wo, wi);
       if (!IsBlack(f) && visibilityTester.Visible(scene)) {
         if (is_specular) {
           L += beta * f * lightSample.li / light_pdf;
@@ -122,7 +123,7 @@ void PathIntegrator::Render(const std::shared_ptr<Scene> &scene,
       camera->GenerateRay(sampler->Get2D(), sampler->Get2D(), {p.x, p.y}, Point2i(film.width, film.height), camera_sample);
       Intersection isect;
       if (scene->Intersect(camera_sample.ray, isect)) {
-        film.AddSample(camera_sample.film, Li(scene, camera_sample.ray, sampler, &isect), 1.0 / spp_);
+        film.AddSample(camera_sample.film, RemoveNaN(Li(scene, camera_sample.ray, sampler, &isect)), 1.0 / spp_);
       }
     }
     ++progress;

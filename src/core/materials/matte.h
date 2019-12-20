@@ -24,21 +24,23 @@
 #include <min-ray/material.h>
 #include "../bsdfs/lambertian.h"
 #include "../bsdfs/oren_nayar.h"
+#include "../textures/constant.h"
 
 namespace min::ray {
 class Matte : public Material {
  public:
-  Matte(const std::shared_ptr<Shader> &kd, const Radians<Float> sigma = Radians<Float>(0)) : kd_(kd), sigma_(sigma) {}
-  virtual void ComputeScatteringFunctions(Intersection *isect) const {
+  Matte(const std::shared_ptr<ConstantTexture> &kd, const Radians<Float> sigma = Radians<Float>(0)) : kd_(kd), sigma_(sigma) {}
+  virtual void ComputeScatteringFunctions(Intersection *isect, const ShadingPoint &sp) const {
+    auto kd = kd_->Evaluate(sp);
     if (sigma_.get() > 0) {
-      isect->bsdf = new OrenNayar(kd_, sigma_);
+      isect->bsdf = new OrenNayar(kd, sigma_.get());
       return;
     }
-    isect->bsdf = new LambertianReflection(kd_);
+    isect->bsdf = new LambertianReflection(kd);
   }
 
  private:
-  std::shared_ptr<Shader> kd_;
+  std::shared_ptr<ConstantTexture> kd_;
   Radians<Float> sigma_;
 };
 }  // namespace min::ray

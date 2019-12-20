@@ -23,30 +23,29 @@
 
 #include <min-ray/bsdf.h>
 #include <min-ray/sampling.h>
-#include <min-ray/shader.h>
 
 namespace min::ray {
 
 class LambertianReflection : public BSDF {
  public:
-  LambertianReflection(const std::shared_ptr<Shader> &shader) : shader_(shader) {}
-  virtual Spectrum Evaluate(const ShadingPoint &sp, const Vector3 &wo, const Vector3 &wi) const {
+  LambertianReflection(const Spectrum &albedo) : albedo_(albedo) {}
+  virtual Spectrum Evaluate(const Vector3 &wo, const Vector3 &wi) const {
     if (wo.y * wi.y > 0) {
-      return shader_->Evaluate(sp) * InvPi;
+      return albedo_ * InvPi;
     }
     return Spectrum(0);
   }
-  virtual void Sample(Point2 u, const ShadingPoint &sp, BSDFSample &sample) const {
+  virtual void Sample(Point2 u, BSDFSample &sample) const {
     sample.wi = CosineHeisphereSampling(u);
     sample.sample_type = BSDF::Type(sample.sample_type | GetBSDFType());
     if (sample.wo.y * sample.wi.y < 0) {
       sample.wi.y = -sample.wi.y;
     }
-    sample.pdf = EvaluatePdf(sp, sample.wo, sample.wi);
-    sample.s = Evaluate(sp, sample.wo, sample.wi);
+    sample.pdf = EvaluatePdf(sample.wo, sample.wi);
+    sample.s = Evaluate(sample.wo, sample.wi);
   }
 
-  virtual Float EvaluatePdf(const ShadingPoint &sp, const Vector3 &wo, const Vector3 &wi) const {
+  virtual Float EvaluatePdf(const Vector3 &wo, const Vector3 &wi) const {
     if (wo.y * wi.y > 0) {
       return std::abs(wi.y) * InvPi;
     }
@@ -58,6 +57,6 @@ class LambertianReflection : public BSDF {
   }
 
  private:
-  std::shared_ptr<Shader> shader_;
+  const Spectrum albedo_;
 };
 }  // namespace min::ray

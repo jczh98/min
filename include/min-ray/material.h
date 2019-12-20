@@ -23,12 +23,12 @@
 
 #include "bsdf.h"
 #include "intersection.h"
-#include "shader.h"
+#include "texture.h"
 
 namespace min::ray {
 
 class Material {
  public:
-  virtual void ComputeScatteringFunctions(Intersection *isect) const = 0;
+  virtual void ComputeScatteringFunctions(Intersection *isect, const ShadingPoint &sp) const = 0;
 };
 }  // namespace min::ray

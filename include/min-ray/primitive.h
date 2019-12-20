@@ -36,7 +36,7 @@ class Primitive {
   virtual BoundingBox3 GetBoundingBox() const = 0;
   virtual AreaLight *GetAreaLight() const { return nullptr; }
   virtual Material *GetMaterial() const { return nullptr; }
-  virtual void ComputeScatteringFunctions(Intersection *isect) const = 0;
+  virtual void ComputeScatteringFunctions(Intersection *isect, const ShadingPoint &sp) const = 0;
 };
 
 class GeometricPrimitive : public Primitive {
@@ -64,9 +64,9 @@ class GeometricPrimitive : public Primitive {
   virtual Material *GetMaterial() const {
     return material.get();
   }
-  void ComputeScatteringFunctions(Intersection *isect) const {
+  void ComputeScatteringFunctions(Intersection *isect, const ShadingPoint& sp) const {
     if (material) {
-      material->ComputeScatteringFunctions(isect);
+      material->ComputeScatteringFunctions(isect, sp);
     }
   }
 

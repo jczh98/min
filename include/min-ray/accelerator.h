@@ -29,7 +29,7 @@ class Accelerator : public Primitive {
  public:
   virtual bool Intersect(const Ray &ray, Intersection &isect) const = 0;
   virtual BoundingBox3 GetBoundingBox() const = 0;
-  void ComputeScatteringFunctions(Intersection *isect) const {
+  void ComputeScatteringFunctions(Intersection *isect, const ShadingPoint &) const {
     fmt::print("Accelerator should not call ComputeScatteringFunctions method.\n");
   }
 };

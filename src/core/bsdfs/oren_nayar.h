@@ -23,20 +23,17 @@
 
 #include <min-ray/bsdf.h>
 #include <min-ray/sampling.h>
-#include "../shaders/common.h"
 
 namespace min::ray {
 
 class OrenNayar : public BSDF {
  public:
-  OrenNayar(const std::shared_ptr<Shader> &albedo, const Radians<Float> &sigma) : albedo_(albedo) {
-    Float sigma2 = sigma.get() * sigma.get();
-    Float A = 1.f - (sigma2 / (2.f * (sigma2 + 0.33f)));
-    Float B = 0.45f * sigma2 / (sigma2 + 0.09f);
-    a_ = std::make_shared<FloatShader>(A);
-    b_ = std::make_shared<FloatShader>(B);
+  OrenNayar(const Spectrum &albedo, const Float &sigma) : albedo_(albedo) {
+    Float sigma2 = sigma * sigma;
+    a_ = 1.f - (sigma2 / (2.f * (sigma2 + 0.33f)));
+    b_ = 0.45f * sigma2 / (sigma2 + 0.09f);
   }
-  virtual Spectrum Evaluate(const ShadingPoint &sp, const Vector3 &wo, const Vector3 &wi) const {
+  virtual Spectrum Evaluate(const Vector3 &wo, const Vector3 &wi) const {
     Float sin_theta_i = std::sqrt(std::max(0., 1. - wi.y * wi.y));
     Float sin_theta_o = std::sqrt(std::max(0., 1. - wo.y * wo.y));
     Float max_cos = 0;
@@ -56,20 +53,20 @@ class OrenNayar : public BSDF {
       sin_alpha = sin_theta_i;
       tan_beta = sin_theta_o / std::abs(wo.y);
     }
-    return albedo_->Evaluate(sp) * InvPi * (a_->Evaluate(sp) + b_->Evaluate(sp) * max_cos * sin_alpha * tan_beta);
+    return albedo_ * InvPi * (a_ + b_ * max_cos * sin_alpha * tan_beta);
   }
 
-  virtual void Sample(Point2 u, const ShadingPoint &sp, BSDFSample &sample) const {
+  virtual void Sample(Point2 u, BSDFSample &sample) const {
     sample.wi = CosineHeisphereSampling(u);
     sample.sample_type = BSDF::Type(sample.sample_type | GetBSDFType());
     if (sample.wo.y * sample.wi.y < 0) {
       sample.wi.y = -sample.wi.y;
     }
-    sample.pdf = EvaluatePdf(sp, sample.wo, sample.wi);
-    sample.s = Evaluate(sp, sample.wo, sample.wi);
+    sample.pdf = EvaluatePdf(sample.wo, sample.wi);
+    sample.s = Evaluate(sample.wo, sample.wi);
   }
 
-  virtual Float EvaluatePdf(const ShadingPoint &sp, const Vector3 &wo, const Vector3 &wi) const {
+  virtual Float EvaluatePdf(const Vector3 &wo, const Vector3 &wi) const {
     if (wo.y * wi.y > 0) {
       return std::abs(wi.y) * InvPi;
     }
@@ -81,7 +78,7 @@ class OrenNayar : public BSDF {
   }
 
  private:
-  std::shared_ptr<Shader> albedo_;
-  std::shared_ptr<Shader> a_, b_;
+  const Spectrum albedo_;
+  Float a_, b_;
 };
 }  // namespace min::ray
