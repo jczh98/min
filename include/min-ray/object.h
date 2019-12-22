@@ -21,26 +21,58 @@
 // SOFTWARE.
 #pragma once
 
-#include <cereal/archives/json.hpp>
-#include <cereal/cereal.hpp>
-#include <cereal/details/static_object.hpp>
 #include <nlohmann/json.hpp>
+#include <any>
+#include <memory>
 
-namespace min::ray {
+namespace min::refl {
+
+using namespace nlohmann;
+
+struct ObjectDeleter;
 
 class Object {
  public:
+
   using CreateFunc = std::function<Object*()>;
   using ReleaseFunc = std::function<void(Object*)>;
-  virtual void Initialize(const nlohmann::json& json) {}
-  virtual std::string GetType() const = 0;
+  template <typename Interface>
+  using Ptr = std::unique_ptr<Interface, ObjectDeleter>;
+  using Visitor = std::function<void(Object*& p, bool weak)>;
 
+  virtual void Initialize(const json& json) {}
+  virtual Object* Underlying(const std::string& name) const { return nullptr; }
+  virtual void ForeachUnderlying(const Visitor& visitor) const {}
+
+  const std::string& key() const { return key_; }
+  const std::string& loc() const { return loc_; }
+  const std::string& name() const {
+    const auto i = loc().find_last_of('.');
+    return loc().substr(i+1);
+  }
+  const std::string& MakeLoc(const std::string& base, const std::string& child) const {
+    return base + '.' + child;
+  }
+  const std::string& MakeLoc(const std::string& child) const {
+    return MakeLoc(loc(), child);
+  }
  private:
   friend struct Access;
+  friend struct ObjectDeleter;
   std::string key_;
   std::string loc_;
   CreateFunc create_func_;
   ReleaseFunc release_func_;
+  std::any owner_ref;
+};
+
+struct ObjectDeleter {
+  ObjectDeleter() = default;
+  void operator()(Object *p) const noexcept {
+    if (auto release_func = p->release_func_; release_func) {
+      release_func(p);
+    }
+  }
 };
 
 struct Access {
@@ -54,12 +86,6 @@ struct Access {
   static Object::ReleaseFunc& release_func(Object* p) { return p->release_func_; }
   static const Object::ReleaseFunc& release_func(const Object* p) { return p->release_func_; }
 };
-
-Object* Create(const std::string& key);
-
-void Register(const std::string& key, const Object::CreateFunc& create_func, const Object::ReleaseFunc& release_func);
-
-void Unregister(const std::string& key);
 
 // Type holder
 template <typename... Ts>
@@ -81,6 +107,71 @@ struct KeyGen<T<Ts...>> {
     return s + "<" + std::string(typeid(TypeHolder<Ts...>).name()) + ">";
   }
 };
+
+// Global functions
+Object* CreateObject(const std::string& key);
+
+void Register(const std::string& key, const Object::CreateFunc& create_func, const Object::ReleaseFunc& release_func);
+
+void Unregister(const std::string& key);
+
+void RegisterAsRoot(Object *p);
+
+Object* get(const std::string& loc);
+
+
+template <typename T>
+T* get(const std::string& loc) {
+    return dynamic_cast<T*>(refl::get(loc));
+}
+
+template<typename T>
+std::enable_if_t<std::is_base_of_v<Object, T>, void>
+UpdateWeakRef(T*& p) {
+  if (!p) {
+    return;
+  }
+  const auto loc = p->loc();
+  if (loc.empty()) {
+    return;
+  }
+  p = get<T>(loc);
+}
+
+template<typename T>
+std::enable_if_t<std::is_base_of_v<Object, T>, void>
+visit(const Object::Visitor& visitor, T*& p) {
+  Object* tmp = p;
+  visitor(tmp, true);
+  p = dynamic_cast<T*>(tmp);
+}
+
+template<typename T>
+std::enable_if_t<std::is_base_of_v<Object, T>, void>
+visit(const Object::Visitor& visitor, Object::Ptr<T>& p) {
+  Object* tmp = p.get();
+  visitor(tmp, false);
+}
+
+template<typename Interface>
+Object::Ptr<Interface> CreateWithoutInitialize(const std::string &key, const std::string &loc) {
+  auto* inst = CreateObject(KeyGen<Interface>::gen(std::move(key)).c_str());
+  if (!inst) {
+    return {};
+  }
+  Access::loc(inst) = loc;
+  return Object::Ptr<Interface>(dynamic_cast<Interface*>(inst));
+}
+template<typename Interface>
+Object::Ptr<Interface> Create(const std::string &key, const std::string &loc, const json& json = {}) {
+  auto inst = CreateWithoutInitialize<Interface>(key, loc);
+  if (!inst) {
+    return {};
+  }
+  inst->Initialize(json);
+  return inst;
+}
+
 
 template <typename ImplType>
 class Registry {

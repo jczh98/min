@@ -49,7 +49,6 @@ target_include_directories(${EXECUTABLE_NAME}
 	PUBLIC
 	"include"
 	external/tinyobjloader
-	external/cereal/include
 	external/json/include
 	external/glm
 	external/fmt/include

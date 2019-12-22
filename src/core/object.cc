@@ -23,8 +23,9 @@
 #include <fmt/format.h>
 #include <min-ray/object.h>
 #include <unordered_map>
+#include <tuple>
 
-namespace min::ray {
+namespace min::refl {
 class ObjectFactory final {
  public:
   static ObjectFactory& instance() {
@@ -56,6 +57,46 @@ class ObjectFactory final {
     func_map_.erase(key);
   }
 
+  void RegisterAsRoot(Object* p) {
+    if (p->loc() != "$") {
+      return;
+    }
+    root_ = p;
+  }
+
+  Object* get(const std::string& loc) {
+    if (!root_) {
+      return nullptr;
+    }
+    if (loc.empty()) {
+      return nullptr;
+    }
+
+    const auto split_first = [&](const std::string& s) -> std::tuple<std::string, std::string> {
+      const auto i = s.find_last_of('.', 0);
+      if (i == std::string::npos) {
+        return {s, ""};
+      }
+      return {s.substr(0, i), s.substr(i + 1)};
+    };
+
+    const auto [s0, r0] = split_first(loc);
+    if (s0!= "$") {
+      return nullptr;
+    }
+    auto remain = r0;
+    auto* cur = root_;
+    while(cur && !remain.empty()) {
+      const auto [s, r] = split_first(remain);
+      cur = cur->Underlying(s);
+      remain = r;
+    }
+    if (!cur) {
+
+    }
+    return cur;
+  }
+
  private:
   struct BundledFunctions {
     Object::CreateFunc create_func;
@@ -63,10 +104,10 @@ class ObjectFactory final {
   };
 
   std::unordered_map<std::string, BundledFunctions> func_map_;
-  Object* root = nullptr;
+  Object* root_ = nullptr;
 };
 
-Object* Create(const std::string& key) {
+Object* CreateObject(const std::string& key) {
   return ObjectFactory::instance().Create(key);
 }
 
@@ -78,4 +119,12 @@ void Unregister(const std::string& key) {
   ObjectFactory::instance().Unregister(key);
 }
 
-}  // namespace min::ray
+void RegisterAsRoot(Object* p) {
+  ObjectFactory::instance().RegisterAsRoot(p);
+}
+
+Object* get(const std::string& loc) {
+  return ObjectFactory::instance().get(loc);
+}
+
+}  // namespace min::refl
