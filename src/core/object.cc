@@ -22,8 +22,8 @@
 
 #include <fmt/format.h>
 #include <min-ray/object.h>
-#include <unordered_map>
 #include <tuple>
+#include <unordered_map>
 
 namespace min::refl {
 class ObjectFactory final {
@@ -58,7 +58,7 @@ class ObjectFactory final {
   }
 
   void RegisterAsRoot(Object* p) {
-    if (p->loc() != "$") {
+    if (Access::loc(p) != "$") {
       return;
     }
     root_ = p;
@@ -73,7 +73,7 @@ class ObjectFactory final {
     }
 
     const auto split_first = [&](const std::string& s) -> std::tuple<std::string, std::string> {
-      const auto i = s.find_last_of('.', 0);
+      const auto i = s.find_first_of('.', 0);
       if (i == std::string::npos) {
         return {s, ""};
       }
@@ -81,18 +81,19 @@ class ObjectFactory final {
     };
 
     const auto [s0, r0] = split_first(loc);
-    if (s0!= "$") {
+    if (s0 != "$") {
       return nullptr;
     }
     auto remain = r0;
     auto* cur = root_;
-    while(cur && !remain.empty()) {
+    while (cur && !remain.empty()) {
       const auto [s, r] = split_first(remain);
       cur = cur->Underlying(s);
+      //fmt::print("{}\n", cur->loc());
       remain = r;
     }
     if (!cur) {
-
+      fmt::print("Failed to find a component with locator [loc='{}']", loc);
     }
     return cur;
   }

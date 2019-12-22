@@ -21,48 +21,28 @@
 // SOFTWARE.
 #pragma once
 
-#include "assets.h"
 #include "object.h"
-
+#include <fmt/format.h>
 namespace min::refl {
-class Context : public Object {
- public:
-  Context() {
-    Access::loc(this) = "$";
-    RegisterAsRoot(this);
-  }
-
-  static Context& instance() {
-    static Context instance;
-    return instance;
-  }
-
-  Assets* assets() {
-    return root_assets_.get();
-  }
-
-  Object* Underlying(const std::string& name) const override {
-    if (name == "assets") {
-      return root_assets_.get();
-    }
-    return nullptr;
-  }
-
-  void ForeachUnderlying(const Visitor& visitor) override {
-    visit(visitor, root_assets_);
-  }
-
-  void Reset() {
-    root_assets_ = Create<Assets>("assets::default", MakeLoc("assets"));
-  }
-
- private:
-  bool initialized_ = false;
-  Ptr<Assets> root_assets_;
-};
 
 template <typename T>
-T* Load(const std::string& name, const std::string& impl_key, const json& json) {
-  return dynamic_cast<T*>(Context::instance().assets()->LoadAsset(name, impl_key, json));
+T* ref(const json& j, const std::string& name) {
+
+  const auto it = j.find(name);
+  if (it == j.end()) {
+    fmt::print("Missing property[name = '{}'] ", name);
+    return nullptr;
+  }
+  if (!it->is_string()) {
+    fmt::print("Property must be string [name='{}']", name);
+	  return nullptr;
+  }
+  const std::string ref = *it;
+  auto* p = refl::get<T>(ref);
+  if (!p) {
+    fmt::print("Invalid componen reference [name='{}', ref='{}']", name, ref);
+    return nullptr;
+  }
+  return p;
 }
 }  // namespace min::refl

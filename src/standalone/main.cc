@@ -68,7 +68,7 @@ int main(int, char**) {
   scene->Preprocess();
   scene->accelerator() = std::make_shared<BVHAccelerator>(scene->primitives());
   std::shared_ptr<Sampler> sampler(new RandomSampler());
-  std::shared_ptr<Integrator> integrator(new PathIntegrator(640));
+  std::shared_ptr<Integrator> integrator(new PathIntegrator(128));
   integrator->Render(scene, camera, sampler, film);
   film.WriteImage("out.ppm");
   ParallelCleanUp();

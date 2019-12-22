@@ -106,6 +106,10 @@
 		"*.tcc": "cpp",
 		"memory_resource": "cpp",
 		"cinttypes": "cpp",
-		"*.ipp": "cpp"
+		"*.ipp": "cpp",
+		"any": "cpp",
+		"shared_mutex": "cpp",
+		"strstream": "cpp",
+		"cfenv": "cpp"
 	}
 }

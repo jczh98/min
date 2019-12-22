@@ -21,9 +21,10 @@
 // SOFTWARE.
 #pragma once
 
-#include <nlohmann/json.hpp>
 #include <any>
 #include <memory>
+#include <nlohmann/json.hpp>
+#include <iostream>
 
 namespace min::refl {
 
@@ -33,7 +34,6 @@ struct ObjectDeleter;
 
 class Object {
  public:
-
   using CreateFunc = std::function<Object*()>;
   using ReleaseFunc = std::function<void(Object*)>;
   template <typename Interface>
@@ -42,20 +42,21 @@ class Object {
 
   virtual void Initialize(const json& json) {}
   virtual Object* Underlying(const std::string& name) const { return nullptr; }
-  virtual void ForeachUnderlying(const Visitor& visitor) const {}
+  virtual void ForeachUnderlying(const Visitor& visitor) {}
 
   const std::string& key() const { return key_; }
   const std::string& loc() const { return loc_; }
-  const std::string& name() const {
+  const std::string name() const {
     const auto i = loc().find_last_of('.');
-    return loc().substr(i+1);
+    return loc().substr(i + 1);
   }
-  const std::string& MakeLoc(const std::string& base, const std::string& child) const {
+  const std::string MakeLoc(const std::string& base, const std::string& child) const {
     return base + '.' + child;
   }
-  const std::string& MakeLoc(const std::string& child) const {
+  const std::string MakeLoc(const std::string& child) const {
     return MakeLoc(loc(), child);
   }
+
  private:
   friend struct Access;
   friend struct ObjectDeleter;
@@ -68,7 +69,7 @@ class Object {
 
 struct ObjectDeleter {
   ObjectDeleter() = default;
-  void operator()(Object *p) const noexcept {
+  void operator()(Object* p) const noexcept {
     if (auto release_func = p->release_func_; release_func) {
       release_func(p);
     }
@@ -79,7 +80,7 @@ struct Access {
   Access() = delete;
   static std::string& key(Object* p) { return p->key_; }
   static const std::string& key(const Object* p) { return p->key_; }
-  static std::string& loc(Object* p) { return p->key_; }
+  static std::string& loc(Object* p) { return p->loc_; }
   static const std::string& loc(const Object* p) { return p->loc_; }
   static Object::CreateFunc& create_func(Object* p) { return p->create_func_; }
   static const Object::CreateFunc& create_func(const Object* p) { return p->create_func_; }
@@ -115,17 +116,16 @@ void Register(const std::string& key, const Object::CreateFunc& create_func, con
 
 void Unregister(const std::string& key);
 
-void RegisterAsRoot(Object *p);
+void RegisterAsRoot(Object* p);
 
 Object* get(const std::string& loc);
 
-
 template <typename T>
 T* get(const std::string& loc) {
-    return dynamic_cast<T*>(refl::get(loc));
+  return dynamic_cast<T*>(refl::get(loc));
 }
 
-template<typename T>
+template <typename T>
 std::enable_if_t<std::is_base_of_v<Object, T>, void>
 UpdateWeakRef(T*& p) {
   if (!p) {
@@ -138,7 +138,7 @@ UpdateWeakRef(T*& p) {
   p = get<T>(loc);
 }
 
-template<typename T>
+template <typename T>
 std::enable_if_t<std::is_base_of_v<Object, T>, void>
 visit(const Object::Visitor& visitor, T*& p) {
   Object* tmp = p;
@@ -146,15 +146,23 @@ visit(const Object::Visitor& visitor, T*& p) {
   p = dynamic_cast<T*>(tmp);
 }
 
-template<typename T>
+template <typename T>
+std::enable_if_t<std::is_base_of_v<Object, T>, void>
+visit(const Object::Visitor& visitor, std::shared_ptr<T>& p) {
+  Object* tmp = p.get();
+  visitor(tmp, true);
+  p = std::shared_ptr<T>(dynamic_cast<T*>(tmp));
+}
+
+template <typename T>
 std::enable_if_t<std::is_base_of_v<Object, T>, void>
 visit(const Object::Visitor& visitor, Object::Ptr<T>& p) {
   Object* tmp = p.get();
   visitor(tmp, false);
 }
 
-template<typename Interface>
-Object::Ptr<Interface> CreateWithoutInitialize(const std::string &key, const std::string &loc) {
+template <typename Interface>
+Object::Ptr<Interface> CreateWithoutInitialize(const std::string& key, const std::string& loc) {
   auto* inst = CreateObject(KeyGen<Interface>::gen(std::move(key)).c_str());
   if (!inst) {
     return {};
@@ -162,8 +170,8 @@ Object::Ptr<Interface> CreateWithoutInitialize(const std::string &key, const std
   Access::loc(inst) = loc;
   return Object::Ptr<Interface>(dynamic_cast<Interface*>(inst));
 }
-template<typename Interface>
-Object::Ptr<Interface> Create(const std::string &key, const std::string &loc, const json& json = {}) {
+template <typename Interface>
+Object::Ptr<Interface> Create(const std::string& key, const std::string& loc, const json& json = {}) {
   auto inst = CreateWithoutInitialize<Interface>(key, loc);
   if (!inst) {
     return {};
@@ -171,7 +179,6 @@ Object::Ptr<Interface> Create(const std::string &key, const std::string &loc, co
   inst->Initialize(json);
   return inst;
 }
-
 
 template <typename ImplType>
 class Registry {
@@ -199,4 +206,17 @@ class Registry {
  private:
   std::string key_;
 };
-}  // namespace min::ray
+
+#define MIN_IMPL(Impl, Key)                         \
+  namespace {                                       \
+  template <typename T>                             \
+  class Registry_Init_;                             \
+  template <>                                       \
+  class Registry_Init_<Impl> {                      \
+    static const min::refl::Registry<Impl>& reg_;   \
+  };                                                \
+  const min::refl::Registry<Impl>&                  \
+      Registry_Init_<Impl>::reg_ =                  \
+          min::refl::Registry<Impl>::instance(Key); \
+  }
+}  // namespace min::refl

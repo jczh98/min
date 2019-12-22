@@ -33,10 +33,18 @@ class Assets : public Object {
     }
     return assets_.at(it->second).get();
   }
-	virtual Object* LoadAsset(const std::string &name, const std::string& impl_key, const json &json);
+  void ForeachUnderlying(const Visitor& v) override {
+    for (auto& asset : assets_) {
+      visit(v, asset);
+    }
+  }
+  virtual Object* LoadAsset(const std::string& name, const std::string& impl_key, const json& json);
 
  private:
   std::vector<Ptr<Object>> assets_;
   std::unordered_map<std::string, int> asset_index_map_;
 };
-}  // namespace min::detail
+
+MIN_IMPL(Assets, "assets::default")
+
+}  // namespace min::refl
