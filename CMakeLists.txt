@@ -6,6 +6,14 @@ enable_testing()
 
 set(CMAKE_CXX_STANDARD  17)
 
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -pthread")	
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+endif()
+
 set(EXECUTABLE_NAME min-ray-cli)
 
 add_subdirectory(external/fmt)
@@ -57,6 +65,7 @@ target_include_directories(${EXECUTABLE_NAME}
 target_link_libraries(${EXECUTABLE_NAME}
 	PUBLIC 
 	fmt
+	stdc++fs
 )
 
 add_executable(test_importer tests/test_importer.cc ${MIN_RAY_API} ${MIN_RAY_CORE})
