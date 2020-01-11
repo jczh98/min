@@ -21,6 +21,7 @@
 // SOFTWARE.
 #pragma once
 
+#include "interface.h"
 #include "math.h"
 #include "spectrum.h"
 
@@ -31,9 +32,10 @@ struct ShadingPoint {
   Normal3 ns, ng;
 };
 
-class Texture {
+class Texture : unit::Unit {
  public:
   virtual Spectrum Evaluate(const ShadingPoint &sp) const = 0;
 };
+MIN_INTERFACE(Texture)
 
 }  // namespace min::ray

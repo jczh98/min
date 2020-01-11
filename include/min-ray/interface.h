@@ -82,7 +82,7 @@ class ImplementationHolderBase {
  public:
   std::string name;
   virtual bool has(const std::string& alias) const = 0;
-  virtual bool remove(const std::string& alias) = 0;
+  virtual void remove(const std::string& alias) = 0;
   virtual std::vector<std::string> GetImplementationNames() const = 0;
 };
 
@@ -93,11 +93,11 @@ class InterfaceHolder {
   std::map<std::string, ImplementationHolderBase*> interfaces;
 
   void RegisterRegistrationMethod(const std::string& name,
-                                  const RegisterRegistrationMethod& method) {
+                                  const RegistrationMethod& method) {
     methods[name] = method;
   }
 
-  void RegisterInterface(cosnt std::string& name,
+  void RegisterInterface(const std::string& name,
                          ImplementationHolderBase* interface) {
     interfaces[name] = interface;
   }
@@ -111,7 +111,7 @@ class InterfaceHolder {
 #define MIN_INTERFACE(T)                                                                               \
   extern void* GetImplementationHolderInstance_##T();                                                  \
   class MIN_IMPLEMENTATION_HOLDER_NAME(T) final                                                        \
-      : public ImplementationHolderBase {                                                              \
+      : public min::unit::ImplementationHolderBase {                                                   \
    public:                                                                                             \
     MIN_IMPLEMENTATION_HOLDER_NAME(T)                                                                  \
     (const std::string& name) {                                                                        \
@@ -140,7 +140,7 @@ class InterfaceHolder {
       implementation_raw_factories.insert(                                                             \
           std::make_pair(alias, [&]() { return new G(); }));                                           \
       implementation_placement_factories.insert(                                                       \
-          std::make_pair(alias, [&]() { return new (placement) G(); }));                               \
+          std::make_pair(alias, [&](void* placement) { return new (placement) G(); }));                \
     }                                                                                                  \
     void insert(const std::string& alias, const FactoryMethod& f) {                                    \
       implementation_factories.insert(std::make_pair(alias, f));                                       \
@@ -176,7 +176,7 @@ class InterfaceHolder {
       auto factory = implementation_raw_factories.find(alias);                                         \
       return (factory->second)();                                                                      \
     }                                                                                                  \
-    T* CreatePlacement(const std::string& alias, void* place) {                                        \
+    T* CreatePlacement(const std::string& alias, void* placement) {                                    \
       auto factory = implementation_placement_factories.find(alias);                                   \
       return (factory->second)(placement);                                                             \
     }                                                                                                  \
@@ -186,70 +186,70 @@ class InterfaceHolder {
     }                                                                                                  \
   };                                                                                                   \
   extern MIN_IMPLEMENTATION_HOLDER_NAME(T) * MIN_IMPLEMENTATION_HOLDER_PTR(T);
-#define MIN_INTERFACE_DEF(class_name, base_alias)                                                   \
-  template <>                                                                                       \
-  std::shared_ptr<class_name> CreateInstance(const std::string& alias) {                            \
-    return MIN_IMPLEMENTATION_HOLDER_NAME(class_name)::instance()->Create(alias);                   \
-  }                                                                                                 \
-  template <>                                                                                       \
-  std::shared_ptr<class_name> CreateInstance(const std::string& alias,                              \
-                                             const json& json) {                                    \
-    auto instance = CreateInstance<class_name>(alias);                                              \
-    instance->initialize(json);                                                                     \
-    return instance;                                                                                \
-  }                                                                                                 \
-  template <>                                                                                       \
-  std::unique_ptr<class_name> CreateInstanceUnique(const std::string& alias) {                      \
-    return MIN_IMPLEMENTATION_HOLDER_NAME(class_name)::instance()->CreateUnique(alias);             \
-  }                                                                                                 \
-  template <>                                                                                       \
-  std::unique_ptr<class_name> CreateInstanceUnique(const std::string& alias,                        \
-                                                   const json& json) {                              \
-    auto instance = CreateInstanceUnique<class_name>(alias);                                        \
-    instance->initialize(json);                                                                     \
-    return instance;                                                                                \
-  }                                                                                                 \
-  template <>                                                                                       \
-  class_name* CreateInstanceRaw(const std::string& alias) {                                         \
-    return MIN_IMPLEMENTATION_HOLDER_NAME(class_name)::instance()->CreateRaw(alias);                \
-  }                                                                                                 \
-  template <>                                                                                       \
-  class_name* CreateInstanceRaw(const std::string& alias,                                           \
-                                const json& json) {                                                 \
-    auto instance = CreateInstanceRaw<class_name>(alias);                                           \
-    instance->initialize(json);                                                                     \
-    return instance;                                                                                \
-  }                                                                                                 \
-  template <>                                                                                       \
-  class_name* CreateInstancePlacement(const std::string& alias) {                                   \
-    return MIN_IMPLEMENTATION_HOLDER_NAME(class_name)::instance()->CreatePlacement(alias);          \
-  }                                                                                                 \
-  template <>                                                                                       \
-  class_name* CreateInstancePlacement(const std::string& alias,                                     \
-                                      const json& json) {                                           \
-    auto instance = CreateInstancePlacement<class_name>(alias);                                     \
-    instance->initialize(json);                                                                     \
-    return instance;                                                                                \
-  }                                                                                                 \
-  template <>                                                                                       \
-  std::vector<std::string> GetImplementationNames<class_name>() {                                   \
-    return MIN_IMPLEMENTATION_HOLDER_NAME(class_name)::instance()->GetImplementationNames();        \
-  }                                                                                                 \
-  MIN_IMPLEMENTATION_HOLDER_NAME(class_name) * MIN_IMPLEMENTATION_HOLDER_PTR(class_name) = nullptr; \
-  void* GetImplementationHolderInstance_##class_name() {                                            \
-    if (!MIN_IMPLEMENTATION_HOLDER_PTR(class_name)) {                                               \
-      MIN_IMPLEMENTATION_HOLDER_PTR(class_name) =                                                   \
-          new MIN_IMPLEMENTATION_HOLDER_NAME(class_name)(base_alias);                               \
-    }                                                                                               \
-    return MIN_IMPLEMENTATION_HOLDER_PTR(class_name);                                               \
-  }                                                                                                 \
-  class InterfaceInjector_##class_name {                                                            \
-   public:                                                                                          \
-    InterfaceHolder::instance()->RegisterRegistrationMethod(                                        \
-        base_alias, [&](void* m) {                                                                  \
-        });                                                                                         \
-    InterfaceHolder::instance()->RegisterInterface(                                                 \
-        base_alias, (ImplementationHolderBase*)GetImplementationHolderInstance_##class_name())      \
+#define MIN_INTERFACE_DEF(class_name, base_alias)                                                         \
+  template <>                                                                                             \
+  std::shared_ptr<class_name> min::unit::CreateInstance(const std::string& alias) {                       \
+    return MIN_IMPLEMENTATION_HOLDER_NAME(class_name)::instance()->Create(alias);                         \
+  }                                                                                                       \
+  template <>                                                                                             \
+  std::shared_ptr<class_name> min::unit::CreateInstance(const std::string& alias,                         \
+                                                        const json& json) {                               \
+    auto instance = CreateInstance<class_name>(alias);                                                    \
+    instance->initialize(json);                                                                           \
+    return instance;                                                                                      \
+  }                                                                                                       \
+  template <>                                                                                             \
+  std::unique_ptr<class_name> min::unit::CreateInstanceUnique(const std::string& alias) {                 \
+    return MIN_IMPLEMENTATION_HOLDER_NAME(class_name)::instance()->CreateUnique(alias);                   \
+  }                                                                                                       \
+  template <>                                                                                             \
+  std::unique_ptr<class_name> min::unit::CreateInstanceUnique(const std::string& alias,                   \
+                                                              const json& json) {                         \
+    auto instance = CreateInstanceUnique<class_name>(alias);                                              \
+    instance->initialize(json);                                                                           \
+    return instance;                                                                                      \
+  }                                                                                                       \
+  template <>                                                                                             \
+  class_name* min::unit::CreateInstanceRaw(const std::string& alias) {                                    \
+    return MIN_IMPLEMENTATION_HOLDER_NAME(class_name)::instance()->CreateRaw(alias);                      \
+  }                                                                                                       \
+  template <>                                                                                             \
+  class_name* min::unit::CreateInstanceRaw(const std::string& alias,                                      \
+                                           const json& json) {                                            \
+    auto instance = CreateInstanceRaw<class_name>(alias);                                                 \
+    instance->initialize(json);                                                                           \
+    return instance;                                                                                      \
+  }                                                                                                       \
+  template <>                                                                                             \
+  class_name* min::unit::CreateInstancePlacement(const std::string& alias) {                              \
+    return MIN_IMPLEMENTATION_HOLDER_NAME(class_name)::instance()->CreatePlacement(alias);                \
+  }                                                                                                       \
+  template <>                                                                                             \
+  class_name* min::unit::CreateInstancePlacement(const std::string& alias,                                \
+                                                 const json& json) {                                      \
+    auto instance = CreateInstancePlacement<class_name>(alias);                                           \
+    instance->initialize(json);                                                                           \
+    return instance;                                                                                      \
+  }                                                                                                       \
+  template <>                                                                                             \
+  std::vector<std::string> min::unit::GetImplementationNames<class_name>() {                              \
+    return MIN_IMPLEMENTATION_HOLDER_NAME(class_name)::instance()->GetImplementationNames();              \
+  }                                                                                                       \
+  MIN_IMPLEMENTATION_HOLDER_NAME(class_name) * MIN_IMPLEMENTATION_HOLDER_PTR(class_name) = nullptr;       \
+  void* GetImplementationHolderInstance_##class_name() {                                                  \
+    if (!MIN_IMPLEMENTATION_HOLDER_PTR(class_name)) {                                                     \
+      MIN_IMPLEMENTATION_HOLDER_PTR(class_name) =                                                         \
+          new MIN_IMPLEMENTATION_HOLDER_NAME(class_name)(base_alias);                                     \
+    }                                                                                                     \
+    return MIN_IMPLEMENTATION_HOLDER_PTR(class_name);                                                     \
+  }                                                                                                       \
+  class InterfaceInjector_##class_name {                                                                  \
+   public:                                                                                                \
+    min::unit::InterfaceHolder::instance()->RegisterRegistrationMethod(                                   \
+        base_alias, [&](void* m) {                                                                        \
+        });                                                                                               \
+    min::unit::InterfaceHolder::instance()->RegisterInterface(                                            \
+        base_alias, (min::unit::ImplementationHolderBase*)GetImplementationHolderInstance_##class_name()) \
   } ImplementationInjector_##base_class_name##class_name##instance(base_alias);
 #define MIN_IMPLEMENTATION(base_class_name, class_name, alias)                        \
   class ImplementationInjector_##base_class_name##class_name##{                       \

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.4)
+cmake_minimum_required(VERSION 3.10)
 
 project(min-ray VERSION 0.1.0)
 
@@ -13,6 +13,18 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif()
+
+set(CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake/")
+
+if (WIN32)
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/")
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_ROOT}/Modules")
+else ()
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_ROOT}/Modules")
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/")
+endif ()
+
+include(cmake/Pybind11.cmake)
 
 set(EXECUTABLE_NAME min-ray-cli)
 
@@ -44,6 +56,7 @@ file(GLOB MIN_RAY_CORE
 	"src/core/shaders/*.cc"
 	"src/core/shapes/*.h"
 	"src/core/shapes/*.cc"
+	"src/textures/*.cc"
 	"external/tinyobjloader/tiny_obj_loader.cc"
 	)
 
@@ -66,38 +79,4 @@ target_link_libraries(${EXECUTABLE_NAME}
 	PUBLIC 
 	fmt
 	stdc++fs
-)
-
-add_executable(test_importer tests/test_importer.cc ${MIN_RAY_API} ${MIN_RAY_CORE})
-
-target_include_directories(test_importer
-	PUBLIC
-	"include"
-	external/tinyobjloader
-	external/glm
-	external/fmt/include
-	external/cereal/include
-	external/json/includ
-)
-
-target_link_libraries(test_importer
-	PUBLIC
-	fmt
-)
-
-add_executable(test_object tests/test_object.cc ${MIN_RAY_API} ${MIN_RAY_CORE})
-
-target_include_directories(test_object
-	PUBLIC
-	"include"
-	external/tinyobjloader
-	external/glm
-	external/fmt/include
-	external/cereal/include
-	external/json/includ
-)
-
-target_link_libraries(test_object
-	PUBLIC
-	fmt
 )
