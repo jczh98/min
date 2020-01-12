@@ -32,9 +32,11 @@ struct ShadingPoint {
   Normal3 ns, ng;
 };
 
-class Texture : unit::Unit {
+class Texture : public Unit {
  public:
-  virtual Spectrum Evaluate(const ShadingPoint &sp) const = 0;
+  virtual Spectrum Evaluate(const ShadingPoint &sp) const {
+    return Spectrum(0);
+  }
 };
 MIN_INTERFACE(Texture)
 

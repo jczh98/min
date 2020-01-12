@@ -2,7 +2,7 @@
 
 namespace min::ray {
 
-class Mesh : public unit::Unit {
+class Mesh : public Unit {
  public:
 };
 MIN_INTERFACE(Mesh)
