@@ -1,5 +1,6 @@
 #include <min-ray/film.h>
 #include <min-ray/parallel.h>
+#include <min-ray/logging.h>
 #include <iostream>
 #include "../core/accelerators/sahbvh.h"
 #include "../core/bsdfs/lambertian.h"

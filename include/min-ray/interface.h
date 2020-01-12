@@ -22,6 +22,7 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
+#include "logging.h"
 
 namespace min::ray {
 
@@ -66,10 +67,12 @@ class Unit {
   virtual void initialize(const json& json) {}
 
   virtual std::string name() const {
+    MIN_NOT_IMPLEMENTED
     return "";
   }
 
   virtual std::string GeneralAction(const json& json) {
+    MIN_NOT_IMPLEMENTED
     return "";
   }
   virtual ~Unit() {}

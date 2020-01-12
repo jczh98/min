@@ -29,6 +29,7 @@ include(cmake/Pybind11.cmake)
 set(EXECUTABLE_NAME min-ray-cli)
 
 add_subdirectory(external/fmt)
+add_subdirectory(external/spdlog)
 
 file(GLOB MIN_RAY_API
 	"include/min-ray/*.h"
@@ -78,5 +79,6 @@ target_include_directories(${EXECUTABLE_NAME}
 target_link_libraries(${EXECUTABLE_NAME}
 	PUBLIC 
 	fmt
+	spdlog::spdlog
 	stdc++fs
 )
