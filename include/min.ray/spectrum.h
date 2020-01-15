@@ -21,28 +21,21 @@
 // SOFTWARE.
 #pragma once
 
-#include "object.h"
-#include <fmt/format.h>
-namespace min::refl {
+#include "math.h"
 
-template <typename T>
-T* ref(const json& j, const std::string& name) {
+namespace min::ray {
 
-  const auto it = j.find(name);
-  if (it == j.end()) {
-    fmt::print("Missing property[name = '{}'] ", name);
-    return nullptr;
-  }
-  if (!it->is_string()) {
-    fmt::print("Property must be string [name='{}']", name);
-	  return nullptr;
-  }
-  const std::string ref = *it;
-  auto* p = refl::get<T>(ref);
-  if (!p) {
-    fmt::print("Invalid componen reference [name='{}', ref='{}']", name, ref);
-    return nullptr;
-  }
-  return p;
+using Spectrum = Vector3;
+
+inline bool IsBlack(const Spectrum &s) {
+  return s.x <= 0 || s.y <= 0 || s.z <= 0;
 }
-}  // namespace min::refl
+
+inline Spectrum RemoveNaN(const Spectrum &s) {
+  auto remove_nan = [=](float x) { return std::isnan(x) ? 0 : x; };
+  return Spectrum(remove_nan(s.x),
+                  remove_nan(s.y),
+                  remove_nan(s.z));
+}
+
+}  // namespace min::ray

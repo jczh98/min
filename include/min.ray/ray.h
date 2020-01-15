@@ -21,48 +21,16 @@
 // SOFTWARE.
 #pragma once
 
-#include "assets.h"
-#include "object.h"
+#include "math.h"
 
-namespace min::refl {
-class Context : public Object {
+namespace min::ray {
+
+class Ray {
  public:
-  Context() {
-    Access::loc(this) = "$";
-    RegisterAsRoot(this);
-  }
-
-  static Context& instance() {
-    static Context instance;
-    return instance;
-  }
-
-  Assets* assets() {
-    return root_assets_.get();
-  }
-
-  Object* Underlying(const std::string& name) const override {
-    if (name == "assets") {
-      return root_assets_.get();
-    }
-    return nullptr;
-  }
-
-  void ForeachUnderlying(const Visitor& visitor) override {
-    visit(visitor, root_assets_);
-  }
-
-  void Reset() {
-    root_assets_ = Create<Assets>("assets::default", MakeLoc("assets"));
-  }
-
- private:
-  bool initialized_ = false;
-  Ptr<Assets> root_assets_;
+  Ray() : tmin(-1), tmax(-1) {}
+  Ray(const Point3 &o, const Point3 &d, Float tmin, Float tmax = MaxFloat) : o(o), d(d), tmin(tmin), tmax(tmax) {}
+  Point3 o;
+  Vector3 d;
+  Float tmin, tmax;
 };
-
-template <typename T>
-T* Load(const std::string& name, const std::string& impl_key, const json& json) {
-  return dynamic_cast<T*>(Context::instance().assets()->LoadAsset(name, impl_key, json));
-}
-}  // namespace min::refl
+}  // namespace min::ray
