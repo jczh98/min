@@ -40,6 +40,8 @@ using Point2i = Vector2i;
 using Point3i = Vector3i;
 using Normal3 = Vector3;
 
+using namespace glm;
+
 inline void ComputeLocalFrame(const Vector3 &v1, Vector3 *v2, Vector3 *v3) {
   if (std::abs(v1.x) > std::abs(v1.y))
     *v2 = Vector3(-v1.z, 0, v1.x) / std::sqrt(v1.x * v1.x + v1.z * v1.z);

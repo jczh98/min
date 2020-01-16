@@ -32,38 +32,37 @@ add_subdirectory(external/fmt)
 add_subdirectory(external/spdlog)
 
 file(GLOB MIN_RAY_API
-	"include/min.ray/*.h"
+	"include/min-ray/*.h"
 	)
 
 file(GLOB MIN_RAY_CORE
-	src/core_/*.cc
-	#"src/core/accelerators/*.h"
-	#"src/core/accelerators/*.cc"
-	#"src/core/bsdfs/*.h"
-	#"src/core/bsdfs/*.cc"
-	#"src/core/integrators/*.h"
-	#"src/core/integrators/*.cc"
-	#"src/core/*.cc"
-	#"src/core/lights/*.h"
-	#"src/core/lights/*.cc"
-	#"src/core/samplers/*.h"
-	#"src/core/samplers/*.cc"
-	#"src/core/cameras/*.h"
-	#"src/core/cameras/*.cc"
-	#"src/core/materials/*.h"
-	#"src/core/materials/*.cc"
-	#"src/core/importers/*.h"
-	#"src/core/importers/*.cc"
-	#"src/core/shaders/*.h"
-	#"src/core/shaders/*.cc"
-	#"src/core/shapes/*.h"
-	#"src/core/shapes/*.cc"
-	#"src/textures/*.cc"
+	"src/core/accelerators/*.h"
+	"src/core/accelerators/*.cc"
+	"src/core/bsdfs/*.h"
+	"src/core/bsdfs/*.cc"
+	"src/core/integrators/*.h"
+	"src/core/integrators/*.cc"
+	"src/core/*.cc"
+	"src/core/lights/*.h"
+	"src/core/lights/*.cc"
+	"src/core/samplers/*.h"
+	"src/core/samplers/*.cc"
+	"src/core/cameras/*.h"
+	"src/core/cameras/*.cc"
+	"src/core/materials/*.h"
+	"src/core/materials/*.cc"
+	"src/core/importers/*.h"
+	"src/core/importers/*.cc"
+	"src/core/shaders/*.h"
+	"src/core/shaders/*.cc"
+	"src/core/shapes/*.h"
+	"src/core/shapes/*.cc"
+	"src/textures/*.cc"
 	"external/tinyobjloader/tiny_obj_loader.cc"
 	)
 
 add_executable(${EXECUTABLE_NAME} 
-	src/standalone/test.cc 
+	src/standalone/main.cc 
 	${MIN_RAY_API}
 	${MIN_RAY_CORE}
 	)

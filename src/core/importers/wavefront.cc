@@ -2,8 +2,8 @@
 #include <tiny_obj_loader.h>
 #include "../bsdfs/lambertian.h"
 #include "../materials/matte.h"
-#include "../textures/constant.h"
 #include "../shapes/triangle.h"
+#include "../textures/constant.h"
 
 namespace min::ray {
 
@@ -59,8 +59,11 @@ MeshImportResult WavefrontImporter::Import(const fs::path &path) {
   printf("# of texcoords = %d\n", (int)(attrib.texcoords.size()) / 2);
   printf("# of materials = %d\n", (int)materials.size());
   printf("# of shapes    = %d\n", (int)shapes.size());
+
   auto mesh = std::make_shared<MeshTriangle>();
+
   int face_count = 0;
+  int cnt = 0;
   for (size_t s = 0; s < shapes.size(); s++) {
     size_t index_offset = 0;
     for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++, face_count++) {
@@ -70,11 +73,16 @@ MeshImportResult WavefrontImporter::Import(const fs::path &path) {
         mesh->positions.emplace_back(Vector3(attrib.vertices[3 * idx.vertex_index + 0],
                                              attrib.vertices[3 * idx.vertex_index + 1],
                                              attrib.vertices[3 * idx.vertex_index + 2]));
-        mesh->normals.emplace_back(Vector3(attrib.normals[3 * idx.normal_index + 0],
-                                           attrib.normals[3 * idx.normal_index + 1],
-                                           attrib.normals[3 * idx.normal_index + 2]));
-        mesh->tex_coords.emplace_back(Vector2(attrib.texcoords[2 * idx.texcoord_index + 0],
-                                           attrib.texcoords[2 * idx.texcoord_index + 1]));
+        if (idx.normal_index != -1) {
+          mesh->normals.emplace_back(Vector3(attrib.normals[3 * idx.normal_index + 0],
+                                             attrib.normals[3 * idx.normal_index + 1],
+                                             attrib.normals[3 * idx.normal_index + 2]));
+        }
+        if (idx.texcoord_index != -1) {
+          mesh->tex_coords.emplace_back(Vector2(attrib.texcoords[2 * idx.texcoord_index + 0],
+                                                attrib.texcoords[2 * idx.texcoord_index + 1]));
+        }
+
         mesh->vertex_indices.emplace_back(3 * face_count + 0);
         mesh->vertex_indices.emplace_back(3 * face_count + 1);
         mesh->vertex_indices.emplace_back(3 * face_count + 2);
@@ -92,5 +100,5 @@ MeshImportResult WavefrontImporter::Import(const fs::path &path) {
   fmt::print("Loaded {} vertices, {} normals, {} primitives\n", mesh->positions.size(),
              mesh->normals.size(), mesh->face_indices.size());
   return result;
-}
+}  // namespace min::ray
 }  // namespace min::ray

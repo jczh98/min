@@ -43,8 +43,7 @@ class Triangle : public Shape {
     const Point3 &p0 = mesh_->positions[v_[0]];
     const Point3 &p1 = mesh_->positions[v_[1]];
     const Point3 &p2 = mesh_->positions[v_[2]];
-    const BoundingBox3 box{p0, p1};
-    return box.UnionOf(p2);
+    return BoundingBox3{glm::min(p0, glm::min(p1, p2)), glm::max(p0, glm::max(p1, p2))};
   }
   Float Area() const override {
     const Point3 &p0 = mesh_->positions[v_[0]];
@@ -54,6 +53,7 @@ class Triangle : public Shape {
   }
 
  private:
+  void get_coord(const Vector3 &inter, Float &coord_u, Float &coord_v) const;
   std::shared_ptr<MeshTriangle> mesh_;
   const int *v_;
   int face_index_;

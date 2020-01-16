@@ -21,21 +21,36 @@
 // SOFTWARE.
 #pragma once
 
-#include "math.h"
+#include <min-ray/accelerator.h>
+#include <min-ray/logging.h>
 
 namespace min::ray {
 
-using Spectrum = Vector3;
-
-inline bool IsBlack(const Spectrum &s) {
-  return s.x <= 0 || s.y <= 0 || s.z <= 0;
-}
-
-inline Spectrum RemoveNaN(const Spectrum &s) {
-  auto remove_nan = [=](float x) { return std::isnan(x) ? 0 : x; };
-  return Spectrum(remove_nan(s.x),
-                  remove_nan(s.y),
-                  remove_nan(s.z));
-}
-
+class Bruteforce : public Accelerator {
+  std::vector<std::shared_ptr<Primitive>> primitives;
+ public:
+  Bruteforce(const std::vector<std::shared_ptr<Primitive>> &primitives) : primitives(primitives) {
+    fmt::print("primitives : {}\n", primitives.size());
+  }
+  virtual bool Intersect(const Ray &ray, Intersection &isect) const {
+		bool hit = false;
+    for (auto pri : primitives) {
+      if (pri->Intersect(ray, isect)) {
+        hit = true;
+      }
+		}
+		return hit;
+	}
+  virtual BoundingBox3 GetBoundingBox() const {
+    MIN_NOT_IMPLEMENTED
+    return BoundingBox3();
+  }
+  virtual void Sample(const Point2 &p, SurfaceSample &sample) const {
+    MIN_NOT_IMPLEMENTED
+        }
+  virtual Float Area() const {
+    MIN_NOT_IMPLEMENTED
+    return 0; 
+		}
+};
 }  // namespace min::ray
