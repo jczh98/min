@@ -1,96 +1,113 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required (VERSION 2.8.10)
+project(nori)
 
-project(min-ray VERSION 0.1.0)
+add_subdirectory(ext ext_build)
 
-enable_testing()
-
-set(CMAKE_CXX_STANDARD  17)
-
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -pthread")	
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-endif()
-
-set(CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake/")
-
-if (WIN32)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/")
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_ROOT}/Modules")
-else ()
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_ROOT}/Modules")
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/")
-endif ()
-
-include(cmake/Pybind11.cmake)
-
-set(EXECUTABLE_NAME min-ray-cli)
-
-add_subdirectory(external/fmt)
-add_subdirectory(external/spdlog)
-
-file(GLOB MIN_RAY_API
-	"include/min-ray/*.h"
-	)
-
-file(GLOB MIN_RAY_CORE
-	"src/core/*.cc"
-	"src/core/cameras/*.h"
-	"src/core/cameras/*.cc"
-	"src/core/importers/*.h"
-	"src/core/importers/*.cc"
-	"src/core/bsdfs/diffuse.h"
-	"src/core/bsdfs/diffuse.cc"
-	"src/core/textures/constant.h"
-	"src/core/integrators/ao.h"
-	"src/core/integrators/ao.cc"
-	"src/core/samplers/*.h"
-	"src/core/samplers/*.cc"
-	"src/core/accelerators/brute.h"
-	"src/core/lights/*.cc"
-	# "src/core/accelerators/*.h"
-	# "src/core/accelerators/*.cc"
-	# "src/core/bsdfs/*.h"
-	# "src/core/bsdfs/*.cc"
-	# "src/core/integrators/*.h"
-	# "src/core/integrators/*.cc"
-	# "src/core/*.cc"
-	# "src/core/lights/*.h"
-	# "src/core/lights/*.cc"
-	# "src/core/samplers/*.h"
-	# "src/core/samplers/*.cc"
-	# "src/core/materials/*.h"
-	# "src/core/materials/*.cc"
-	# "src/core/importers/*.h"
-	# "src/core/importers/*.cc"
-	# "src/core/shaders/*.h"
-	# "src/core/shaders/*.cc"
-	# "src/core/shapes/*.h"
-	# "src/core/shapes/*.cc"
-	# "src/textures/*.cc"
-	"external/tinyobjloader/tiny_obj_loader.cc"
-	)
-
-add_executable(${EXECUTABLE_NAME} 
-	src/standalone/main.cc 
-	${MIN_RAY_API}
-	${MIN_RAY_CORE}
-	)
-
-target_include_directories(${EXECUTABLE_NAME} 
-	PUBLIC
-	"include"
-	external/tinyobjloader
-	external/json/include
-	external/glm
-	external/fmt/include
-	)
-
-target_link_libraries(${EXECUTABLE_NAME}
-	PUBLIC 
-	fmt
-	spdlog::spdlog
-	stdc++fs
+include_directories(
+  # Nori include files
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  # tinyformat string formatting library
+  ${TFM_INCLUDE_DIR}
+  # Eigen linear algebra library
+  ${EIGEN_INCLUDE_DIR}
+  # OpenEXR high dynamic range bitmap library
+  ${OPENEXR_INCLUDE_DIRS}
+  # Intel Thread Building Blocks
+  ${TBB_INCLUDE_DIR}
+  # Pseudorandom number generator
+  ${PCG32_INCLUDE_DIR}
+  # PugiXML parser
+  ${PUGIXML_INCLUDE_DIR}
+  # Helper functions for statistical hypothesis tests
+  ${HYPOTHESIS_INCLUDE_DIR}
+  # GLFW library for OpenGL context creation
+  ${GLFW_INCLUDE_DIR}
+  # GLEW library for accessing OpenGL functions
+  ${GLEW_INCLUDE_DIR}
+  # NanoVG drawing library
+  ${NANOVG_INCLUDE_DIR}
+  # NanoGUI user interface library
+  ${NANOGUI_INCLUDE_DIR}
+  ${NANOGUI_EXTRA_INCS}
+  # Portable filesystem API
+  ${FILESYSTEM_INCLUDE_DIR}
+  # STB Image Write
+  ${STB_IMAGE_WRITE_INCLUDE_DIR}
 )
+
+# The following lines build the main executable. If you add a source
+# code file to Nori, be sure to include it in this list.
+add_executable(nori
+
+  # Header files
+  include/nori/bbox.h
+  include/nori/bitmap.h
+  include/nori/block.h
+  include/nori/bsdf.h
+  include/nori/accel.h
+  include/nori/camera.h
+  include/nori/color.h
+  include/nori/common.h
+  include/nori/dpdf.h
+  include/nori/frame.h
+  include/nori/integrator.h
+  include/nori/emitter.h
+  include/nori/mesh.h
+  include/nori/object.h
+  include/nori/parser.h
+  include/nori/proplist.h
+  include/nori/ray.h
+  include/nori/rfilter.h
+  include/nori/sampler.h
+  include/nori/scene.h
+  include/nori/timer.h
+  include/nori/transform.h
+  include/nori/vector.h
+  include/nori/warp.h
+  include/nori/rendermode.h
+
+  # Source code files
+  src/bitmap.cpp
+  src/block.cpp
+  src/accel.cpp
+  src/chi2test.cpp
+  src/common.cpp
+  src/diffuse.cpp
+  src/gui.cpp
+  src/independent.cpp
+  src/main.cpp
+  src/mesh.cpp
+  src/obj.cpp
+  src/object.cpp
+  src/parser.cpp
+  src/perspective.cpp
+  src/proplist.cpp
+  src/rfilter.cpp
+  src/scene.cpp
+  src/ttest.cpp
+  src/warp.cpp
+  src/microfacet.cpp
+  src/mirror.cpp
+  src/dielectric.cpp
+  src/blockwise.cpp
+  src/progressive.cpp
+  src/normals.cpp
+)
+
+add_definitions(${NANOGUI_EXTRA_DEFS})
+
+# The following lines build the warping test application
+add_executable(warptest
+  include/nori/warp.h
+  src/warp.cpp
+  src/warptest.cpp
+  src/microfacet.cpp
+  src/object.cpp
+  src/proplist.cpp
+  src/common.cpp
+)
+
+target_link_libraries(nori tbb_static pugixml IlmImf nanogui ${NANOGUI_EXTRA_LIBS})
+target_link_libraries(warptest tbb_static nanogui ${NANOGUI_EXTRA_LIBS})
+
+# vim: set et ts=2 sw=2 ft=cmake nospell:
