@@ -32,12 +32,13 @@ Float DiffuseAreaLight::PdfLi(const Intersection &isect, const Vector3 &wi) cons
   return 1.0f / SA;
 }
 
-void DiffuseAreaLight::SetShape(Shape *shape) {
+void DiffuseAreaLight::SetTriangle(MeshTriangle *shape) {
   this->shape = shape;
+  emission = shape->GetMaterial()->emission;
 }
 
 Spectrum DiffuseAreaLight::Li(ShadingPoint &sp) const {
-  return color_;
+  return emission->Evaluate(sp);
 }
 
 void DiffuseAreaLight::SampleLi(const Point2 &u, Intersection &isect, LightSample &sample, VisibilityTester &tester) const {
@@ -45,7 +46,11 @@ void DiffuseAreaLight::SampleLi(const Point2 &u, Intersection &isect, LightSampl
   shape->Sample(u, surface_sample);
   auto wi = surface_sample.p - isect.p;
   tester.shadow_ray = Ray(isect.p, wi, RayBias, 1);
-  sample.li = color_;
+  ShadingPoint sp;
+  sp.tex_coords = shape->TexcoordAt(surface_sample.uv);
+  sp.ng = shape->NormalGeometry();
+  sp.ns = shape->NormalAt(surface_sample.uv);
+  sample.li = Li(sp);
   sample.wi = glm::normalize(wi);
   sample.pdf = glm::dot(wi, wi) / std::abs(glm::dot(surface_sample.normal, sample.wi)) * surface_sample.pdf;
 }

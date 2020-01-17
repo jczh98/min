@@ -26,7 +26,13 @@
 namespace min::ray {
 
 class PerspectiveCamera : public Camera {
+  Transform transform, inv_transform;
+
+  
+
  public:
+  TransformManipulator manipulator;
+  Angle<Float> fov = DegreesToRadians(80);
   static Matrix4 LookAt(const Vector3 &from, const Vector3 &to) {
     Vector3 up(0, 1, 0);
     Vector3 d = glm::normalize(to - from);
@@ -40,29 +46,20 @@ class PerspectiveCamera : public Camera {
     return Result;
   }
   PerspectiveCamera() = default;
-  PerspectiveCamera(const Vector3 &eye, const Vector3 &center, Float fov) : fov_(fov) {
-    viewpoint_ = eye;
-    transform_ = LookAt(eye, center);
-    inv_transform_ = glm::inverse(transform_);
+
+  void initialize(const json &json) override {
+    fov = json.at("fov").get<Angle<Float>>();
+    manipulator = json.at("transform").get<TransformManipulator>();
   }
 
-  virtual Vector3 WorldToCamera(const Vector3 &v) const {
-    auto r = inv_transform_ * Vector4(v.x, v.y, v.z, 1);
-    return {r.x, r.y, r.z};
+  const Transform &GetTransform() const override {
+    return transform;
   }
-  virtual Vector3 CameraToWorld(const Vector3 &v) const {
-    auto r = transform_ * Vector4(v.x, v.y, v.z, 1);
-    return {r.x, r.y, r.z};
-  }
-  virtual void GenerateRay(const Point2 &u1,
-                           const Point2 &u2,
-                           const Point2i &raster,
-                           Point2i dimension,
-                           CameraSample &sample) const;
-
- private:
-  Matrix4 transform_, inv_transform_;
-  Vector3 viewpoint_;
-  Radians<float> fov_ = Radians<float>(Degrees<float>(80.0));
+  void Preprocess() override;
+  void GenerateRay(const Point2 &u1,
+                   const Point2 &u2,
+                   const Point2i &raster,
+                   Point2i dimension,
+                   CameraSample &sample) const override;
 };
 }  // namespace min::ray

@@ -20,12 +20,14 @@ void AOIntegrator::Render(const std::shared_ptr<Scene> &scene,
       camera->GenerateRay(sampler->Get2D(), sampler->Get2D(), Point2i(i, j), Point2i(film.width, film.height), camera_sample);
       Intersection isect;
       if (scene->Intersect(camera_sample.ray, isect)) {
+        MIN_DEBUG("fuck");
         isect.ComputeLocalFrame();
-        auto wo = isect.WorldToLocal(-camera_sample.ray.d);
-        auto w = CosineHeisphereSampling(sampler->Get2D());
+        auto wo = isect.WorldToLocal(isect.wo);
+        auto w = CosineHemisphereSampling(sampler->Get2D());
         if (wo.y * w.y < 0) {
           w = -w;
         }
+        w = isect.LocalToWorld(w);
         auto ray = isect.SpawnRay(w);
         isect = Intersection();
         if (!scene->Intersect(ray, isect) || isect.distance >= occlude_distance_) {

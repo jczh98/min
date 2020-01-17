@@ -19,13 +19,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+#pragma once
 
-#include <min-ray/intersection.h>
-#include <min-ray/primitive.h>
+#include <min-ray/bsdf.h>
+#include <min-ray/texture.h>
 
 namespace min::ray {
+class DiffuseBSDF : public BSDF {
+  std::shared_ptr<Texture> color;
 
-void Intersection::ComputeScatteringFunctions() {
-  primitive->ComputeScatteringFunctions(this, sp);
-}
+ public:
+  DiffuseBSDF() = default;
+  explicit DiffuseBSDF(const std::shared_ptr<Texture> &color) : color(color) {}
+
+  Spectrum Evaluate(const ShadingPoint &sp, const Vector3 &wo, const Vector3 &wi) const override;
+
+  void Sample(Point2 u, const ShadingPoint &sp, BSDFSample &sample) const override;
+
+  Float EvaluatePdf(const ShadingPoint &point, const Vector3 &wo, const Vector3 &wi) const override;
+
+  Type GetBSDFType() const override {
+    return Type(EDiffuse | EReflection);
+  }
+};
 }  // namespace min::ray

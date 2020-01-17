@@ -29,14 +29,17 @@ struct CameraSample {
   Point2 film;
   Ray ray;
 };
-class Camera {
+class Camera : public Unit{
  public:
-  virtual Vector3 WorldToCamera(const Vector3 &v) const = 0;
-  virtual Vector3 CameraToWorld(const Vector3 &v) const = 0;
-  virtual void GenerateRay(const Point2 &eye,
-                           const Point2 &center,
+  virtual void Preprocess() {
+    MIN_NOT_IMPLEMENTED
+  }
+  virtual const Transform &GetTransform() const = 0;
+  virtual void GenerateRay(const Point2 &u1,
+                           const Point2 &u2,
                            const Point2i &raster,
                            Point2i dimension,
                            CameraSample &sample) const = 0;
 };
+MIN_INTERFACE(Camera)
 }  // namespace min::ray

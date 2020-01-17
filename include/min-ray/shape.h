@@ -26,10 +26,13 @@
 
 namespace min::ray {
 
+struct MeshTriangle;
+
 struct SurfaceSample {
   Point3 p;
   Float pdf;
   Normal3 normal;
+  Point2 uv;
 };
 
 class Shape {
@@ -38,5 +41,8 @@ class Shape {
   virtual void Sample(const Point2 &, SurfaceSample &) const = 0;
   virtual BoundingBox3 GetBoundingBox() const = 0;
   virtual Float Area() const = 0;
+  virtual void Foreach(const std::function<void(MeshTriangle *)> &func) {
+    MIN_NOT_IMPLEMENTED
+  }
 };
 }  // namespace min::ray

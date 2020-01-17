@@ -24,29 +24,22 @@
 #include "accelerator.h"
 #include "intersection.h"
 #include "light.h"
-#include "primitive.h"
+#include "mesh.h"
 #include "ray.h"
 #include "sampler.h"
 
 namespace min::ray {
 class Scene {
  public:
+  std::vector<std::shared_ptr<Mesh>> meshes;
+  std::vector<std::shared_ptr<Light>> lights;
+  std::shared_ptr<Accelerator> accelerator;
   void Preprocess();
   bool Intersect(const Ray &ray, Intersection &isect);
   size_t GetRayCounter() const { return ray_counter_; }
-  std::vector<std::shared_ptr<Primitive>> &primitives() {
-    return primitives_;
-  }
-  Light *SampleLight(const std::shared_ptr<Sampler> &sampler) const;
-
-  std::shared_ptr<Accelerator> &accelerator() { return accelerator_; }
-  std::vector<Light *> &lights() { return lights_; }
 
  private:
   std::atomic<size_t> ray_counter_ = 0;
-  std::shared_ptr<Accelerator> accelerator_;
-  std::vector<std::shared_ptr<Primitive>> primitives_;
-  std::vector<Light *> lights_;
 };
 
 struct VisibilityTester {

@@ -31,6 +31,8 @@
 #include <functional>
 #include <vector>
 #include <glm/gtx/string_cast.hpp>
+#include "logging.h"
+#include "interface.h"
 
 namespace min::ray {
 

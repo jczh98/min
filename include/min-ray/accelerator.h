@@ -21,16 +21,17 @@
 // SOFTWARE.
 #pragma once
 
-#include "primitive.h"
+#include "ray.h"
+#include "intersection.h"
 
 namespace min::ray {
 
-class Accelerator : public Primitive {
+class Scene;
+
+class Accelerator {
  public:
+  virtual void Build(Scene &scene) = 0;
   virtual bool Intersect(const Ray &ray, Intersection &isect) const = 0;
   virtual BoundingBox3 GetBoundingBox() const = 0;
-  void ComputeScatteringFunctions(Intersection *isect, const ShadingPoint &) const {
-    fmt::print("Accelerator should not call ComputeScatteringFunctions method.\n");
-  }
 };
 }  // namespace min::ray

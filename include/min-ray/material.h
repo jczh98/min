@@ -22,13 +22,14 @@
 #pragma once
 
 #include "bsdf.h"
-#include "intersection.h"
 #include "texture.h"
 
 namespace min::ray {
 
 class Material {
  public:
-  virtual void ComputeScatteringFunctions(Intersection *isect, const ShadingPoint &sp) const = 0;
+  std::shared_ptr<Texture> emission;
+  std::shared_ptr<Texture> emissionStrength;
+  std::shared_ptr<BSDF> bsdf;
 };
 }  // namespace min::ray

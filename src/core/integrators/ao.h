@@ -31,11 +31,10 @@ namespace min::ray {
 class AOIntegrator : public Integrator {
  public:
   AOIntegrator(int spp, Float occlude = 30) : spp_(spp), occlude_distance_(occlude) {}
-
-  virtual void Render(const std::shared_ptr<Scene> &scene,
+  void Render(const std::shared_ptr<Scene> &scene,
                       const std::shared_ptr<Camera> &camera,
                       const std::shared_ptr<Sampler> &sampler,
-                      Film &film);
+                      Film &film) override;
 
  private:
   int spp_;

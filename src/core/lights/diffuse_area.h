@@ -23,20 +23,21 @@
 
 #include <min-ray/light.h>
 #include <min-ray/scene.h>
-#include <min-ray/shape.h>
+#include <min-ray/mesh.h>
+#include <min-ray/texture.h>
 
 namespace min::ray {
 class DiffuseAreaLight : public AreaLight {
  public:
-  DiffuseAreaLight(const Spectrum &color) : color_(color) {}
+  DiffuseAreaLight() {}
   virtual Float PdfLi(const Intersection &isect, const Vector3 &wi) const;
-  virtual void SetShape(Shape *shape);
+  virtual void SetTriangle(MeshTriangle *shape);
   virtual Spectrum Li(ShadingPoint &sp) const;
   virtual void SampleLi(const Point2 &u, Intersection &isect, LightSample &sample, VisibilityTester &tester) const;
   virtual void SampleLe(const Point2 &u1, const Point2 &u2, LightRaySample &sample);
 
  private:
-  Spectrum color_;
-  Shape *shape = nullptr;
+  std::shared_ptr<Texture> emission;
+  MeshTriangle *shape = nullptr;
 };
 }  // namespace min::ray

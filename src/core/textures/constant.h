@@ -27,6 +27,7 @@ namespace min::ray {
 
 class ConstantTexture : public Texture {
  public:
+  ConstantTexture(Float v) : value_(v) {}
   ConstantTexture(const Vector3 &v) : value_(v) {}
   Spectrum Evaluate(const ShadingPoint &sp) const override{
     return Spectrum(value_);

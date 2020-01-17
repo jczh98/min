@@ -23,7 +23,36 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <nlohmann/json.hpp>
 #include "defs.h"
+
+namespace nlohmann {
+
+template <int N, typename T, glm::qualifier Q>
+struct adl_serializer<glm::vec<N, T, Q>> {
+  using VecT = glm::vec<N, T, Q>;
+  static void to_json(json &j, const VecT &v) {
+    std::array<T, N> a;
+    for (int i = 0; i < N; i++) {
+      a[i] = static_cast<json::number_float_t>(v[i]);
+    }
+    j = std::move(a);
+  }
+  static void from_json(const json &j, VecT &v) {
+    if (!j.is_array()) {
+      MIN_ERROR(
+          "Invalid JSON type [expected='array', actual='{}']", j.type_name());
+    }
+    if (j.size() != N) {
+      MIN_ERROR(
+          "Invalid number of elements [expected={}, actual={}]", N, j.size());
+    }
+    for (int i = 0; i < N; i++) {
+      v[i] = static_cast<T>(j[i]);
+    }
+  }
+};
+}  // namespace nlohmann
 
 namespace min::ray {
 
@@ -175,61 +204,106 @@ struct Radians {
   private : T value = T();
 };
 
-class Transform {
+template <class T>
+struct Angle {
+  Angle() = default;
+
+  Angle(const T &v) : data(v) {}
+
+  operator T() const { return data; }
+
+  auto &get() const { return data; }
+
+ private:
+  T data;
+};
+
+template <class Value>
+class TTransform {
+  using mat4 = tmat4x4<Value>;
+  using mat3 = tmat3x3<Value>;
+  mat4 T, invT;
+  mat3 T3, invT3, invT3T;
+
  public:
-  Transform() = default;
-  explicit Transform(const Matrix4 &mat) : mat4_(mat), inv_mat4_(glm::inverse(mat4_)) {
-    mat3_ = Matrix3(mat4_);
-    inv_mat3_ = Matrix3(inv_mat4_);
-    inv_mat3_t_ = glm::transpose(inv_mat3_);
+  TTransform() = default;
+
+  explicit TTransform(const mat4 &T) : T(T), invT(glm::inverse(T)) {
+    T3 = mat3(T);
+    invT3 = mat3(invT);
+    invT3T = transpose(invT3);
   }
 
-  Transform(const Matrix4 &mat, const Matrix4 &inv) : mat4_(mat), inv_mat4_(inv) {
-    mat3_ = Matrix3(mat4_);
-    inv_mat3_ = Matrix3(inv_mat4_);
-    inv_mat3_t_ = glm::transpose(inv_mat3_);
+  TTransform(const mat4 &T, const mat4 &invT) : T(T), invT(invT) {
+    T3 = mat3(T);
+    invT3 = mat3(invT);
+    invT3T = transpose(invT3);
   }
 
-  const Matrix4 &Matrix() const { return mat4_; }
-  Transform Inverse() const {
-    return Transform(inv_mat4_, mat4_);
+  const mat4 &matrix() const { return T; }
+
+  TTransform inverse() const {
+    return TTransform{invT, T};
   }
 
   Vector3 TransformVector3(const Vector3 &v) const {
-    return mat3_ * v;
+    return T3 * v;
   }
 
-  Vector3 TransformPoint3(const Vector3 &v) const {
-    auto x = mat4_ * Vector4(v, 1);
+  Point3 TransformPoint3(const Point3 &v) const {
+    auto x = T * Vector4(v.x, v.y, v.z, 1.0f);
     if (x.w == 1) {
-      return x;
+      return Vector3(x);
     }
     return Vector3(x) / x.w;
   }
 
- private:
-  Matrix4 mat4_, inv_mat4_;
-  Matrix3 mat3_, inv_mat3_, inv_mat3_t_;
+  Normal3 TransformNormal3(const Normal3 &v) const {
+    return invT3T * v;
+  }
 };
-
+using Transform = TTransform<Float>;
 class TransformManipulator {
  public:
-  Radians<Vector3> rotation;
+  Angle<Vector3> rotation;
   Vector3 translation;
 
-  Transform toTransform() const {
-    Matrix4 m = glm::identity<Matrix4>();
-    m = glm::rotate(rotation.get().z, Vector3(0, 0, 1)) * m;
-    m = glm::rotate(rotation.get().y, Vector3(1, 0, 0)) * m;
-    m = glm::rotate(rotation.get().x, Vector3(0, 1, 0)) * m;
-    m = glm::translate(translation) * m;
+  Transform ToTransform() const {
+    Matrix4 m = Matrix4(1);
+    m = rotate(m, rotation.get().z, Vector3(0, 0, 1));
+    m = rotate(m, rotation.get().y, Vector3(1, 0, 0));
+    m = rotate(m, rotation.get().x, Vector3(0, 1, 0));
+    m = translate(m, translation);
     return Transform(m);
   }
 };
 
 template <class T>
-inline Degrees<T>::Degrees(const Radians<T> &r) {
-  value = RadiansToDegrees(T(r));
+void to_json(json &j, const Angle<T> &v) {
+  j = {
+      {"rad", v.get()}};
+}
+
+template <class T>
+void from_json(const json &j, Angle<T> &v) {
+  if (j.contains("deg")) {
+    v = DegreesToRadians(j.at("deg").get<T>());
+  } else if (j.contains("rad")) {
+    v = j.at("rad").get<T>();
+  } else {
+    v = j.get<T>();
+  }
+}
+
+inline void to_json(json &j, const TransformManipulator &transform) {
+  j = json::object();
+  j["rotation"] = transform.rotation;
+  j["translation"] = transform.translation;
+}
+
+inline void from_json(const json &j, TransformManipulator &transform) {
+  transform.rotation = j.at("rotation").get<Angle<Vector3>>();
+  transform.translation = j.at("translation").get<Vector3>();
 }
 
 }  // namespace min::ray

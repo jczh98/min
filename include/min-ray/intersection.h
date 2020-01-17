@@ -31,12 +31,13 @@ class Shape;
 
 class BSDF;
 
-class Primitive;
+class Material;
+
+struct MeshTriangle;
 
 struct Intersection {
   void ComputeLocalFrame() {
-    localframe = CoordinateSystem(ng);
-    auto v = WorldToLocal(ng);
+    localframe = CoordinateSystem(ns);
   }
   Vector3 LocalToWorld(const Vector3 &vec) const {
     return localframe.LocalToWorld(vec);
@@ -49,16 +50,14 @@ struct Intersection {
     return Ray(p, w, t, MaxFloat);
   }
 
-  void ComputeScatteringFunctions();
-
   Ray SpawnTo(const Point3 &p) const {
     return Ray(this->p, (p - this->p), RayBias, 1);
   }
-  const Shape *shape = nullptr;
-  const Primitive *primitive = nullptr;
-  const BSDF *bsdf = nullptr;
-  ShadingPoint sp;
+  const MeshTriangle *mesh = nullptr;
+
+  const Material *material = nullptr;
   Float distance = MaxFloat;
+  Vector3 wo;
   Point3 p;
   Normal3 ns, ng;
   Point2 uv;

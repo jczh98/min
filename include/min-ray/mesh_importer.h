@@ -22,12 +22,12 @@
 #pragma once
 
 #include "material.h"
-#include "shape.h"
 
 namespace min::ray {
+class Mesh;
 struct MeshImportResult {
   std::vector<std::shared_ptr<Material>> materials;
-  std::vector<std::shared_ptr<Shape>> triangles;
+  std::shared_ptr<Mesh> mesh;
 };
 class MeshImporter {
  public:

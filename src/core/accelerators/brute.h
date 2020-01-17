@@ -22,35 +22,36 @@
 #pragma once
 
 #include <min-ray/accelerator.h>
-#include <min-ray/logging.h>
+#include <min-ray/mesh.h>
+#include <min-ray/scene.h>
 
 namespace min::ray {
 
 class Bruteforce : public Accelerator {
-  std::vector<std::shared_ptr<Primitive>> primitives;
+  std::vector<std::shared_ptr<Mesh>> meshes;
  public:
-  Bruteforce(const std::vector<std::shared_ptr<Primitive>> &primitives) : primitives(primitives) {
-    fmt::print("primitives : {}\n", primitives.size());
+  void Build(Scene &scene) override {
+    meshes = scene.meshes;
+    int count = 0;
+    for (auto mesh : meshes) {
+      count += mesh->triangles.size();
+    }
+    MIN_DEBUG("Primitives : {}\n", count);
   }
-  virtual bool Intersect(const Ray &ray, Intersection &isect) const {
+  bool Intersect(const Ray &ray, Intersection &isect) const override{
 		bool hit = false;
-    for (auto pri : primitives) {
-      if (pri->Intersect(ray, isect)) {
-        hit = true;
+    for (auto mesh : meshes) {
+      for (auto tri : mesh->triangles) {
+        if (tri.Intersect(ray, isect)) {
+          hit = true;
+        }
       }
 		}
 		return hit;
 	}
-  virtual BoundingBox3 GetBoundingBox() const {
+  BoundingBox3 GetBoundingBox() const override{
     MIN_NOT_IMPLEMENTED
     return BoundingBox3();
   }
-  virtual void Sample(const Point2 &p, SurfaceSample &sample) const {
-    MIN_NOT_IMPLEMENTED
-        }
-  virtual Float Area() const {
-    MIN_NOT_IMPLEMENTED
-    return 0; 
-		}
 };
 }  // namespace min::ray

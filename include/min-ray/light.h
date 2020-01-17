@@ -27,8 +27,7 @@
 
 namespace min::ray {
 
-class Shape;
-class Primitive;
+class MeshTriangle;
 
 struct VisibilityTester;
 struct ShadingPoint;
@@ -58,7 +57,7 @@ class Light {
 
 class AreaLight : public Light {
  public:
-  virtual void SetShape(Shape *shape) = 0;
+  virtual void SetTriangle(MeshTriangle *shape) = 0;
 };
 
 }  // namespace min::ray

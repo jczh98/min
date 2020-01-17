@@ -28,21 +28,31 @@ void PerspectiveCamera::GenerateRay(const Point2 &u1,
                                     const Point2i &raster,
                                     Point2i dimension,
                                     CameraSample &sample) const {
-  float x = Float(raster.x) / dimension.x;
-  float y = 1 - Float(raster.y) / dimension.y;
-  Point2 pixel_width(1.0 / dimension.x, 1.0 / dimension.y);
-  sample.film = {x, y};
-  sample.film += u1 * pixel_width - 0.5f * pixel_width;
+  Float x = Float(raster.x / dimension.x);
+  Float y = Float(raster.y / dimension.y);
+
+  Point2 pixelWidth(1.0 / dimension.x, 1.0 / dimension.y);
+  sample.film = raster;
+  auto p = Point2(x, y) + u1 * pixelWidth - 0.5f * pixelWidth;
   sample.lens = {0, 0};
-  x = 2 * x - 1;
+  x = p[0];
+  y = p[1];
+  y = 1 - y;
+  x = -(2 * x - 1);
   y = 2 * y - 1;
-  y *= float(dimension.y) / dimension.x;
-  float z = 1 / std::atan(fov_.get() / 2);
-  auto d = Vector3(x, y, 0) - Vector3(0, 0, -z);
-  d = glm::normalize(d);
-  auto o = Vector3(sample.lens.x, sample.lens.y, 0);
-  o = CameraToWorld(o) + viewpoint_;
-  d = CameraToWorld(d);
+  y *= Float(dimension.y / dimension.x);
+  Float z = 1.0f / std::atan(fov.get() / 2);
+  Vector3 d = Vector3(x, y, 0) - Vector3(0, 0, -z);
+  d = normalize(d);
+  Point3 o = Vector3(sample.lens.x, sample.lens.y, 0);
+  o = transform.TransformPoint3(o);
+  d = transform.TransformVector3(d);
   sample.ray = Ray(o, d, RayBias);
 }
+
+void PerspectiveCamera::Preprocess() {
+  transform = manipulator.ToTransform();
+  inv_transform = transform.inverse();
+}
+MIN_IMPLEMENTATION(Camera, PerspectiveCamera, "perspective")
 }  // namespace min::ray

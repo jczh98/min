@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 #pragma once
-
+#if 0
 #include "intersection.h"
 #include "light.h"
 #include "material.h"
@@ -77,3 +77,4 @@ class GeometricPrimitive : public Primitive {
 };
 
 }  // namespace min::ray
+#endif

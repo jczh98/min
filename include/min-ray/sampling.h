@@ -44,7 +44,7 @@ inline Point2 ConcentricSampleDisk(const Point2 &u) {
   return r * Point2(std::cos(theta), std::sin(theta));
 }
 
-inline Vector3 CosineHeisphereSampling(const Point2 &u) {
+inline Vector3 CosineHemisphereSampling(const Point2 &u) {
   Point2 d = ConcentricSampleDisk(u);
   auto r = glm::dot(d, d);
   auto h = std::sqrt(std::max((Float)0, 1 - r));
