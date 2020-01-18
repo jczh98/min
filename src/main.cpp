@@ -1,36 +1,19 @@
-/*
-    This file is part of Nori, a simple educational ray tracer
 
-    Copyright (c) 2015 by Wenzel Jakob
-
-    Nori is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License Version 3
-    as published by the Free Software Foundation.
-
-    Nori is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-#include <nori/parser.h>
-#include <nori/scene.h>
-#include <nori/camera.h>
-#include <nori/block.h>
-#include <nori/timer.h>
-#include <nori/bitmap.h>
-#include <nori/sampler.h>
-#include <nori/integrator.h>
-#include <nori/gui.h>
+#include <min-ray/parser.h>
+#include <min-ray/scene.h>
+#include <min-ray/camera.h>
+#include <min-ray/block.h>
+#include <min-ray/timer.h>
+#include <min-ray/bitmap.h>
+#include <min-ray/sampler.h>
+#include <min-ray/integrator.h>
+#include <min-ray/gui.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 #include <filesystem/resolver.h>
 #include <thread>
 
-using namespace nori;
+using namespace min::ray;
 
 int main(int argc, char **argv) {
     if (argc != 2) {

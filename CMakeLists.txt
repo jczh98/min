@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.8.10)
-project(nori)
+
+project(min-ray)
 
 add_subdirectory(ext ext_build)
 
@@ -18,8 +19,6 @@ include_directories(
   ${PCG32_INCLUDE_DIR}
   # PugiXML parser
   ${PUGIXML_INCLUDE_DIR}
-  # Helper functions for statistical hypothesis tests
-  ${HYPOTHESIS_INCLUDE_DIR}
   # GLFW library for OpenGL context creation
   ${GLFW_INCLUDE_DIR}
   # GLEW library for accessing OpenGL functions
@@ -37,40 +36,39 @@ include_directories(
 
 # The following lines build the main executable. If you add a source
 # code file to Nori, be sure to include it in this list.
-add_executable(nori
+add_executable(min-ray
 
   # Header files
-  include/nori/bbox.h
-  include/nori/bitmap.h
-  include/nori/block.h
-  include/nori/bsdf.h
-  include/nori/accel.h
-  include/nori/camera.h
-  include/nori/color.h
-  include/nori/common.h
-  include/nori/dpdf.h
-  include/nori/frame.h
-  include/nori/integrator.h
-  include/nori/emitter.h
-  include/nori/mesh.h
-  include/nori/object.h
-  include/nori/parser.h
-  include/nori/proplist.h
-  include/nori/ray.h
-  include/nori/rfilter.h
-  include/nori/sampler.h
-  include/nori/scene.h
-  include/nori/timer.h
-  include/nori/transform.h
-  include/nori/vector.h
-  include/nori/warp.h
-  include/nori/rendermode.h
+  include/min-ray/bbox.h
+  include/min-ray/bitmap.h
+  include/min-ray/block.h
+  include/min-ray/bsdf.h
+  include/min-ray/accel.h
+  include/min-ray/camera.h
+  include/min-ray/color.h
+  include/min-ray/common.h
+  include/min-ray/dpdf.h
+  include/min-ray/frame.h
+  include/min-ray/integrator.h
+  include/min-ray/emitter.h
+  include/min-ray/mesh.h
+  include/min-ray/object.h
+  include/min-ray/parser.h
+  include/min-ray/proplist.h
+  include/min-ray/ray.h
+  include/min-ray/rfilter.h
+  include/min-ray/sampler.h
+  include/min-ray/scene.h
+  include/min-ray/timer.h
+  include/min-ray/transform.h
+  include/min-ray/vector.h
+  include/min-ray/warp.h
+  include/min-ray/rendermode.h
 
   # Source code files
   src/bitmap.cpp
   src/block.cpp
   src/accel.cpp
-  src/chi2test.cpp
   src/common.cpp
   src/diffuse.cpp
   src/gui.cpp
@@ -84,7 +82,6 @@ add_executable(nori
   src/proplist.cpp
   src/rfilter.cpp
   src/scene.cpp
-  src/ttest.cpp
   src/warp.cpp
   src/microfacet.cpp
   src/mirror.cpp
@@ -96,18 +93,6 @@ add_executable(nori
 
 add_definitions(${NANOGUI_EXTRA_DEFS})
 
-# The following lines build the warping test application
-add_executable(warptest
-  include/nori/warp.h
-  src/warp.cpp
-  src/warptest.cpp
-  src/microfacet.cpp
-  src/object.cpp
-  src/proplist.cpp
-  src/common.cpp
-)
-
-target_link_libraries(nori tbb_static pugixml IlmImf nanogui ${NANOGUI_EXTRA_LIBS})
-target_link_libraries(warptest tbb_static nanogui ${NANOGUI_EXTRA_LIBS})
+target_link_libraries(min-ray tbb_static pugixml IlmImf nanogui ${NANOGUI_EXTRA_LIBS})
 
 # vim: set et ts=2 sw=2 ft=cmake nospell:

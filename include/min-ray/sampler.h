@@ -1,27 +1,10 @@
-/*
-    This file is part of Nori, a simple educational ray tracer
-
-    Copyright (c) 2015 by Wenzel Jakob
-
-    Nori is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License Version 3
-    as published by the Free Software Foundation.
-
-    Nori is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
 
 #pragma once
 
-#include <nori/object.h>
+#include <min-ray/object.h>
 #include <memory>
 
-NORI_NAMESPACE_BEGIN
+namespace min::ray {
 
 class ImageBlock;
 
@@ -60,14 +43,14 @@ class ImageBlock;
  * within a pixel.
  */
 class Sampler : public NoriObject {
-public:
-    /// Release all memory
-    virtual ~Sampler() { }
+ public:
+  /// Release all memory
+  virtual ~Sampler() {}
 
-    /// Create an exact clone of the current instance
-    virtual std::unique_ptr<Sampler> clone() const = 0;
+  /// Create an exact clone of the current instance
+  virtual std::unique_ptr<Sampler> clone() const = 0;
 
-    /**
+  /**
      * \brief Prepare to render a new image block
      * 
      * This function is called when the sampler begins rendering
@@ -75,35 +58,36 @@ public:
      * initialize the sampler so that repeated program runs
      * always create the same image.
      */
-    virtual void prepare(const ImageBlock &block) = 0;
+  virtual void prepare(const ImageBlock &block) = 0;
 
-    /**
+  /**
      * \brief Prepare to generate new samples
      * 
      * This function is called initially and every time the 
      * integrator starts rendering a new pixel.
      */
-    virtual void generate() = 0;
+  virtual void generate() = 0;
 
-    /// Advance to the next sample
-    virtual void advance() = 0;
+  /// Advance to the next sample
+  virtual void advance() = 0;
 
-    /// Retrieve the next component value from the current sample
-    virtual float next1D() = 0;
+  /// Retrieve the next component value from the current sample
+  virtual float next1D() = 0;
 
-    /// Retrieve the next two component values from the current sample
-    virtual Point2f next2D() = 0;
+  /// Retrieve the next two component values from the current sample
+  virtual Point2f next2D() = 0;
 
-    /// Return the number of configured pixel samples
-    virtual size_t getSampleCount() const { return m_sampleCount; }
+  /// Return the number of configured pixel samples
+  virtual size_t getSampleCount() const { return m_sampleCount; }
 
-    /**
+  /**
      * \brief Return the type of object (i.e. Mesh/Sampler/etc.) 
      * provided by this instance
      * */
-    EClassType getClassType() const { return ESampler; }
-protected:
-    size_t m_sampleCount;
+  EClassType getClassType() const { return ESampler; }
+
+ protected:
+  size_t m_sampleCount;
 };
 
-NORI_NAMESPACE_END
+}  // namespace min::ray
