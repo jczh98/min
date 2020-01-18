@@ -66,29 +66,29 @@ add_executable(min-ray
   include/min-ray/rendermode.h
 
   # Source code files
-  src/bitmap.cpp
-  src/block.cpp
-  src/accel.cpp
-  src/common.cpp
-  src/diffuse.cpp
-  src/gui.cpp
-  src/independent.cpp
-  src/main.cpp
-  src/mesh.cpp
-  src/obj.cpp
-  src/object.cpp
-  src/parser.cpp
-  src/perspective.cpp
-  src/proplist.cpp
-  src/rfilter.cpp
-  src/scene.cpp
-  src/warp.cpp
-  src/microfacet.cpp
-  src/mirror.cpp
-  src/dielectric.cpp
-  src/blockwise.cpp
-  src/progressive.cpp
-  src/normals.cpp
+  src/core/bitmap.cc
+  src/core/block.cc
+  src/accelerators/accel.cc
+  src/core/common.cc
+  src/bsdfs/diffuse.cc
+  src/core/gui.cc
+  src/samplers/independent.cc
+  src/main.cc
+  src/core/mesh.cc
+  src/core/obj.cc
+  src/core/object.cc
+  src/core/parser.cc
+  src/cameras/perspective.cc
+  src/core/proplist.cc
+  src/core/rfilter.cc
+  src/core/scene.cc
+  src/core/warp.cc
+  src/bsdfs/microfacet.cc
+  src/bsdfs/mirror.cc
+  src/bsdfs/dielectric.cc
+  src/renderers/blockwise.cc
+  src/renderers/progressive.cc
+  src/integrators/normals.cc
 )
 
 add_definitions(${NANOGUI_EXTRA_DEFS})

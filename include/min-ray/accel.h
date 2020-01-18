@@ -19,13 +19,13 @@ class Accel {
      *
      * This function can only be used before \ref build() is called
      */
-  void addMesh(Mesh *mesh);
+  void AddMesh(Mesh *mesh);
 
   /// Build the acceleration data structure (currently a no-op)
-  void build();
+  void Build();
 
   /// Return an axis-aligned box that bounds the scene
-  const BoundingBox3f &getBoundingBox() const { return m_bbox; }
+  const BoundingBox3f &GetBoundingBox() const { return bbox; }
 
   /**
      * \brief Intersect a ray against all triangles stored in the scene and
@@ -46,11 +46,11 @@ class Accel {
      *
      * \return \c true if an intersection was found
      */
-  bool rayIntersect(const Ray3f &ray, Intersection &its, bool shadowRay) const;
+  bool Intersect(const Ray3f &ray, Intersection &its, bool shadowRay) const;
 
  private:
-  Mesh *m_mesh = nullptr;  ///< Mesh (only a single one for now)
-  BoundingBox3f m_bbox;    ///< Bounding box of the entire scene
+  Mesh *mesh = nullptr;  ///< Mesh (only a single one for now)
+  BoundingBox3f bbox;    ///< Bounding box of the entire scene
 };
 
 }  // namespace min::ray

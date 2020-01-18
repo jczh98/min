@@ -21,7 +21,7 @@ Scene::~Scene() {
 }
 
 void Scene::activate() {
-  m_accel->build();
+  m_accel->Build();
 
   if (!m_integrator)
     throw NoriException("No integrator was specified!");
@@ -49,7 +49,7 @@ void Scene::addChild(NoriObject *obj) {
   switch (obj->getClassType()) {
     case EMesh: {
       Mesh *mesh = static_cast<Mesh *>(obj);
-      m_accel->addMesh(mesh);
+      m_accel->AddMesh(mesh);
       m_meshes.push_back(mesh);
     } break;
 
