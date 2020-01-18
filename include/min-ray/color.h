@@ -43,8 +43,8 @@ struct Color3f : public Eigen::Array3f {
   const float &b() const { return z(); }
 
   /// Clamp to the positive range
-  Color3f clamp() const { return Color3f(std::max(r(), 0.0f),
-                                         std::max(g(), 0.0f), std::max(b(), 0.0f)); }
+  Color3f clamp() const { return Color3f(std::max<float>(r(), 0.0f),
+                                         std::max<float>(g(), 0.0f), std::max<float>(b(), 0.0f)); }
 
   /// Check if the color vector contains a NaN/Inf/negative value
   bool isValid() const;

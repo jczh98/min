@@ -5,9 +5,9 @@
 namespace min::ray {
 
 void Accel::AddMesh(Mesh *mesh) {
-  if (mesh)
+  if (this->mesh)
     throw NoriException("Accel: only a single mesh is supported!");
-  mesh = mesh;
+  this->mesh = mesh;
   bbox = mesh->getBoundingBox();
 }
 

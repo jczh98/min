@@ -143,8 +143,14 @@ class WavefrontOBJ : public Mesh {
     }
   };
 
+  template <typename ArgumentType, typename ResultType>
+  struct unary_function{
+    using argument_type = ArgumentType;
+    using result_type = ResultType;
+  };
+
   /// Hash function for OBJVertex
-  struct OBJVertexHash : std::unary_function<OBJVertex, size_t> {
+  struct OBJVertexHash : unary_function<OBJVertex, size_t> {
     std::size_t operator()(const OBJVertex &v) const {
       size_t hash = std::hash<uint32_t>()(v.p);
       hash = hash * 37 + std::hash<uint32_t>()(v.uv);

@@ -25,7 +25,7 @@ class Progressive : public RenderMode {
   void render(Scene *scene, const std::string &filename) {
     const Camera *camera = scene->getCamera();
     Sampler *sampler = scene->getSampler();
-    Vector2i outputSize = camera->getOutputSize();
+    Vector2i outputSize = camera->GetOutputSize();
     scene->getIntegrator()->preprocess(scene);
 
     /* Create a block generator (i.e. a work scheduler) */
@@ -128,7 +128,7 @@ class Progressive : public RenderMode {
 
         /* Sample a ray from the camera */
         Ray3f ray;
-        Color3f value = camera->sampleRay(ray, pixelSample, apertureSample);
+        Color3f value = camera->SampleRay(ray, pixelSample, apertureSample);
 
         /* Compute the incident radiance */
         value *= integrator->Li(scene, sampler, ray);

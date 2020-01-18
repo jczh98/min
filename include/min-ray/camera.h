@@ -35,12 +35,12 @@ class Camera : public NoriObject {
      *    This accounts for the difference in the camera response
      *    function and the sampling density.
      */
-  virtual Color3f sampleRay(Ray3f &ray,
+  virtual Color3f SampleRay(Ray3f &ray,
                             const Point2f &samplePosition,
                             const Point2f &apertureSample) const = 0;
 
   /// Return the size of the output image in pixels
-  const Vector2i &getOutputSize() const { return m_outputSize; }
+  const Vector2i &GetOutputSize() const { return m_outputSize; }
 
   /// Return the camera's reconstruction filter in image space
   const ReconstructionFilter *getReconstructionFilter() const { return m_rfilter; }

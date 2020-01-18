@@ -68,7 +68,7 @@ class PerspectiveCamera : public Camera {
           NoriObjectFactory::createInstance("gaussian", PropertyList()));
   }
 
-  Color3f sampleRay(Ray3f &ray,
+  Color3f SampleRay(Ray3f &ray,
                     const Point2f &samplePosition,
                     const Point2f &apertureSample) const {
     /* Compute the corresponding position on the 
