@@ -11,29 +11,29 @@ namespace min::ray {
 Mesh::Mesh() {}
 
 Mesh::~Mesh() {
-  delete m_bsdf;
-  delete m_emitter;
+  delete bsdf;
+  delete light;
 }
 
 void Mesh::activate() {
-  if (!m_bsdf) {
+  if (!bsdf) {
     /* If no material was assigned, instantiate a diffuse BRDF */
-    m_bsdf = static_cast<BSDF *>(
+    bsdf = static_cast<BSDF *>(
         NoriObjectFactory::createInstance("diffuse", PropertyList()));
   }
 }
 
-float Mesh::surfaceArea(uint32_t index) const {
-  uint32_t i0 = m_F(0, index), i1 = m_F(1, index), i2 = m_F(2, index);
+float Mesh::surface_area(uint32_t index) const {
+  uint32_t i0 = faces(0, index), i1 = faces(1, index), i2 = faces(2, index);
 
-  const Point3f p0 = m_V.col(i0), p1 = m_V.col(i1), p2 = m_V.col(i2);
+  const Point3f p0 = positions.col(i0), p1 = positions.col(i1), p2 = positions.col(i2);
 
   return 0.5f * Vector3f((p1 - p0).cross(p2 - p0)).norm();
 }
 
-bool Mesh::rayIntersect(uint32_t index, const Ray3f &ray, float &u, float &v, float &t) const {
-  uint32_t i0 = m_F(0, index), i1 = m_F(1, index), i2 = m_F(2, index);
-  const Point3f p0 = m_V.col(i0), p1 = m_V.col(i1), p2 = m_V.col(i2);
+bool Mesh::Intersect(uint32_t index, const Ray3f &ray, float &u, float &v, float &t) const {
+  uint32_t i0 = faces(0, index), i1 = faces(1, index), i2 = faces(2, index);
+  const Point3f p0 = positions.col(i0), p1 = positions.col(i1), p2 = positions.col(i2);
 
   /* Find vectors for two edges sharing v[0] */
   Vector3f edge1 = p1 - p0, edge2 = p2 - p0;
@@ -70,35 +70,35 @@ bool Mesh::rayIntersect(uint32_t index, const Ray3f &ray, float &u, float &v, fl
   return t >= ray.mint && t <= ray.maxt;
 }
 
-BoundingBox3f Mesh::getBoundingBox(uint32_t index) const {
-  BoundingBox3f result(m_V.col(m_F(0, index)));
-  result.expandBy(m_V.col(m_F(1, index)));
-  result.expandBy(m_V.col(m_F(2, index)));
+BoundingBox3f Mesh::GetBoundingBox(uint32_t index) const {
+  BoundingBox3f result(positions.col(faces(0, index)));
+  result.ExpandBy(positions.col(faces(1, index)));
+  result.ExpandBy(positions.col(faces(2, index)));
   return result;
 }
 
-Point3f Mesh::getCentroid(uint32_t index) const {
+Point3f Mesh::centroid(uint32_t index) const {
   return (1.0f / 3.0f) *
-         (m_V.col(m_F(0, index)) +
-          m_V.col(m_F(1, index)) +
-          m_V.col(m_F(2, index)));
+         (positions.col(faces(0, index)) +
+          positions.col(faces(1, index)) +
+          positions.col(faces(2, index)));
 }
 
 void Mesh::addChild(NoriObject *obj) {
   switch (obj->getClassType()) {
     case EBSDF:
-      if (m_bsdf)
+      if (bsdf)
         throw NoriException(
             "Mesh: tried to register multiple BSDF instances!");
-      m_bsdf = static_cast<BSDF *>(obj);
+      bsdf = static_cast<BSDF *>(obj);
       break;
 
     case EEmitter: {
       Emitter *emitter = static_cast<Emitter *>(obj);
-      if (m_emitter)
+      if (light)
         throw NoriException(
             "Mesh: tried to register multiple Emitter instances!");
-      m_emitter = emitter;
+      light = emitter;
     } break;
 
     default:
@@ -107,7 +107,7 @@ void Mesh::addChild(NoriObject *obj) {
   }
 }
 
-std::string Mesh::toString() const {
+std::string Mesh::ToString() const {
   return tfm::format(
       "Mesh[\n"
       "  name = \"%s\",\n"
@@ -116,14 +116,14 @@ std::string Mesh::toString() const {
       "  bsdf = %s,\n"
       "  emitter = %s\n"
       "]",
-      m_name,
-      m_V.cols(),
-      m_F.cols(),
-      m_bsdf ? indent(m_bsdf->toString()) : std::string("null"),
-      m_emitter ? indent(m_emitter->toString()) : std::string("null"));
+      name_val,
+      positions.cols(),
+      faces.cols(),
+      bsdf ? indent(bsdf->ToString()) : std::string("null"),
+      light ? indent(light->ToString()) : std::string("null"));
 }
 
-std::string Intersection::toString() const {
+std::string Intersection::ToString() const {
   if (!mesh)
     return "Intersection[invalid]";
 
@@ -136,12 +136,12 @@ std::string Intersection::toString() const {
       "  geoFrame = %s,\n"
       "  mesh = %s\n"
       "]",
-      p.toString(),
+      p.ToString(),
       t,
-      uv.toString(),
-      indent(shFrame.toString()),
-      indent(geoFrame.toString()),
-      mesh ? mesh->toString() : std::string("null"));
+      uv.ToString(),
+      indent(shading_frame.ToString()),
+      indent(geo_frame.ToString()),
+      mesh ? mesh->ToString() : std::string("null"));
 }
 
 }  // namespace min::ray

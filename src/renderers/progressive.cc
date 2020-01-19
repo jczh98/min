@@ -22,18 +22,18 @@ class Progressive : public RenderMode {
 
   virtual ~Progressive() {}
 
-  void render(Scene *scene, const std::string &filename) {
-    const Camera *camera = scene->getCamera();
-    Sampler *sampler = scene->getSampler();
+  void Render(Scene *scene, const std::string &filename) {
+    const Camera *camera = scene->GetCamera();
+    Sampler *sampler = scene->GetSampler();
     Vector2i outputSize = camera->GetOutputSize();
-    scene->getIntegrator()->preprocess(scene);
+    scene->GetIntegrator()->Preprocess(scene);
 
     /* Create a block generator (i.e. a work scheduler) */
     BlockGenerator blockGenerator(outputSize, NORI_BLOCK_SIZE);
 
     /* Allocate memory for the entire output image and clear it */
-    ImageBlock result(outputSize, camera->getReconstructionFilter());
-    result.clear();
+    ImageBlock result(outputSize, camera->GetReconstructionFilter());
+    result.Clear();
 
     /* Create a window that visualizes the partially rendered result */
     nanogui::init();
@@ -45,31 +45,30 @@ class Progressive : public RenderMode {
       cout.flush();
       Timer timer;
 
-      tbb::blocked_range<int> range(0, blockGenerator.getBlockCount());
+      tbb::blocked_range<int> range(0, blockGenerator.GetBlockCount());
 
       auto map = [&](const tbb::blocked_range<int> &range) {
         /* Allocate memory for a small image block to be rendered
 	               by the current thread */
         ImageBlock block(Vector2i(NORI_BLOCK_SIZE),
-                         camera->getReconstructionFilter());
+                         camera->GetReconstructionFilter());
 
         /* Create a clone of the sampler for the current thread */
-        std::unique_ptr<Sampler> sampler(scene->getSampler()->clone());
+        std::unique_ptr<Sampler> sampler(scene->GetSampler()->Clone());
 
         for (int i = range.begin(); i < range.end(); ++i) {
           /* Request an image block from the block generator */
-          blockGenerator.next(block);
-
+          blockGenerator.Next(block);
           /* Render all contained pixels */
-          renderBlock(scene, sampler.get(), block);
+          RenderBlock(scene, sampler.get(), block);
 
           /* The image block has been processed. Now add it to
 	                   the "big" block that represents the entire image */
-          result.put(block);
+          result.Put(block);
         }
       };
 
-      for (uint32_t i = 0; i < sampler->getSampleCount(); ++i) {
+      for (uint32_t i = 0; i < sampler->GetSampleCount(); ++i) {
         // Print and update current sample idx
         cout << "Current sample: " << i + 1 << "\r" << std::flush;
 
@@ -80,10 +79,10 @@ class Progressive : public RenderMode {
         tbb::parallel_for(range, map);
 
         /// Reset Blockcount for new render step
-        blockGenerator.setBlockCount(outputSize, NORI_BLOCK_SIZE);
+        blockGenerator.SetBlockCount(outputSize, NORI_BLOCK_SIZE);
       }
 
-      cout << "\n done. (took " << timer.elapsedString() << ")" << endl;
+      cout << "\n done. (took " << timer.ElapsedString() << ")" << endl;
     });
 
     /* Enter the application main loop */
@@ -97,34 +96,34 @@ class Progressive : public RenderMode {
 
     /* Now turn the rendered image block into
 	       a properly normalized bitmap */
-    std::unique_ptr<Bitmap> bitmap(result.toBitmap());
+    std::unique_ptr<Bitmap> bitmap(result.ToBitmap());
 
     /* Determine the filename of the output bitmap */
     std::string outputName = filename;
     size_t lastdot = outputName.find_last_of(".");
     if (lastdot != std::string::npos)
       outputName.erase(lastdot, std::string::npos);
-    outputName += ".exr";
+    outputName += ".png";
 
     /* Save using the OpenEXR format */
-    bitmap->save(outputName);
+    bitmap->Save(outputName);
   }
 
-  void renderBlock(const Scene *scene, Sampler *sampler, ImageBlock &block) {
-    const Camera *camera = scene->getCamera();
-    const Integrator *integrator = scene->getIntegrator();
+  void RenderBlock(const Scene *scene, Sampler *sampler, ImageBlock &block) {
+    const Camera *camera = scene->GetCamera();
+    const Integrator *integrator = scene->GetIntegrator();
 
-    Point2i offset = block.getOffset();
-    Vector2i size = block.getSize();
+    Point2i offset = block.GetOffset();
+    Vector2i size = block.GetSize();
 
     /* Clear the block contents */
-    block.clear();
+    block.Clear();
 
     /* For each pixel and pixel sample sample */
     for (int y = 0; y < size.y(); ++y) {
       for (int x = 0; x < size.x(); ++x) {
-        Point2f pixelSample = Point2f((float)(x + offset.x()), (float)(y + offset.y())) + sampler->next2D();
-        Point2f apertureSample = sampler->next2D();
+        Point2f pixelSample = Point2f((float)(x + offset.x()), (float)(y + offset.y())) + sampler->Next2D();
+        Point2f apertureSample = sampler->Next2D();
 
         /* Sample a ray from the camera */
         Ray3f ray;
@@ -134,12 +133,12 @@ class Progressive : public RenderMode {
         value *= integrator->Li(scene, sampler, ray);
 
         /* Store in the image block */
-        block.put(pixelSample, value);
+        block.Put(pixelSample, value);
       }
     }
   }
 
-  std::string toString() const {
+  std::string ToString() const {
     return tfm::format("Progressive[]");
   }
 

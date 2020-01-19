@@ -48,7 +48,7 @@ class Sampler : public NoriObject {
   virtual ~Sampler() {}
 
   /// Create an exact clone of the current instance
-  virtual std::unique_ptr<Sampler> clone() const = 0;
+  virtual std::unique_ptr<Sampler> Clone() const = 0;
 
   /**
      * \brief Prepare to render a new image block
@@ -58,7 +58,7 @@ class Sampler : public NoriObject {
      * initialize the sampler so that repeated program runs
      * always create the same image.
      */
-  virtual void prepare(const ImageBlock &block) = 0;
+  virtual void Prepare(const ImageBlock &block) = 0;
 
   /**
      * \brief Prepare to generate new samples
@@ -66,19 +66,19 @@ class Sampler : public NoriObject {
      * This function is called initially and every time the 
      * integrator starts rendering a new pixel.
      */
-  virtual void generate() = 0;
+  virtual void Generate() = 0;
 
   /// Advance to the next sample
-  virtual void advance() = 0;
+  virtual void Advance() = 0;
 
   /// Retrieve the next component value from the current sample
-  virtual float next1D() = 0;
+  virtual float Next1D() = 0;
 
   /// Retrieve the next two component values from the current sample
-  virtual Point2f next2D() = 0;
+  virtual Point2f Next2D() = 0;
 
   /// Return the number of configured pixel samples
-  virtual size_t getSampleCount() const { return m_sampleCount; }
+  virtual size_t GetSampleCount() const { return sample_count; }
 
   /**
      * \brief Return the type of object (i.e. Mesh/Sampler/etc.) 
@@ -87,7 +87,7 @@ class Sampler : public NoriObject {
   EClassType getClassType() const { return ESampler; }
 
  protected:
-  size_t m_sampleCount;
+  size_t sample_count;
 };
 
 }  // namespace min::ray

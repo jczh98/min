@@ -4,59 +4,59 @@
 
 namespace min::ray {
 
-Point2f Warp::squareToUniformSquare(const Point2f &sample) {
+Point2f Warp::SquareToUniformSquare(const Point2f &sample) {
   return sample;
 }
 
-float Warp::squareToUniformSquarePdf(const Point2f &sample) {
+float Warp::SquareToUniformSquarePdf(const Point2f &sample) {
   return ((sample.array() >= 0).all() && (sample.array() <= 1).all()) ? 1.0f : 0.0f;
 }
 
-Point2f Warp::squareToTent(const Point2f &sample) {
+Point2f Warp::SquareToTent(const Point2f &sample) {
   throw NoriException("Warp::squareToTent() is not yet implemented!");
 }
 
-float Warp::squareToTentPdf(const Point2f &p) {
+float Warp::SquareToTentPdf(const Point2f &p) {
   throw NoriException("Warp::squareToTentPdf() is not yet implemented!");
 }
 
-Point2f Warp::squareToUniformDisk(const Point2f &sample) {
+Point2f Warp::SquareToUniformDisk(const Point2f &sample) {
   throw NoriException("Warp::squareToUniformDisk() is not yet implemented!");
 }
 
-float Warp::squareToUniformDiskPdf(const Point2f &p) {
+float Warp::SquareToUniformDiskPdf(const Point2f &p) {
   throw NoriException("Warp::squareToUniformDiskPdf() is not yet implemented!");
 }
 
-Vector3f Warp::squareToUniformSphere(const Point2f &sample) {
+Vector3f Warp::SquareToUniformSphere(const Point2f &sample) {
   throw NoriException("Warp::squareToUniformSphere() is not yet implemented!");
 }
 
-float Warp::squareToUniformSpherePdf(const Vector3f &v) {
+float Warp::SquareToUniformSpherePdf(const Vector3f &v) {
   throw NoriException("Warp::squareToUniformSpherePdf() is not yet implemented!");
 }
 
-Vector3f Warp::squareToUniformHemisphere(const Point2f &sample) {
+Vector3f Warp::SquareToUniformHemisphere(const Point2f &sample) {
   throw NoriException("Warp::squareToUniformHemisphere() is not yet implemented!");
 }
 
-float Warp::squareToUniformHemispherePdf(const Vector3f &v) {
+float Warp::SquareToUniformHemispherePdf(const Vector3f &v) {
   throw NoriException("Warp::squareToUniformHemispherePdf() is not yet implemented!");
 }
 
-Vector3f Warp::squareToCosineHemisphere(const Point2f &sample) {
+Vector3f Warp::SquareToCosineHemisphere(const Point2f &sample) {
   throw NoriException("Warp::squareToCosineHemisphere() is not yet implemented!");
 }
 
-float Warp::squareToCosineHemispherePdf(const Vector3f &v) {
+float Warp::SquareToCosineHemispherePdf(const Vector3f &v) {
   throw NoriException("Warp::squareToCosineHemispherePdf() is not yet implemented!");
 }
 
-Vector3f Warp::squareToBeckmann(const Point2f &sample, float alpha) {
+Vector3f Warp::SquareToBeckmann(const Point2f &sample, float alpha) {
   throw NoriException("Warp::squareToBeckmann() is not yet implemented!");
 }
 
-float Warp::squareToBeckmannPdf(const Vector3f &m, float alpha) {
+float Warp::SquareToBeckmannPdf(const Vector3f &m, float alpha) {
   throw NoriException("Warp::squareToBeckmannPdf() is not yet implemented!");
 }
 

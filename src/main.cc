@@ -16,13 +16,12 @@
 using namespace min::ray;
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
-        cerr << "Syntax: " << argv[0] << " <scene.xml>" << endl;
-        return -1;
-    }
-
-    filesystem::path path(argv[1]);
-
+    //if (argc != 2) {
+    //    cerr << "Syntax: " << argv[0] << " <scene.xml>" << endl;
+    //    return -1;
+    //}
+    std::string tmp = "E:\\work\\min-ray\\assets\\bunny\\bunny.xml";
+    filesystem::path path(tmp);
     try {
         if (path.extension() == "xml") {
             /* Add the parent directory of the scene file to the
@@ -30,19 +29,19 @@ int main(int argc, char **argv) {
                resources (OBJ files, textures) using relative paths */
             getFileResolver()->prepend(path.parent_path());
 
-            std::unique_ptr<NoriObject> root(loadFromXML(argv[1]));
+            std::unique_ptr<NoriObject> root(loadFromXML(tmp));
 
             /* When the XML root object is a scene, start rendering it .. */
             if (root->getClassType() == NoriObject::EScene) {
             	Scene *scene = static_cast<Scene *>(root.get());
-            	RenderMode *rendermode = scene->getRenderMode();
-            	rendermode->render(scene, argv[1]);
+            	RenderMode *rendermode = scene->GetRenderMode();
+            	rendermode->Render(scene, tmp);
             }
         } else if (path.extension() == "exr") {
             /* Alternatively, provide a basic OpenEXR image viewer */
             Bitmap bitmap(argv[1]);
             ImageBlock block(Vector2i((int) bitmap.cols(), (int) bitmap.rows()), nullptr);
-            block.fromBitmap(bitmap);
+            block.FromBitmap(bitmap);
             nanogui::init();
             NoriScreen *screen = new NoriScreen(block);
             nanogui::mainloop();

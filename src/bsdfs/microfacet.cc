@@ -32,17 +32,17 @@ class Microfacet : public BSDF {
   }
 
   /// Evaluate the BRDF for the given pair of directions
-  Color3f eval(const BSDFQueryRecord &bRec) const {
+  Color3f Evaluate(const BSDFQueryRecord &bRec) const {
     throw NoriException("MicrofacetBRDF::eval(): not implemented!");
   }
 
   /// Evaluate the sampling density of \ref sample() wrt. solid angles
-  float pdf(const BSDFQueryRecord &bRec) const {
+  float Pdf(const BSDFQueryRecord &bRec) const {
     throw NoriException("MicrofacetBRDF::pdf(): not implemented!");
   }
 
   /// Sample the BRDF
-  Color3f sample(BSDFQueryRecord &bRec, const Point2f &_sample) const {
+  Color3f Sample(BSDFQueryRecord &bRec, const Point2f &_sample) const {
     throw NoriException("MicrofacetBRDF::sample(): not implemented!");
 
     // Note: Once you have implemented the part that computes the scattered
@@ -59,7 +59,7 @@ class Microfacet : public BSDF {
     return true;
   }
 
-  std::string toString() const {
+  std::string ToString() const {
     return tfm::format(
         "Microfacet[\n"
         "  alpha = %f,\n"
@@ -71,7 +71,7 @@ class Microfacet : public BSDF {
         m_alpha,
         m_intIOR,
         m_extIOR,
-        m_kd.toString(),
+        m_kd.ToString(),
         m_ks);
   }
 

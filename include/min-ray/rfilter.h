@@ -23,10 +23,10 @@ namespace min::ray {
 class ReconstructionFilter : public NoriObject {
  public:
   /// Return the filter radius in fractional pixels
-  float getRadius() const { return m_radius; }
+  float GetRadius() const { return radius; }
 
   /// Evaluate the filter function
-  virtual float eval(float x) const = 0;
+  virtual float Evaluate(float x) const = 0;
 
   /**
      * \brief Return the type of object (i.e. Mesh/Camera/etc.) 
@@ -35,7 +35,7 @@ class ReconstructionFilter : public NoriObject {
   EClassType getClassType() const { return EReconstructionFilter; }
 
  protected:
-  float m_radius;
+  float radius;
 };
 
 }  // namespace min::ray

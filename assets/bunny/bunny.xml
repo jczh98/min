@@ -2,7 +2,7 @@
     <!-- Independent sample generator, one sample per pixel -->
 	<rendermode type="progressive"/>
 	<sampler type="independent">
-		<integer name="sampleCount" value="3"/>
+		<integer name="sampleCount" value="1"/>
 	</sampler>
 
     <!-- Render the visible surface normals -->

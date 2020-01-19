@@ -14,25 +14,25 @@ namespace min::ray {
 class Timer {
  public:
   /// Create a new timer and reset it
-  Timer() { reset(); }
+  Timer() { Reset(); }
 
   /// Reset the timer to the current time
-  void reset() { start = std::chrono::system_clock::now(); }
+  void Reset() { start = std::chrono::system_clock::now(); }
 
   /// Return the number of milliseconds elapsed since the timer was last reset
-  double elapsed() const {
+  double Elapsed() const {
     auto now = std::chrono::system_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - start);
     return (double)duration.count();
   }
 
   /// Like \ref elapsed(), but return a human-readable string
-  std::string elapsedString(bool precise = false) const {
-    return timeString(elapsed(), precise);
+  std::string ElapsedString(bool precise = false) const {
+    return timeString(Elapsed(), precise);
   }
 
   /// Return the number of milliseconds elapsed since the timer was last reset and then reset it
-  double lap() {
+  double Lap() {
     auto now = std::chrono::system_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - start);
     start = now;
@@ -40,8 +40,8 @@ class Timer {
   }
 
   /// Like \ref lap(), but return a human-readable string
-  std::string lapString(bool precise = false) {
-    return timeString(lap(), precise);
+  std::string LapString(bool precise = false) {
+    return timeString(Lap(), precise);
   }
 
  private:

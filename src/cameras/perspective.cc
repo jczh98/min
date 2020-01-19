@@ -16,9 +16,9 @@ class PerspectiveCamera : public Camera {
  public:
   PerspectiveCamera(const PropertyList &propList) {
     /* Width and height in pixels. Default: 720p */
-    m_outputSize.x() = propList.getInteger("width", 1280);
-    m_outputSize.y() = propList.getInteger("height", 720);
-    m_invOutputSize = m_outputSize.cast<float>().cwiseInverse();
+    output_size.x() = propList.getInteger("width", 1280);
+    output_size.y() = propList.getInteger("height", 720);
+    m_invOutputSize = output_size.cast<float>().cwiseInverse();
 
     /* Specifies an optional camera-to-world transformation. Default: none */
     m_cameraToWorld = propList.getTransform("toWorld", Transform());
@@ -30,11 +30,11 @@ class PerspectiveCamera : public Camera {
     m_nearClip = propList.getFloat("nearClip", 1e-4f);
     m_farClip = propList.getFloat("farClip", 1e4f);
 
-    m_rfilter = NULL;
+    rfilter = NULL;
   }
 
   void activate() {
-    float aspect = m_outputSize.x() / (float)m_outputSize.y();
+    float aspect = output_size.x() / (float)output_size.y();
 
     /* Project vectors in camera space onto a plane at z=1:
          *
@@ -60,11 +60,11 @@ class PerspectiveCamera : public Camera {
     m_sampleToCamera = Transform(
                            Eigen::DiagonalMatrix<float, 3>(Vector3f(-0.5f, -0.5f * aspect, 1.0f)) *
                            Eigen::Translation<float, 3>(-1.0f, -1.0f / aspect, 0.0f) * perspective)
-                           .inverse();
+                           .Inverse();
 
     /* If no reconstruction filter was assigned, instantiate a Gaussian filter */
-    if (!m_rfilter)
-      m_rfilter = static_cast<ReconstructionFilter *>(
+    if (!rfilter)
+      rfilter = static_cast<ReconstructionFilter *>(
           NoriObjectFactory::createInstance("gaussian", PropertyList()));
   }
 
@@ -94,9 +94,9 @@ class PerspectiveCamera : public Camera {
   void addChild(NoriObject *obj) {
     switch (obj->getClassType()) {
       case EReconstructionFilter:
-        if (m_rfilter)
+        if (rfilter)
           throw NoriException("Camera: tried to register multiple reconstruction filters!");
-        m_rfilter = static_cast<ReconstructionFilter *>(obj);
+        rfilter = static_cast<ReconstructionFilter *>(obj);
         break;
 
       default:
@@ -106,7 +106,7 @@ class PerspectiveCamera : public Camera {
   }
 
   /// Return a human-readable summary
-  std::string toString() const {
+  std::string ToString() const {
     return tfm::format(
         "PerspectiveCamera[\n"
         "  cameraToWorld = %s,\n"
@@ -115,12 +115,12 @@ class PerspectiveCamera : public Camera {
         "  clip = [%f, %f],\n"
         "  rfilter = %s\n"
         "]",
-        indent(m_cameraToWorld.toString(), 18),
-        m_outputSize.toString(),
+        indent(m_cameraToWorld.ToString(), 18),
+        output_size.ToString(),
         m_fov,
         m_nearClip,
         m_farClip,
-        indent(m_rfilter->toString()));
+        indent(rfilter->ToString()));
   }
 
  private:

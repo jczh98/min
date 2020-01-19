@@ -9,18 +9,18 @@ class Mirror : public BSDF {
  public:
   Mirror(const PropertyList &) {}
 
-  Color3f eval(const BSDFQueryRecord &) const {
+  Color3f Evaluate(const BSDFQueryRecord &) const {
     /* Discrete BRDFs always evaluate to zero in Nori */
     return Color3f(0.0f);
   }
 
-  float pdf(const BSDFQueryRecord &) const {
+  float Pdf(const BSDFQueryRecord &) const {
     /* Discrete BRDFs always evaluate to zero in Nori */
     return 0.0f;
   }
 
-  Color3f sample(BSDFQueryRecord &bRec, const Point2f &) const {
-    if (Frame::cosTheta(bRec.wi) <= 0)
+  Color3f Sample(BSDFQueryRecord &bRec, const Point2f &) const {
+    if (Frame::CosTheta(bRec.wi) <= 0)
       return Color3f(0.0f);
 
     // Reflection in local coordinates
@@ -36,7 +36,7 @@ class Mirror : public BSDF {
     return Color3f(1.0f);
   }
 
-  std::string toString() const {
+  std::string ToString() const {
     return "Mirror[]";
   }
 };

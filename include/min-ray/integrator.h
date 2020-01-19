@@ -21,7 +21,7 @@ class Integrator : public NoriObject {
   virtual ~Integrator() {}
 
   /// Perform an (optional) preprocess step
-  virtual void preprocess(const Scene *scene) {}
+  virtual void Preprocess(const Scene *scene) {}
 
   /**
      * \brief Sample the incident radiance along a ray

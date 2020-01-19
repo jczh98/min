@@ -43,23 +43,23 @@ struct Color3f : public Eigen::Array3f {
   const float &b() const { return z(); }
 
   /// Clamp to the positive range
-  Color3f clamp() const { return Color3f(std::max<float>(r(), 0.0f),
+  Color3f Clamp() const { return Color3f(std::max<float>(r(), 0.0f),
                                          std::max<float>(g(), 0.0f), std::max<float>(b(), 0.0f)); }
 
   /// Check if the color vector contains a NaN/Inf/negative value
-  bool isValid() const;
+  bool Valid() const;
 
   /// Convert from sRGB to linear RGB
-  Color3f toLinearRGB() const;
+  Color3f ToLinearRGB() const;
 
   /// Convert from linear RGB to sRGB
-  Color3f toSRGB() const;
+  Color3f ToSRGB() const;
 
   /// Return the associated luminance
-  float getLuminance() const;
+  float luminance() const;
 
   /// Return a human-readable string summary
-  std::string toString() const {
+  std::string ToString() const {
     return tfm::format("[%f, %f, %f]", coeff(0), coeff(1), coeff(2));
   }
 };
@@ -95,7 +95,7 @@ struct Color4f : public Eigen::Array4f {
   }
 
   /// Divide by the filter weight and convert into a \ref Color3f value
-  Color3f divideByFilterWeight() const {
+  Color3f DivideByFilterWeight() const {
     if (w() != 0)
       return head<3>() / w();
     else
@@ -103,7 +103,7 @@ struct Color4f : public Eigen::Array4f {
   }
 
   /// Return a human-readable string summary
-  std::string toString() const {
+  std::string ToString() const {
     return tfm::format("[%f, %f, %f, %f]", coeff(0), coeff(1), coeff(2), coeff(3));
   }
 };

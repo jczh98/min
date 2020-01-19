@@ -69,7 +69,7 @@ class NoriObject {
   virtual void activate();
 
   /// Return a brief string summary of the instance (for debugging purposes)
-  virtual std::string toString() const = 0;
+  virtual std::string ToString() const = 0;
 
   /// Turn a class type into a human-readable string
   static std::string classTypeName(EClassType type) {

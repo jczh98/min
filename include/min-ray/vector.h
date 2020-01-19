@@ -52,7 +52,7 @@ struct TVector : public Eigen::Matrix<_Scalar, _Dimension, 1> {
   }
 
   /// Return a human-readable string summary
-  std::string toString() const {
+  std::string ToString() const {
     std::string result;
     for (size_t i = 0; i < Dimension; ++i) {
       result += std::to_string(this->coeff(i));
@@ -103,7 +103,7 @@ struct TPoint : public Eigen::Matrix<_Scalar, _Dimension, 1> {
   }
 
   /// Return a human-readable string summary
-  std::string toString() const {
+  std::string ToString() const {
     std::string result;
     for (size_t i = 0; i < Dimension; ++i) {
       result += std::to_string(this->coeff(i));
@@ -147,12 +147,12 @@ struct Normal3f : public Eigen::Matrix<float, 3, 1> {
   }
 
   /// Return a human-readable string summary
-  std::string toString() const {
+  std::string ToString() const {
     return tfm::format("[%f, %f, %f]", coeff(0), coeff(1), coeff(2));
   }
 };
 
 /// Complete the set {a} to an orthonormal base
-extern void coordinateSystem(const Vector3f& a, Vector3f& b, Vector3f& c);
+extern void ComputeCoordinateSystem(const Vector3f& a, Vector3f& b, Vector3f& c);
 
 }  // namespace min::ray

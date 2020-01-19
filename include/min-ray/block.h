@@ -43,19 +43,19 @@ class ImageBlock : public Eigen::Array<Color4f, Eigen::Dynamic, Eigen::Dynamic, 
   ~ImageBlock();
 
   /// Configure the offset of the block within the main image
-  void setOffset(const Point2i &offset) { m_offset = offset; }
+  void SetOffset(const Point2i &offset) { this->offset = offset; }
 
   /// Return the offset of the block within the main image
-  inline const Point2i &getOffset() const { return m_offset; }
+  inline const Point2i &GetOffset() const { return offset; }
 
   /// Configure the size of the block within the main image
-  void setSize(const Point2i &size) { m_size = size; }
+  void SetSize(const Point2i &size) { this->size = size; }
 
   /// Return the size of the block within the main image
-  inline const Vector2i &getSize() const { return m_size; }
+  inline const Vector2i &GetSize() const { return size; }
 
   /// Return the border size in pixels
-  inline int getBorderSize() const { return m_borderSize; }
+  inline int GetBorderSize() const { return border_size; }
 
   /**
      * \brief Turn the block into a proper bitmap
@@ -63,16 +63,16 @@ class ImageBlock : public Eigen::Array<Color4f, Eigen::Dynamic, Eigen::Dynamic, 
      * This entails normalizing all pixels and discarding
      * the border region.
      */
-  Bitmap *toBitmap() const;
+  Bitmap *ToBitmap() const;
 
   /// Convert a bitmap into an image block
-  void fromBitmap(const Bitmap &bitmap);
+  void FromBitmap(const Bitmap &bitmap);
 
   /// Clear all contents
-  void clear() { setConstant(Color4f()); }
+  void Clear() { setConstant(Color4f()); }
 
   /// Record a sample with the given position and radiance value
-  void put(const Point2f &pos, const Color3f &value);
+  void Put(const Point2f &pos, const Color3f &value);
 
   /**
      * \brief Merge another image block into this one
@@ -80,27 +80,27 @@ class ImageBlock : public Eigen::Array<Color4f, Eigen::Dynamic, Eigen::Dynamic, 
      * During the merge operation, this function locks 
      * the destination block using a mutex.
      */
-  void put(ImageBlock &b);
+  void Put(ImageBlock &b);
 
   /// Lock the image block (using an internal mutex)
-  inline void lock() const { m_mutex.lock(); }
+  inline void Lock() const { mutex.lock(); }
 
   /// Unlock the image block
-  inline void unlock() const { m_mutex.unlock(); }
+  inline void Unlock() const { mutex.unlock(); }
 
   /// Return a human-readable string summary
-  std::string toString() const;
+  std::string ToString() const;
 
  protected:
-  Point2i m_offset;
-  Vector2i m_size;
-  int m_borderSize = 0;
-  float *m_filter = nullptr;
-  float m_filterRadius = 0;
-  float *m_weightsX = nullptr;
-  float *m_weightsY = nullptr;
-  float m_lookupFactor = 0;
-  mutable tbb::mutex m_mutex;
+  Point2i offset;
+  Vector2i size;
+  int border_size = 0;
+  float *filter = nullptr;
+  float filter_radius = 0;
+  float *weights_x = nullptr;
+  float *weights_y = nullptr;
+  float lookup_factor = 0;
+  mutable tbb::mutex mutex;
 };
 
 /**
@@ -120,7 +120,7 @@ class BlockGenerator {
      * \param blockSize
      *      Maximum size of the individual blocks
      */
-  BlockGenerator(const Vector2i &size, int blockSize);
+  BlockGenerator(const Vector2i &size, int block_size);
 
   /**
      * \brief Return the next block to be rendered
@@ -129,13 +129,13 @@ class BlockGenerator {
      *
      * \return \c false if there were no more blocks
      */
-  bool next(ImageBlock &block);
+  bool Next(ImageBlock &block);
 
   /// Return the total number of blocks
-  int getBlockCount() const { return m_blocksLeft; }
+  int GetBlockCount() const { return blocks_left; }
 
   /// Set total number of blocks (for progressive rendering)
-  void setBlockCount(const Vector2i &size, int blockSize);
+  void SetBlockCount(const Vector2i &size, int block_size);
 
  protected:
   enum EDirection { ERight = 0,
@@ -143,15 +143,15 @@ class BlockGenerator {
                     ELeft,
                     EUp };
 
-  Point2i m_block;
-  Vector2i m_numBlocks;
-  Vector2i m_size;
-  int m_blockSize;
-  int m_numSteps;
-  int m_blocksLeft;
-  int m_stepsLeft;
-  int m_direction;
-  tbb::mutex m_mutex;
+  Point2i block;
+  Vector2i num_blocks;
+  Vector2i size;
+  int block_size;
+  int num_steps;
+  int blocks_left;
+  int steps_left;
+  int direction;
+  tbb::mutex mutex;
 };
 
 }  // namespace min::ray

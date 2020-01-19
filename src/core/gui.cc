@@ -8,7 +8,7 @@
 namespace min::ray {
 
 NoriScreen::NoriScreen(const ImageBlock &block)
-    : nanogui::Screen(block.getSize() + Vector2i(0, 36), "Nori", false), m_block(block) {
+    : nanogui::Screen(block.GetSize() + Vector2i(0, 36), "Nori", false), m_block(block) {
   using namespace nanogui;
 
   /* Add some UI elements to adjust the exposure value */
@@ -23,11 +23,11 @@ NoriScreen::NoriScreen(const ImageBlock &block)
         m_scale = std::pow(2.f, (value - 0.5f) * 20);
       });
 
-  panel->setSize(block.getSize());
+  panel->setSize(block.GetSize());
   performLayout(mNVGContext);
 
   panel->setPosition(
-      Vector2i((mSize.x() - panel->size().x()) / 2, block.getSize().y()));
+      Vector2i((mSize.x() - panel->size().x()) / 2, block.GetSize().y()));
 
   /* Simple gamma tonemapper as a GLSL shader */
   m_shader = new GLShader();
@@ -91,16 +91,18 @@ NoriScreen::~NoriScreen() {
 
 void NoriScreen::drawContents() {
   /* Reload the partially rendered image onto the GPU */
-  m_block.lock();
-  int borderSize = m_block.getBorderSize();
-  const Vector2i &size = m_block.getSize();
+  m_block.Lock();
+  int borderSize = m_block.GetBorderSize();
+  const Vector2i &size = m_block.GetSize();
+  //std::cout << borderSize << std::endl;
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_texture);
   glPixelStorei(GL_UNPACK_ROW_LENGTH, (GLint)m_block.cols());
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, size.x(), size.y(),
                0, GL_RGBA, GL_FLOAT, (uint8_t *)m_block.data() + (borderSize * m_block.cols() + borderSize) * sizeof(Color4f));
+  
   glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-  m_block.unlock();
+  m_block.Unlock();
 
   glViewport(0, GLsizei(36 * mPixelRatio), GLsizei(mPixelRatio * size[0]),
              GLsizei(mPixelRatio * size[1]));

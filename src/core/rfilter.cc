@@ -12,20 +12,20 @@ class GaussianFilter : public ReconstructionFilter {
  public:
   GaussianFilter(const PropertyList &propList) {
     /* Half filter size */
-    m_radius = propList.getFloat("radius", 2.0f);
+    radius = propList.getFloat("radius", 2.0f);
     /* Standard deviation of the Gaussian */
     m_stddev = propList.getFloat("stddev", 0.5f);
   }
 
-  float eval(float x) const {
+  float Evaluate(float x) const {
     float alpha = -1.0f / (2.0f * m_stddev * m_stddev);
     return std::max(0.0f,
                     std::exp(alpha * x * x) -
-                        std::exp(alpha * m_radius * m_radius));
+                        std::exp(alpha * radius * radius));
   }
 
-  std::string toString() const {
-    return tfm::format("GaussianFilter[radius=%f, stddev=%f]", m_radius, m_stddev);
+  std::string ToString() const {
+    return tfm::format("GaussianFilter[radius=%f, stddev=%f]", radius, m_stddev);
   }
 
  protected:
@@ -42,15 +42,15 @@ class MitchellNetravaliFilter : public ReconstructionFilter {
  public:
   MitchellNetravaliFilter(const PropertyList &propList) {
     /* Filter size in pixels */
-    m_radius = propList.getFloat("radius", 2.0f);
+    radius = propList.getFloat("radius", 2.0f);
     /* B parameter from the paper */
     m_B = propList.getFloat("B", 1.0f / 3.0f);
     /* C parameter from the paper */
     m_C = propList.getFloat("C", 1.0f / 3.0f);
   }
 
-  float eval(float x) const {
-    x = std::abs(2.0f * x / m_radius);
+  float Evaluate(float x) const {
+    x = std::abs(2.0f * x / radius);
     float x2 = x * x, x3 = x2 * x;
 
     if (x < 1) {
@@ -62,8 +62,8 @@ class MitchellNetravaliFilter : public ReconstructionFilter {
     }
   }
 
-  std::string toString() const {
-    return tfm::format("MitchellNetravaliFilter[radius=%f, B=%f, C=%f]", m_radius, m_B, m_C);
+  std::string ToString() const {
+    return tfm::format("MitchellNetravaliFilter[radius=%f, B=%f, C=%f]", radius, m_B, m_C);
   }
 
  protected:
@@ -74,14 +74,14 @@ class MitchellNetravaliFilter : public ReconstructionFilter {
 class TentFilter : public ReconstructionFilter {
  public:
   TentFilter(const PropertyList &) {
-    m_radius = 1.0f;
+    radius = 1.0f;
   }
 
-  float eval(float x) const {
+  float Evaluate(float x) const {
     return std::max(0.0f, 1.0f - std::abs(x));
   }
 
-  std::string toString() const {
+  std::string ToString() const {
     return "TentFilter[]";
   }
 };
@@ -90,14 +90,14 @@ class TentFilter : public ReconstructionFilter {
 class BoxFilter : public ReconstructionFilter {
  public:
   BoxFilter(const PropertyList &) {
-    m_radius = 0.5f;
+    radius = 0.5f;
   }
 
-  float eval(float) const {
+  float Evaluate(float) const {
     return 1.0f;
   }
 
-  std::string toString() const {
+  std::string ToString() const {
     return "BoxFilter[]";
   }
 };

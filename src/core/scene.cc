@@ -9,39 +9,39 @@
 namespace min::ray {
 
 Scene::Scene(const PropertyList &) {
-  m_accel = new Accel();
+  accelerator = new Accel();
 }
 
 Scene::~Scene() {
-  delete m_accel;
-  delete m_sampler;
-  delete m_camera;
-  delete m_integrator;
-  delete m_rendermode;
+  delete accelerator;
+  delete sampler;
+  delete camera;
+  delete integrator;
+  delete rendermode;
 }
 
 void Scene::activate() {
-  m_accel->Build();
+  accelerator->Build();
 
-  if (!m_integrator)
+  if (!integrator)
     throw NoriException("No integrator was specified!");
-  if (!m_camera)
+  if (!camera)
     throw NoriException("No camera was specified!");
 
-  if (!m_sampler) {
+  if (!sampler) {
     /* Create a default (independent) sampler */
-    m_sampler = static_cast<Sampler *>(
+    sampler = static_cast<Sampler *>(
         NoriObjectFactory::createInstance("independent", PropertyList()));
   }
 
-  if (!m_rendermode) {
+  if (!rendermode) {
     /* Crate default render mode 'blockwise' */
-    m_rendermode = static_cast<RenderMode *>(
+    rendermode = static_cast<RenderMode *>(
         NoriObjectFactory::createInstance("blockwise", PropertyList()));
   }
 
   cout << endl;
-  cout << "Configuration: " << toString() << endl;
+  cout << "Configuration: " << ToString() << endl;
   cout << endl;
 }
 
@@ -49,8 +49,8 @@ void Scene::addChild(NoriObject *obj) {
   switch (obj->getClassType()) {
     case EMesh: {
       Mesh *mesh = static_cast<Mesh *>(obj);
-      m_accel->AddMesh(mesh);
-      m_meshes.push_back(mesh);
+      accelerator->AddMesh(mesh);
+      meshes.push_back(mesh);
     } break;
 
     case EEmitter: {
@@ -60,27 +60,27 @@ void Scene::addChild(NoriObject *obj) {
     } break;
 
     case ESampler:
-      if (m_sampler)
+      if (sampler)
         throw NoriException("There can only be one sampler per scene!");
-      m_sampler = static_cast<Sampler *>(obj);
+      sampler = static_cast<Sampler *>(obj);
       break;
 
     case ECamera:
-      if (m_camera)
+      if (camera)
         throw NoriException("There can only be one camera per scene!");
-      m_camera = static_cast<Camera *>(obj);
+      camera = static_cast<Camera *>(obj);
       break;
 
     case EIntegrator:
-      if (m_integrator)
+      if (integrator)
         throw NoriException("There can only be one integrator per scene!");
-      m_integrator = static_cast<Integrator *>(obj);
+      integrator = static_cast<Integrator *>(obj);
       break;
 
     case ERenderMode:
-      if (m_rendermode)
+      if (rendermode)
         throw NoriException("There can only be one active render mode per scene!");
-      m_rendermode = static_cast<RenderMode *>(obj);
+      rendermode = static_cast<RenderMode *>(obj);
       break;
 
     default:
@@ -89,13 +89,13 @@ void Scene::addChild(NoriObject *obj) {
   }
 }
 
-std::string Scene::toString() const {
-  std::string meshes;
-  for (size_t i = 0; i < m_meshes.size(); ++i) {
-    meshes += std::string("  ") + indent(m_meshes[i]->toString(), 2);
-    if (i + 1 < m_meshes.size())
-      meshes += ",";
-    meshes += "\n";
+std::string Scene::ToString() const {
+  std::string mesh_string;
+  for (size_t i = 0; i < this->meshes.size(); ++i) {
+      mesh_string += std::string("  ") + indent(this->meshes[i]->ToString(), 2);
+    if (i + 1 < this->meshes.size())
+        mesh_string += ",";
+    mesh_string += "\n";
   }
 
   return tfm::format(
@@ -107,11 +107,11 @@ std::string Scene::toString() const {
       "  meshes = {\n"
       "  %s  }\n"
       "]",
-      indent(m_rendermode->toString()),
-      indent(m_integrator->toString()),
-      indent(m_sampler->toString()),
-      indent(m_camera->toString()),
-      indent(meshes, 2));
+      indent(rendermode->ToString()),
+      indent(integrator->ToString()),
+      indent(sampler->ToString()),
+      indent(camera->ToString()),
+      indent(mesh_string, 2));
 }
 
 NORI_REGISTER_CLASS(Scene, "scene");

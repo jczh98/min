@@ -11,8 +11,6 @@ include_directories(
   ${TFM_INCLUDE_DIR}
   # Eigen linear algebra library
   ${EIGEN_INCLUDE_DIR}
-  # OpenEXR high dynamic range bitmap library
-  ${OPENEXR_INCLUDE_DIRS}
   # Intel Thread Building Blocks
   ${TBB_INCLUDE_DIR}
   # Pseudorandom number generator
@@ -32,6 +30,8 @@ include_directories(
   ${FILESYSTEM_INCLUDE_DIR}
   # STB Image Write
   ${STB_IMAGE_WRITE_INCLUDE_DIR}
+  # Lodepng
+  external/lodepng
 )
 
 # The following lines build the main executable. If you add a source
@@ -89,10 +89,15 @@ add_executable(min-ray
   src/renderers/blockwise.cc
   src/renderers/progressive.cc
   src/integrators/normals.cc
+  external/lodepng/lodepng.cpp
+  external/lodepng/lodepng_util.cpp
 )
+
+SET_PROPERTY(TARGET min-ray PROPERTY CXX_STANDARD 17)
+SET_PROPERTY(TARGET min-ray PROPERTY CXX_STANDARD_REQUIRED ON)
 
 add_definitions(${NANOGUI_EXTRA_DEFS})
 
-target_link_libraries(min-ray tbb_static pugixml IlmImf nanogui ${NANOGUI_EXTRA_LIBS})
+target_link_libraries(min-ray tbb_static pugixml nanogui ${NANOGUI_EXTRA_LIBS})
 
 # vim: set et ts=2 sw=2 ft=cmake nospell:

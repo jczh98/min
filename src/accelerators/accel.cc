@@ -8,7 +8,7 @@ void Accel::AddMesh(Mesh *mesh) {
   if (this->mesh)
     throw NoriException("Accel: only a single mesh is supported!");
   this->mesh = mesh;
-  bbox = mesh->getBoundingBox();
+  bbox = mesh->GetBoundingBox();
 }
 
 void Accel::Build() {
@@ -22,9 +22,9 @@ bool Accel::Intersect(const Ray3f &ray_, Intersection &its, bool shadowRay) cons
   Ray3f ray(ray_);  /// Make a copy of the ray (we will need to update its '.maxt' value)
 
   /* Brute force search through all triangles */
-  for (uint32_t idx = 0; idx < mesh->getTriangleCount(); ++idx) {
+  for (uint32_t idx = 0; idx < mesh->GetTriangleCount(); ++idx) {
     float u, v, t;
-    if (mesh->rayIntersect(idx, ray, u, v, t)) {
+    if (mesh->Intersect(idx, ray, u, v, t)) {
       /* An intersection was found! Can terminate
                immediately if this is a shadow ray query */
       if (shadowRay)
@@ -51,10 +51,10 @@ bool Accel::Intersect(const Ray3f &ray_, Intersection &its, bool shadowRay) cons
 
     /* References to all relevant mesh buffers */
     const Mesh *mesh = its.mesh;
-    const MatrixXf &V = mesh->getVertexPositions();
-    const MatrixXf &N = mesh->getVertexNormals();
-    const MatrixXf &UV = mesh->getVertexTexCoords();
-    const MatrixXu &F = mesh->getIndices();
+    const MatrixXf &V = mesh->GetVertexPositions();
+    const MatrixXf &N = mesh->GetVertexNormals();
+    const MatrixXf &UV = mesh->GetVertexTexCoords();
+    const MatrixXu &F = mesh->GetIndices();
 
     /* Vertex indices of the triangle */
     uint32_t idx0 = F(0, f), idx1 = F(1, f), idx2 = F(2, f);
@@ -72,7 +72,7 @@ bool Accel::Intersect(const Ray3f &ray_, Intersection &its, bool shadowRay) cons
                bary.z() * UV.col(idx2);
 
     /* Compute the geometry frame */
-    its.geoFrame = Frame((p1 - p0).cross(p2 - p0).normalized());
+    its.geo_frame = Frame((p1 - p0).cross(p2 - p0).normalized());
 
     if (N.size() > 0) {
       /* Compute the shading frame. Note that for simplicity,
@@ -81,13 +81,13 @@ bool Accel::Intersect(const Ray3f &ray_, Intersection &its, bool shadowRay) cons
                means that this code will need to be modified to be able
                use anisotropic BRDFs, which need tangent continuity */
 
-      its.shFrame = Frame(
+      its.shading_frame = Frame(
           (bary.x() * N.col(idx0) +
            bary.y() * N.col(idx1) +
            bary.z() * N.col(idx2))
               .normalized());
     } else {
-      its.shFrame = its.geoFrame;
+      its.shading_frame = its.geo_frame;
     }
   }
 

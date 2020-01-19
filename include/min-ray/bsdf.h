@@ -50,7 +50,7 @@ class BSDF : public NoriObject {
      *         when this is appropriate. A zero value means that sampling
      *         failed.
      */
-  virtual Color3f sample(BSDFQueryRecord &bRec, const Point2f &sample) const = 0;
+  virtual Color3f Sample(BSDFQueryRecord &bRec, const Point2f &sample) const = 0;
 
   /**
      * \brief Evaluate the BSDF for a pair of directions and measure
@@ -61,7 +61,7 @@ class BSDF : public NoriObject {
      * \return
      *     The BSDF value, evaluated for each color channel
      */
-  virtual Color3f eval(const BSDFQueryRecord &bRec) const = 0;
+  virtual Color3f Evaluate(const BSDFQueryRecord &bRec) const = 0;
 
   /**
      * \brief Compute the probability of sampling \c bRec.wo
@@ -78,7 +78,7 @@ class BSDF : public NoriObject {
      *     to the specified measure
      */
 
-  virtual float pdf(const BSDFQueryRecord &bRec) const = 0;
+  virtual float Pdf(const BSDFQueryRecord &bRec) const = 0;
 
   /**
      * \brief Return the type of object (i.e. Mesh/BSDF/etc.)
@@ -91,7 +91,7 @@ class BSDF : public NoriObject {
      * is primarily used by photon mapping to decide whether
      * or not to store photons on a surface
      */
-  virtual bool isDiffuse() const { return false; }
+  virtual bool IsDiffuse() const { return false; }
 };
 
 }  // namespace min::ray

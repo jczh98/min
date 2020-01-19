@@ -22,28 +22,28 @@ class Scene : public NoriObject {
   virtual ~Scene();
 
   /// Return a pointer to the scene's kd-tree
-  const Accel *getAccel() const { return m_accel; }
+  const Accel *GetAccelerator() const { return accelerator; }
 
   /// Return a pointer to the scene's integrator
-  const Integrator *getIntegrator() const { return m_integrator; }
+  const Integrator *GetIntegrator() const { return integrator; }
 
   /// Return a pointer to the scene's integrator
-  Integrator *getIntegrator() { return m_integrator; }
+  Integrator *GetIntegrator() { return integrator; }
 
   /// Return a pointer to the scene's camera
-  const Camera *getCamera() const { return m_camera; }
+  const Camera *GetCamera() const { return camera; }
 
   /// Return a pointer to the scene's sample generator (const version)
-  const Sampler *getSampler() const { return m_sampler; }
+  const Sampler *GetSampler() const { return sampler; }
 
   /// Return a pointer to the scene's sample generator
-  Sampler *getSampler() { return m_sampler; }
+  Sampler *GetSampler() { return sampler; }
 
   /// Return a pointer to the scene's render mode
-  RenderMode *getRenderMode() { return m_rendermode; }
+  RenderMode *GetRenderMode() { return rendermode; }
 
   /// Return a reference to an array containing all meshes
-  const std::vector<Mesh *> &getMeshes() const { return m_meshes; }
+  const std::vector<Mesh *> &GetMeshes() const { return meshes; }
 
   /**
      * \brief Intersect a ray against all triangles stored in the scene
@@ -59,8 +59,8 @@ class Scene : public NoriObject {
      *
      * \return \c true if an intersection was found
      */
-  bool rayIntersect(const Ray3f &ray, Intersection &its) const {
-    return m_accel->Intersect(ray, its, false);
+  bool Intersect(const Ray3f &ray, Intersection &its) const {
+    return accelerator->Intersect(ray, its, false);
   }
 
   /**
@@ -78,14 +78,14 @@ class Scene : public NoriObject {
      *
      * \return \c true if an intersection was found
      */
-  bool rayIntersect(const Ray3f &ray) const {
+  bool Intersect(const Ray3f &ray) const {
     Intersection its; /* Unused */
-    return m_accel->Intersect(ray, its, true);
+    return accelerator->Intersect(ray, its, true);
   }
 
   /// \brief Return an axis-aligned box that bounds the scene
   const BoundingBox3f &getBoundingBox() const {
-    return m_accel->GetBoundingBox();
+    return accelerator->GetBoundingBox();
   }
 
   /**
@@ -100,17 +100,17 @@ class Scene : public NoriObject {
   void addChild(NoriObject *obj);
 
   /// Return a string summary of the scene (for debugging purposes)
-  std::string toString() const;
+  std::string ToString() const;
 
   EClassType getClassType() const { return EScene; }
 
  private:
-  std::vector<Mesh *> m_meshes;
-  Integrator *m_integrator = nullptr;
-  Sampler *m_sampler = nullptr;
-  Camera *m_camera = nullptr;
-  Accel *m_accel = nullptr;
-  RenderMode *m_rendermode = nullptr;
+  std::vector<Mesh *> meshes;
+  Integrator *integrator = nullptr;
+  Sampler *sampler = nullptr;
+  Camera *camera = nullptr;
+  Accel *accelerator = nullptr;
+  RenderMode *rendermode = nullptr;
 };
 
 }  // namespace min::ray

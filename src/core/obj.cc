@@ -27,11 +27,11 @@ class WavefrontOBJ : public Mesh {
     cout.flush();
     Timer timer;
 
-    std::vector<Vector3f> positions;
-    std::vector<Vector2f> texcoords;
-    std::vector<Vector3f> normals;
-    std::vector<uint32_t> indices;
-    std::vector<OBJVertex> vertices;
+    std::vector<Vector3f> local_positions;
+    std::vector<Vector2f> local_texcoords;
+    std::vector<Vector3f> local_normals;
+    std::vector<uint32_t> local_indices;
+    std::vector<OBJVertex> local_vertices;
     VertexMap vertexMap;
 
     std::string line_str;
@@ -45,16 +45,16 @@ class WavefrontOBJ : public Mesh {
         Point3f p;
         line >> p.x() >> p.y() >> p.z();
         p = trafo * p;
-        m_bbox.expandBy(p);
-        positions.push_back(p);
+        bound_box.ExpandBy(p);
+        local_positions.push_back(p);
       } else if (prefix == "vt") {
         Point2f tc;
         line >> tc.x() >> tc.y();
-        texcoords.push_back(tc);
+        local_texcoords.push_back(tc);
       } else if (prefix == "vn") {
         Normal3f n;
         line >> n.x() >> n.y() >> n.z();
-        normals.push_back((trafo * n).normalized());
+        local_normals.push_back((trafo * n).normalized());
       } else if (prefix == "f") {
         std::string v1, v2, v3, v4;
         line >> v1 >> v2 >> v3 >> v4;
@@ -77,40 +77,40 @@ class WavefrontOBJ : public Mesh {
           const OBJVertex &v = verts[i];
           VertexMap::const_iterator it = vertexMap.find(v);
           if (it == vertexMap.end()) {
-            vertexMap[v] = (uint32_t)vertices.size();
-            indices.push_back((uint32_t)vertices.size());
-            vertices.push_back(v);
+            vertexMap[v] = (uint32_t)local_vertices.size();
+            local_indices.push_back((uint32_t)local_vertices.size());
+            local_vertices.push_back(v);
           } else {
-            indices.push_back(it->second);
+            local_indices.push_back(it->second);
           }
         }
       }
     }
 
-    m_F.resize(3, indices.size() / 3);
-    memcpy(m_F.data(), indices.data(), sizeof(uint32_t) * indices.size());
+    faces.resize(3, local_indices.size() / 3);
+    memcpy(faces.data(), local_indices.data(), sizeof(uint32_t) * local_indices.size());
 
-    m_V.resize(3, vertices.size());
-    for (uint32_t i = 0; i < vertices.size(); ++i)
-      m_V.col(i) = positions.at(vertices[i].p - 1);
+    positions.resize(3, local_vertices.size());
+    for (uint32_t i = 0; i < local_vertices.size(); ++i)
+      positions.col(i) = local_positions.at(local_vertices[i].p - 1);
 
-    if (!normals.empty()) {
-      m_N.resize(3, vertices.size());
-      for (uint32_t i = 0; i < vertices.size(); ++i)
-        m_N.col(i) = normals.at(vertices[i].n - 1);
+    if (!local_normals.empty()) {
+      normals.resize(3, local_vertices.size());
+      for (uint32_t i = 0; i < local_vertices.size(); ++i)
+        normals.col(i) = local_normals.at(local_vertices[i].n - 1);
     }
 
-    if (!texcoords.empty()) {
-      m_UV.resize(2, vertices.size());
-      for (uint32_t i = 0; i < vertices.size(); ++i)
-        m_UV.col(i) = texcoords.at(vertices[i].uv - 1);
+    if (!local_texcoords.empty()) {
+      texcoords.resize(2, local_vertices.size());
+      for (uint32_t i = 0; i < local_vertices.size(); ++i)
+        texcoords.col(i) = local_texcoords.at(local_vertices[i].uv - 1);
     }
 
-    m_name = filename.str();
-    cout << "done. (V=" << m_V.cols() << ", F=" << m_F.cols() << ", took "
-         << timer.elapsedString() << " and "
-         << memString(m_F.size() * sizeof(uint32_t) +
-                      sizeof(float) * (m_V.size() + m_N.size() + m_UV.size()))
+    name_val = filename.str();
+    cout << "done. (V=" << positions.cols() << ", F=" << faces.cols() << ", took "
+         << timer.ElapsedString() << " and "
+         << memString(faces.size() * sizeof(uint32_t) +
+                      sizeof(float) * (positions.size() + normals.size() + texcoords.size()))
          << ")" << endl;
   }
 

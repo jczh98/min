@@ -162,7 +162,7 @@ filesystem::resolver *getFileResolver() {
   return resolver;
 }
 
-Color3f Color3f::toSRGB() const {
+Color3f Color3f::ToSRGB() const {
   Color3f result;
 
   for (int i = 0; i < 3; ++i) {
@@ -177,7 +177,7 @@ Color3f Color3f::toSRGB() const {
   return result;
 }
 
-Color3f Color3f::toLinearRGB() const {
+Color3f Color3f::ToLinearRGB() const {
   Color3f result;
 
   for (int i = 0; i < 3; ++i) {
@@ -192,7 +192,7 @@ Color3f Color3f::toLinearRGB() const {
   return result;
 }
 
-bool Color3f::isValid() const {
+bool Color3f::Valid() const {
   for (int i = 0; i < 3; ++i) {
     float value = coeff(i);
     if (value < 0 || !std::isfinite(value))
@@ -201,22 +201,22 @@ bool Color3f::isValid() const {
   return true;
 }
 
-float Color3f::getLuminance() const {
+float Color3f::luminance() const {
   return coeff(0) * 0.212671f + coeff(1) * 0.715160f + coeff(2) * 0.072169f;
 }
 
 Transform::Transform(const Eigen::Matrix4f &trafo)
-    : m_transform(trafo), m_inverse(trafo.inverse()) {}
+    : transform(trafo), inverse(trafo.inverse()) {}
 
-std::string Transform::toString() const {
+std::string Transform::ToString() const {
   std::ostringstream oss;
-  oss << m_transform.format(Eigen::IOFormat(4, 0, ", ", ";\n", "", "", "[", "]"));
+  oss << transform.format(Eigen::IOFormat(4, 0, ", ", ";\n", "", "", "[", "]"));
   return oss.str();
 }
 
 Transform Transform::operator*(const Transform &t) const {
-  return Transform(m_transform * t.m_transform,
-                   t.m_inverse * m_inverse);
+  return Transform(transform * t.transform,
+                   t.inverse * inverse);
 }
 
 Vector3f sphericalDirection(float theta, float phi) {
@@ -240,7 +240,7 @@ Point2f sphericalCoordinates(const Vector3f &v) {
   return result;
 }
 
-void coordinateSystem(const Vector3f &a, Vector3f &b, Vector3f &c) {
+void ComputeCoordinateSystem(const Vector3f &a, Vector3f &b, Vector3f &c) {
   if (std::abs(a.x()) > std::abs(a.y())) {
     float invLen = 1.0f / std::sqrt(a.x() * a.x() + a.z() * a.z());
     c = Vector3f(a.z() * invLen, 0.0f, -a.x() * invLen);

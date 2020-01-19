@@ -40,10 +40,10 @@ class Camera : public NoriObject {
                             const Point2f &apertureSample) const = 0;
 
   /// Return the size of the output image in pixels
-  const Vector2i &GetOutputSize() const { return m_outputSize; }
+  const Vector2i &GetOutputSize() const { return output_size; }
 
   /// Return the camera's reconstruction filter in image space
-  const ReconstructionFilter *getReconstructionFilter() const { return m_rfilter; }
+  const ReconstructionFilter *GetReconstructionFilter() const { return rfilter; }
 
   /**
      * \brief Return the type of object (i.e. Mesh/Camera/etc.) 
@@ -52,8 +52,8 @@ class Camera : public NoriObject {
   EClassType getClassType() const { return ECamera; }
 
  protected:
-  Vector2i m_outputSize;
-  ReconstructionFilter *m_rfilter;
+  Vector2i output_size;
+  ReconstructionFilter *rfilter;
 };
 
 }  // namespace min::ray

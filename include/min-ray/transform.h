@@ -16,29 +16,29 @@ namespace min::ray {
 struct Transform {
  public:
   /// Create the identity transform
-  Transform() : m_transform(Eigen::Matrix4f::Identity()),
-                m_inverse(Eigen::Matrix4f::Identity()) {}
+  Transform() : transform(Eigen::Matrix4f::Identity()),
+                inverse(Eigen::Matrix4f::Identity()) {}
 
   /// Create a new transform instance for the given matrix
   Transform(const Eigen::Matrix4f &trafo);
 
   /// Create a new transform instance for the given matrix and its inverse
   Transform(const Eigen::Matrix4f &trafo, const Eigen::Matrix4f &inv)
-      : m_transform(trafo), m_inverse(inv) {}
+      : transform(trafo), inverse(inv) {}
 
   /// Return the underlying matrix
-  const Eigen::Matrix4f &getMatrix() const {
-    return m_transform;
+  const Eigen::Matrix4f &GetMatrix() const {
+    return transform;
   }
 
   /// Return the inverse of the underlying matrix
-  const Eigen::Matrix4f &getInverseMatrix() const {
-    return m_inverse;
+  const Eigen::Matrix4f &GetInverseMatrix() const {
+    return inverse;
   }
 
   /// Return the inverse transformation
-  Transform inverse() const {
-    return Transform(m_inverse, m_transform);
+  Transform Inverse() const {
+    return Transform(inverse, transform);
   }
 
   /// Concatenate with another transform
@@ -46,17 +46,17 @@ struct Transform {
 
   /// Apply the homogeneous transformation to a 3D vector
   Vector3f operator*(const Vector3f &v) const {
-    return m_transform.topLeftCorner<3, 3>() * v;
+    return transform.topLeftCorner<3, 3>() * v;
   }
 
   /// Apply the homogeneous transformation to a 3D normal
   Normal3f operator*(const Normal3f &n) const {
-    return m_inverse.topLeftCorner<3, 3>().transpose() * n;
+    return inverse.topLeftCorner<3, 3>().transpose() * n;
   }
 
   /// Transform a point by an arbitrary matrix in homogeneous coordinates
   Point3f operator*(const Point3f &p) const {
-    Vector4f result = m_transform * Vector4f(p[0], p[1], p[2], 1.0f);
+    Vector4f result = transform * Vector4f(p[0], p[1], p[2], 1.0f);
     return result.head<3>() / result.w();
   }
 
@@ -69,11 +69,11 @@ struct Transform {
   }
 
   /// Return a string representation
-  std::string toString() const;
+  std::string ToString() const;
 
  private:
-  Eigen::Matrix4f m_transform;
-  Eigen::Matrix4f m_inverse;
+  Eigen::Matrix4f transform;
+  Eigen::Matrix4f inverse;
 };
 
 }  // namespace min::ray

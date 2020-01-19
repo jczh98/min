@@ -12,11 +12,6 @@
 
 include(CheckCXXCompilerFlag)
 
-if(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/openexr/OpenEXR")
-  message(FATAL_ERROR "The Nori dependencies are missing! "
-    "You probably did not clone the project with --recursive. It is possible to recover "
-    "by calling \"git submodule update --init --recursive\"")
-endif()
 
 # Set a default build configuration (Release)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -90,27 +85,6 @@ elseif(APPLE)
   string(REGEX REPLACE "^.*X([0-9.]*).sdk$" "\\1" CMAKE_OSX_DEPLOYMENT_TARGET "${CMAKE_OSX_SYSROOT}")
 endif()
 
-if (WIN32)
-  # Build zlib (only on Windows)
-  set(ZLIB_BUILD_STATIC_LIBS ON CACHE BOOL " " FORCE)
-  set(ZLIB_BUILD_SHARED_LIBS OFF CACHE BOOL " " FORCE)
-  add_subdirectory(zlib)
-
-  set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/zlib" CACHE PATH " " FORCE)
-  set(ZLIB_LIBRARY "${CMAKE_CURRENT_BINARY_DIR}/zlib/$<CONFIGURATION>/zlibstatic.lib" CACHE FILEPATH " " FORCE)
-
-  set_property(TARGET zlibstatic PROPERTY FOLDER "dependencies")
-  include_directories(${ZLIB_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/zlib")
-endif()
-
-# Build OpenER
-set(ILMBASE_BUILD_SHARED_LIBS OFF CACHE BOOL " " FORCE)
-set(OPENEXR_BUILD_SHARED_LIBS OFF CACHE BOOL " " FORCE)
-set(ILMBASE_NAMESPACE_VERSIONING OFF CACHE BOOL " " FORCE)
-set(OPENEXR_NAMESPACE_VERSIONING OFF CACHE BOOL " " FORCE)
-add_subdirectory(openexr)
-set_property(TARGET IexMath eLut toFloat b44ExpLogTable dwaLookups CopyIlmBaseLibs IlmThread Half Iex Imath IlmImf PROPERTY FOLDER "dependencies")
-
 # Build Thread Building Blocks (main shared libraries only)
 set(TBB_BUILD_SHARED          OFF  CACHE BOOL " " FORCE)
 set(TBB_BUILD_STATIC          ON  CACHE BOOL " " FORCE)
@@ -138,13 +112,6 @@ set_property(TARGET pugixml PROPERTY
    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/pugixml")
 set_property(TARGET pugixml PROPERTY FOLDER "dependencies")
 
-set(OPENEXR_INCLUDE_DIRS 
-  ${CMAKE_CURRENT_SOURCE_DIR}/openexr/IlmBase/Imath
-  ${CMAKE_CURRENT_SOURCE_DIR}/openexr/IlmBase/Iex
-  ${CMAKE_CURRENT_SOURCE_DIR}/openexr/IlmBase/Half
-  ${CMAKE_CURRENT_SOURCE_DIR}/openexr/OpenEXR/IlmImf
-  ${CMAKE_CURRENT_BINARY_DIR}/openexr/OpenEXR/config
-  ${CMAKE_CURRENT_BINARY_DIR}/openexr/IlmBase/config)
 set(PCG32_INCLUDE_DIR
   ${CMAKE_CURRENT_SOURCE_DIR}/pcg32)
 set(TFM_INCLUDE_DIR 
@@ -187,8 +154,7 @@ set(CompilerFlags
       CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO CMAKE_C_FLAGS
       CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL
       CMAKE_C_FLAGS_RELWITHDEBINFO COMPILE_DEFINITIONS U_CMAKE_BUILD_TYPE
-      CMAKE_MACOSX_RPATH
-      OPENEXR_INCLUDE_DIRS PCG32_INCLUDE_DIR TFM_INCLUDE_DIR
+      CMAKE_MACOSX_RPATH PCG32_INCLUDE_DIR TFM_INCLUDE_DIR
       HYPOTHESIS_INCLUDE_DIR GLFW_INCLUDE_DIR GLEW_INCLUDE_DIR
       NANOVG_INCLUDE_DIR NANOGUI_EXTRA_INCS NANOGUI_EXTRA_DEFS
 	  NANOGUI_EXTRA_LIBS NANOGUI_INCLUDE_DIR EIGEN_INCLUDE_DIR

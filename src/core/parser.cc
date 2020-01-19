@@ -183,7 +183,7 @@ NoriObject *loadFromXML(const std::string &filename) {
               "of type <%s> (expected type <%s>): %s",
               NoriObject::classTypeName(result->getClassType()),
               NoriObject::classTypeName((NoriObject::EClassType)tag),
-              result->toString());
+              result->ToString());
         }
 
         /* Add all children */

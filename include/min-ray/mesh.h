@@ -23,9 +23,9 @@ struct Intersection {
   /// UV coordinates, if any
   Point2f uv;
   /// Shading frame (based on the shading normal)
-  Frame shFrame;
+  Frame shading_frame;
   /// Geometric frame (based on the true geometry)
-  Frame geoFrame;
+  Frame geo_frame;
   /// Pointer to the associated mesh
   const Mesh *mesh;
 
@@ -34,16 +34,16 @@ struct Intersection {
 
   /// Transform a direction vector into the local shading frame
   Vector3f toLocal(const Vector3f &d) const {
-    return shFrame.toLocal(d);
+    return shading_frame.ToLocal(d);
   }
 
   /// Transform a direction vector from local to world coordinates
   Vector3f toWorld(const Vector3f &d) const {
-    return shFrame.toWorld(d);
+    return shading_frame.ToWorld(d);
   }
 
   /// Return a human-readable summary of the intersection record
-  std::string toString() const;
+  std::string ToString() const;
 };
 
 /**
@@ -63,28 +63,28 @@ class Mesh : public NoriObject {
   virtual void activate();
 
   /// Return the total number of triangles in this shape
-  uint32_t getTriangleCount() const { return (uint32_t)m_F.cols(); }
+  uint32_t GetTriangleCount() const { return (uint32_t)faces.cols(); }
 
   /// Return the total number of vertices in this shape
-  uint32_t getVertexCount() const { return (uint32_t)m_V.cols(); }
+  uint32_t GetVertexCount() const { return (uint32_t)positions.cols(); }
 
   /**
      * \brief Uniformly sample a position on the mesh with
      * respect to surface area. Returns both position and normal
      */
-  void samplePosition(const Point2f &sample, Point3f &p, Normal3f &n) const;
+  void SamplePosition(const Point2f &sample, Point3f &p, Normal3f &n) const;
 
   /// Return the surface area of the given triangle
-  float surfaceArea(uint32_t index) const;
+  float surface_area(uint32_t index) const;
 
   //// Return an axis-aligned bounding box of the entire mesh
-  const BoundingBox3f &getBoundingBox() const { return m_bbox; }
+  const BoundingBox3f &GetBoundingBox() const { return bound_box; }
 
   //// Return an axis-aligned bounding box containing the given triangle
-  BoundingBox3f getBoundingBox(uint32_t index) const;
+  BoundingBox3f GetBoundingBox(uint32_t index) const;
 
   //// Return the centroid of the given triangle
-  Point3f getCentroid(uint32_t index) const;
+  Point3f centroid(uint32_t index) const;
 
   /** \brief Ray-triangle intersection test
      *
@@ -111,40 +111,40 @@ class Mesh : public NoriObject {
      * \return
      *   \c true if an intersection has been detected
      */
-  bool rayIntersect(uint32_t index, const Ray3f &ray, float &u, float &v, float &t) const;
+  bool Intersect(uint32_t index, const Ray3f &ray, float &u, float &v, float &t) const;
 
   /// Return a pointer to the vertex positions
-  const MatrixXf &getVertexPositions() const { return m_V; }
+  const MatrixXf &GetVertexPositions() const { return positions; }
 
   /// Return a pointer to the vertex normals (or \c nullptr if there are none)
-  const MatrixXf &getVertexNormals() const { return m_N; }
+  const MatrixXf &GetVertexNormals() const { return normals; }
 
   /// Return a pointer to the texture coordinates (or \c nullptr if there are none)
-  const MatrixXf &getVertexTexCoords() const { return m_UV; }
+  const MatrixXf &GetVertexTexCoords() const { return texcoords; }
 
   /// Return a pointer to the triangle vertex index list
-  const MatrixXu &getIndices() const { return m_F; }
+  const MatrixXu &GetIndices() const { return faces; }
 
   /// Is this mesh an area emitter?
-  bool isEmitter() const { return m_emitter != nullptr; }
+  bool IsLight() const { return light != nullptr; }
 
   /// Return a pointer to an attached area emitter instance
-  Emitter *getEmitter() { return m_emitter; }
+  Emitter *GetEmitter() { return light; }
 
   /// Return a pointer to an attached area emitter instance (const version)
-  const Emitter *getEmitter() const { return m_emitter; }
+  const Emitter *GetEmitter() const { return light; }
 
   /// Return a pointer to the BSDF associated with this mesh
-  const BSDF *getBSDF() const { return m_bsdf; }
+  const BSDF *GetBSDF() const { return bsdf; }
 
   /// Register a child object (e.g. a BSDF) with the mesh
   virtual void addChild(NoriObject *child);
 
   /// Return the name of this mesh
-  const std::string &getName() const { return m_name; }
+  const std::string &GetName() const { return name_val; }
 
   /// Return a human-readable summary of this instance
-  std::string toString() const;
+  std::string ToString() const;
 
   /**
      * \brief Return the type of object (i.e. Mesh/BSDF/etc.)
@@ -157,14 +157,14 @@ class Mesh : public NoriObject {
   Mesh();
 
  protected:
-  std::string m_name;            ///< Identifying name
-  MatrixXf m_V;                  ///< Vertex positions
-  MatrixXf m_N;                  ///< Vertex normals
-  MatrixXf m_UV;                 ///< Vertex texture coordinates
-  MatrixXu m_F;                  ///< Faces
-  BSDF *m_bsdf = nullptr;        ///< BSDF of the surface
-  Emitter *m_emitter = nullptr;  ///< Associated emitter, if any
-  BoundingBox3f m_bbox;          ///< Bounding box of the mesh
+  std::string name_val;            ///< Identifying name
+  MatrixXf positions;                  ///< Vertex positions
+  MatrixXf normals;                  ///< Vertex normals
+  MatrixXf texcoords;                 ///< Vertex texture coordinates
+  MatrixXu faces;                  ///< Faces
+  BSDF *bsdf = nullptr;        ///< BSDF of the surface
+  Emitter *light = nullptr;  ///< Associated emitter, if any
+  BoundingBox3f bound_box;          ///< Bounding box of the mesh
 };
 
 }  // namespace min::ray

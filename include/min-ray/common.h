@@ -8,7 +8,7 @@
 #endif
 
 /* Include the basics needed by any Nori file */
-#include <ImathPlatform.h>
+//#include <ImathPlatform.h>
 #include <stdint.h>
 #include <tinyformat.h>
 #include <Eigen/Core>

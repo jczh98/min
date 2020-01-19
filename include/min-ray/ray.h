@@ -25,7 +25,7 @@ struct TRay {
 
   PointType o;      ///< Ray origin
   VectorType d;     ///< Ray direction
-  VectorType dRcp;  ///< Componentwise reciprocals of the ray direction
+  VectorType inv_dir;  ///< Componentwise reciprocals of the ray direction
   Scalar mint;      ///< Minimum position on the ray segment
   Scalar maxt;      ///< Maximum position on the ray segment
 
@@ -46,33 +46,33 @@ struct TRay {
 
   /// Copy constructor
   TRay(const TRay &ray)
-      : o(ray.o), d(ray.d), dRcp(ray.dRcp), mint(ray.mint), maxt(ray.maxt) {}
+      : o(ray.o), d(ray.d), inv_dir(ray.inv_dir), mint(ray.mint), maxt(ray.maxt) {}
 
   /// Copy a ray, but change the covered segment of the copy
   TRay(const TRay &ray, Scalar mint, Scalar maxt)
-      : o(ray.o), d(ray.d), dRcp(ray.dRcp), mint(mint), maxt(maxt) {}
+      : o(ray.o), d(ray.d), inv_dir(ray.inv_dir), mint(mint), maxt(maxt) {}
 
   /// Update the reciprocal ray directions after changing 'd'
   void update() {
-    dRcp = d.cwiseInverse();
+    inv_dir = d.cwiseInverse();
   }
 
   /// Return the position of a point along the ray
   PointType operator()(Scalar t) const { return o + t * d; }
 
   /// Return a ray that points into the opposite direction
-  TRay reverse() const {
+  TRay Reverse() const {
     TRay result;
     result.o = o;
     result.d = -d;
-    result.dRcp = -dRcp;
+    result.inv_dir = -inv_dir;
     result.mint = mint;
     result.maxt = maxt;
     return result;
   }
 
   /// Return a human-readable string summary of this ray
-  std::string toString() const {
+  std::string ToString() const {
     return tfm::format(
         "Ray[\n"
         "  o = %s,\n"
@@ -80,7 +80,7 @@ struct TRay {
         "  mint = %f,\n"
         "  maxt = %f\n"
         "]",
-        o.toString(), d.toString(), mint, maxt);
+        o.ToString(), d.ToString(), mint, maxt);
   }
 };
 
