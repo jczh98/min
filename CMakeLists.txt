@@ -2,37 +2,53 @@ cmake_minimum_required (VERSION 2.8.10)
 
 project(min-ray)
 
+set(CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake/")
+
+if (WIN32)
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/")
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_ROOT}/Modules")
+else ()
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_ROOT}/Modules")
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/")
+endif ()
+
+find_package(glfw3 CONFIG REQUIRED)
+
 add_subdirectory(ext ext_build)
+add_subdirectory(external/glad)
 
 include_directories(
   # Nori include files
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   # tinyformat string formatting library
   ${TFM_INCLUDE_DIR}
-  # Eigen linear algebra library
-  ${EIGEN_INCLUDE_DIR}
   # Intel Thread Building Blocks
   ${TBB_INCLUDE_DIR}
   # Pseudorandom number generator
   ${PCG32_INCLUDE_DIR}
   # PugiXML parser
   ${PUGIXML_INCLUDE_DIR}
-  # GLFW library for OpenGL context creation
-  ${GLFW_INCLUDE_DIR}
-  # GLEW library for accessing OpenGL functions
-  ${GLEW_INCLUDE_DIR}
-  # NanoVG drawing library
-  ${NANOVG_INCLUDE_DIR}
-  # NanoGUI user interface library
-  ${NANOGUI_INCLUDE_DIR}
-  ${NANOGUI_EXTRA_INCS}
   # Portable filesystem API
   ${FILESYSTEM_INCLUDE_DIR}
   # STB Image Write
   ${STB_IMAGE_WRITE_INCLUDE_DIR}
   # Lodepng
   external/lodepng
+
+  external/imgui
+  external/imgui/examples
+
+  external/eigen
 )
+
+file(GLOB IMGUI_SRC
+        external/imgui/examples/imgui_impl_glfw.h
+        external/imgui/examples/imgui_impl_opengl3.h
+        external/imgui/examples/imgui_impl_glfw.cpp
+        external/imgui/examples/imgui_impl_opengl3.cpp
+        external/imgui/*.cpp
+        external/imgui/*.h
+        )
 
 # The following lines build the main executable. If you add a source
 # code file to Nori, be sure to include it in this list.
@@ -64,6 +80,7 @@ add_executable(min-ray
   include/min-ray/vector.h
   include/min-ray/warp.h
   include/min-ray/rendermode.h
+  include/min-ray/preview_gui.h
 
   # Source code files
   src/core/bitmap.cc
@@ -71,12 +88,12 @@ add_executable(min-ray
   src/accelerators/accel.cc
   src/core/common.cc
   src/bsdfs/diffuse.cc
-  src/core/gui.cc
   src/samplers/independent.cc
   src/main.cc
   src/core/mesh.cc
   src/core/obj.cc
   src/core/object.cc
+  src/core/preview_gui.cc
   src/core/parser.cc
   src/cameras/perspective.cc
   src/core/proplist.cc
@@ -91,13 +108,11 @@ add_executable(min-ray
   src/integrators/normals.cc
   external/lodepng/lodepng.cpp
   external/lodepng/lodepng_util.cpp
+  ${IMGUI_SRC}
 )
 
 SET_PROPERTY(TARGET min-ray PROPERTY CXX_STANDARD 17)
 SET_PROPERTY(TARGET min-ray PROPERTY CXX_STANDARD_REQUIRED ON)
 
-add_definitions(${NANOGUI_EXTRA_DEFS})
-
-target_link_libraries(min-ray tbb_static pugixml nanogui ${NANOGUI_EXTRA_LIBS})
-
+target_link_libraries(min-ray tbb_static pugixml glad glfw)
 # vim: set et ts=2 sw=2 ft=cmake nospell:

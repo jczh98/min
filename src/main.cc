@@ -7,7 +7,6 @@
 #include <min-ray/bitmap.h>
 #include <min-ray/sampler.h>
 #include <min-ray/integrator.h>
-#include <min-ray/gui.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 #include <filesystem/resolver.h>
@@ -38,15 +37,15 @@ int main(int argc, char **argv) {
             	rendermode->Render(scene, tmp);
             }
         } else if (path.extension() == "exr") {
-            /* Alternatively, provide a basic OpenEXR image viewer */
-            Bitmap bitmap(argv[1]);
-            ImageBlock block(Vector2i((int) bitmap.cols(), (int) bitmap.rows()), nullptr);
-            block.FromBitmap(bitmap);
-            nanogui::init();
-            NoriScreen *screen = new NoriScreen(block);
-            nanogui::mainloop();
-            delete screen;
-            nanogui::shutdown();
+            ///* Alternatively, provide a basic OpenEXR image viewer */
+            //Bitmap bitmap(argv[1]);
+            //ImageBlock block(Vector2i((int) bitmap.cols(), (int) bitmap.rows()), nullptr);
+            //block.FromBitmap(bitmap);
+            //nanogui::init();
+            //NoriScreen *screen = new NoriScreen(block);
+            //nanogui::mainloop();
+            //delete screen;
+            //nanogui::shutdown();
         } else {
             cerr << "Fatal error: unknown file \"" << argv[1]
                  << "\", expected an extension of type .xml or .exr" << endl;

@@ -16,9 +16,12 @@
 [submodule "ext/pcg32"]
 	path = ext/pcg32
 	url = https://github.com/wjakob/pcg32
-[submodule "ext/nanogui"]
-	path = ext/nanogui
-	url = https://github.com/wjakob/nanogui
 [submodule "external/lodepng"]
 	path = external/lodepng
 	url = https://github.com/lvandeve/lodepng.git
+[submodule "external/imgui"]
+	path = external/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "external/eigen"]
+	path = external/eigen
+	url = https://gitlab.com/libeigen/eigen.git

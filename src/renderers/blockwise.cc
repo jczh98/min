@@ -3,7 +3,7 @@
 #include <min-ray/bitmap.h>
 #include <min-ray/block.h>
 #include <min-ray/camera.h>
-#include <min-ray/gui.h>
+#include <min-ray/preview_gui.h>
 #include <min-ray/integrator.h>
 #include <min-ray/parser.h>
 #include <min-ray/sampler.h>
@@ -35,8 +35,8 @@ class Blockwise : public RenderMode {
     result.Clear();
 
     /* Create a window that visualizes the partially rendered result */
-    nanogui::init();
-    NoriScreen *screen = new NoriScreen(result);
+    auto gui = std::make_unique<PreviewGUI>(result);
+    gui->Init();
 
     /* Do the following in parallel and asynchronously */
     std::thread render_thread([&] {
@@ -81,13 +81,12 @@ class Blockwise : public RenderMode {
     });
 
     /* Enter the application main loop */
-    nanogui::mainloop();
+    gui->Mainloop();
 
     /* Shut down the user interface */
     render_thread.join();
 
-    delete screen;
-    nanogui::shutdown();
+    gui->Shutdown();
 
     /* Now turn the rendered image block into
 	       a properly normalized bitmap */

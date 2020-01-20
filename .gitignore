@@ -3,6 +3,8 @@ out
 out.ppm
 .DS_Store
 .vs
+.vscode
 .idea
 cmake-build-debug
 /CMakeSettings.json
+lib

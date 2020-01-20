@@ -3,8 +3,8 @@
 #include <min-ray/bitmap.h>
 #include <min-ray/block.h>
 #include <min-ray/camera.h>
-#include <min-ray/gui.h>
 #include <min-ray/integrator.h>
+#include <min-ray/preview_gui.h>
 #include <min-ray/parser.h>
 #include <min-ray/sampler.h>
 #include <min-ray/scene.h>
@@ -18,7 +18,7 @@ namespace min::ray {
 /// Progressive render mode
 class Progressive : public RenderMode {
  public:
-  Progressive(const PropertyList &) {}
+  Progressive(const PropertyList &){}
 
   virtual ~Progressive() {}
 
@@ -35,9 +35,8 @@ class Progressive : public RenderMode {
     ImageBlock result(outputSize, camera->GetReconstructionFilter());
     result.Clear();
 
-    /* Create a window that visualizes the partially rendered result */
-    nanogui::init();
-    NoriScreen *screen = new NoriScreen(result);
+    auto gui = std::make_unique<PreviewGUI>(result);
+    gui->Init();
 
     /* Do the following in parallel and asynchronously */
     std::thread render_thread([&] {
@@ -85,14 +84,9 @@ class Progressive : public RenderMode {
       cout << "\n done. (took " << timer.ElapsedString() << ")" << endl;
     });
 
-    /* Enter the application main loop */
-    nanogui::mainloop();
-
-    /* Shut down the user interface */
+    gui->Mainloop();
     render_thread.join();
-
-    delete screen;
-    nanogui::shutdown();
+    gui->Shutdown();
 
     /* Now turn the rendered image block into
 	       a properly normalized bitmap */
