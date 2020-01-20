@@ -44,7 +44,6 @@ class Diffuse : public BSDF {
   Color3f Sample(BSDFQueryRecord &bRec, const Point2f &sample) const {
     if (Frame::CosTheta(bRec.wi) <= 0)
       return Color3f(0.0f);
-
     bRec.measure = ESolidAngle;
 
     /* Warp a uniformly distributed sample on [0,1]^2

@@ -4,6 +4,7 @@
 #include <min-ray/bbox.h>
 #include <min-ray/frame.h>
 #include <min-ray/object.h>
+#include "dpdf.h"
 
 namespace min::ray {
 
@@ -46,6 +47,25 @@ struct Intersection {
   std::string ToString() const;
 };
 
+struct SurfaceSample {
+  // Reference point
+  Point3f ref;
+  // Sampled point
+  Point3f p;
+  // Sampled normal
+  Normal3f n;
+  // Probability of the sample
+  float pdf;
+
+  /// Empty constructor
+  SurfaceSample() {}
+  /// Data structure with ref to call sampleSurface()
+  SurfaceSample(const Point3f & ref_) : ref(ref_) {}
+  /// Data structure with ref and p to call pdfSurface()
+  SurfaceSample(const Point3f & ref_, const Point3f & p_) : ref(ref_), p(p_) {}
+
+};
+
 /**
  * \brief Triangle mesh
  *
@@ -72,7 +92,9 @@ class Mesh : public NoriObject {
      * \brief Uniformly sample a position on the mesh with
      * respect to surface area. Returns both position and normal
      */
-  void SamplePosition(const Point2f &sample, Point3f &p, Normal3f &n) const;
+  void Sample(const Point2f &sample, SurfaceSample &surface_sample) const;
+
+  float Pdf(const SurfaceSample &surface_sample) const;
 
   /// Return the surface area of the given triangle
   float surface_area(uint32_t index) const;
@@ -113,6 +135,9 @@ class Mesh : public NoriObject {
      */
   bool Intersect(uint32_t index, const Ray3f &ray, float &u, float &v, float &t) const;
 
+  Point3f GetInterpolatedVertex(uint32_t index, const Vector3f & bc) const;
+  Normal3f GetInterpolatedNormal(uint32_t index, const Vector3f & bc) const;
+
   /// Return a pointer to the vertex positions
   const MatrixXf &GetVertexPositions() const { return positions; }
 
@@ -152,6 +177,7 @@ class Mesh : public NoriObject {
      * */
   EClassType getClassType() const { return EMesh; }
 
+  float total_surface_area = 0.0f;
  protected:
   /// Create an empty mesh
   Mesh();
@@ -164,6 +190,7 @@ class Mesh : public NoriObject {
   MatrixXu faces;                  ///< Faces
   BSDF *bsdf = nullptr;        ///< BSDF of the surface
   Emitter *light = nullptr;  ///< Associated emitter, if any
+  DiscretePDF dpdf;
   BoundingBox3f bound_box;          ///< Bounding box of the mesh
 };
 

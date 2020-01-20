@@ -2,7 +2,7 @@
 
 <scene>
 <rendermode type="progressive"/>
-	<integrator type="path_simple"/>
+	<integrator type="path"/>
 
 	<camera type="perspective">
 		<float name="fov" value="27.7856"/>
@@ -16,7 +16,7 @@
 	</camera>
 	
 	<sampler type="independent">
-		<integer name="sampleCount" value="512"/>
+		<integer name="sampleCount" value="32"/>
 	</sampler>
 
 	<mesh type="obj">
@@ -46,13 +46,18 @@
 	<mesh type="obj">
 		<string name="filename" value="meshes/sphere1.obj"/>
 
-		<bsdf type="mirror"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75 0.75 0.25"/>
+		</bsdf>
+<!--		<bsdf type="mirror"/>-->
 	</mesh>
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/sphere2.obj"/>
-
-		<bsdf type="dielectric"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75 0.75 0.25"/>
+		</bsdf>
+<!--		<bsdf type="dielectric"/>-->
 	</mesh>
 
 	<mesh type="obj">

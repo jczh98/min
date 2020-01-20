@@ -99,10 +99,10 @@ struct DiscretePDF {
      *     The discrete index associated with the sample
      */
   size_t Sample(float sampleValue) const {
-    std::vector<float>::const_iterator entry =
+    auto entry =
         std::lower_bound(cdf.begin(), cdf.end(), sampleValue);
-    size_t index = (size_t)std::max((ptrdiff_t)0, entry - cdf.begin() - 1);
-    return std::min(index, cdf.size() - 2);
+    size_t index = std::max<size_t>((ptrdiff_t)0, entry - cdf.begin() - 1);
+    return std::min<size_t>(index, cdf.size() - 2);
   }
 
   /**

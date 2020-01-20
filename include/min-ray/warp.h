@@ -50,6 +50,10 @@ class Warp {
 
   /// Probability density of \ref squareToBeckmann()
   static float SquareToBeckmannPdf(const Vector3f &m, float alpha);
+
+  /// Uniformly sample a vector on the unit sphere with respect to solid angles
+  static Vector3f SquareToUniformTriangle(const Point2f &sample);
+
 };
 
 }  // namespace min::ray

@@ -45,6 +45,7 @@ class Scene : public NoriObject {
   /// Return a reference to an array containing all meshes
   const std::vector<Mesh *> &GetMeshes() const { return meshes; }
 
+  const std::vector<Emitter *> &GetLights() const { return lights; }
   /**
      * \brief Intersect a ray against all triangles stored in the scene
      * and return detailed intersection information
@@ -106,6 +107,7 @@ class Scene : public NoriObject {
 
  private:
   std::vector<Mesh *> meshes;
+  std::vector<Emitter *> lights;
   Integrator *integrator = nullptr;
   Sampler *sampler = nullptr;
   Camera *camera = nullptr;

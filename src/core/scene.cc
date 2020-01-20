@@ -51,12 +51,14 @@ void Scene::addChild(NoriObject *obj) {
       Mesh *mesh = static_cast<Mesh *>(obj);
       accelerator->AddMesh(mesh);
       meshes.push_back(mesh);
+      if (mesh->IsLight()) {
+        lights.emplace_back( mesh->GetEmitter());
+      }
     } break;
 
     case EEmitter: {
-      //Emitter *emitter = static_cast<Emitter *>(obj);
-      /* TBD */
-      throw NoriException("Scene::addChild(): You need to implement this for emitters");
+      Emitter *emitter = static_cast<Emitter *>(obj);
+      lights.emplace_back(emitter);
     } break;
 
     case ESampler:

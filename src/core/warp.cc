@@ -45,7 +45,9 @@ float Warp::SquareToUniformHemispherePdf(const Vector3f &v) {
 }
 
 Vector3f Warp::SquareToCosineHemisphere(const Point2f &sample) {
-  throw NoriException("Warp::squareToCosineHemisphere() is not yet implemented!");
+  float phi = 2 * M_PI * sample[0];
+  float theta = acos(sqrt(sample[1]));
+  return Vector3f(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
 }
 
 float Warp::SquareToCosineHemispherePdf(const Vector3f &v) {
@@ -59,5 +61,12 @@ Vector3f Warp::SquareToBeckmann(const Point2f &sample, float alpha) {
 float Warp::SquareToBeckmannPdf(const Vector3f &m, float alpha) {
   throw NoriException("Warp::squareToBeckmannPdf() is not yet implemented!");
 }
+
+Vector3f Warp::SquareToUniformTriangle(const Point2f &sample) {
+  float su1 = sqrtf(sample.x());
+  float u = 1.f - su1, v = sample.y() * su1;
+  return Vector3f(u,v,1.f-u-v);
+}
+
 
 }  // namespace min::ray

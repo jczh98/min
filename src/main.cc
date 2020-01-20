@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     //    cerr << "Syntax: " << argv[0] << " <scene.xml>" << endl;
     //    return -1;
     //}
-    std::string tmp = "E:\\work\\min-ray\\assets\\bunny\\bunny.xml";
+    std::string tmp = "E:\\work\\min-ray\\assets\\cornell_box\\cornell_box.xml";
     filesystem::path path(tmp);
     try {
         if (path.extension() == "xml") {
