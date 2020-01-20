@@ -321,8 +321,8 @@ struct TBoundingBox {
         if (origin < minVal || origin > maxVal)
           return false;
       } else {
-        float t1 = (minVal - origin) * ray.dRcp[i];
-        float t2 = (maxVal - origin) * ray.dRcp[i];
+        float t1 = (minVal - origin) * ray.inv_dir[i];
+        float t2 = (maxVal - origin) * ray.inv_dir[i];
 
         if (t1 > t2)
           std::swap(t1, t2);
@@ -351,8 +351,8 @@ struct TBoundingBox {
         if (origin < minVal || origin > maxVal)
           return false;
       } else {
-        float t1 = (minVal - origin) * ray.dRcp[i];
-        float t2 = (maxVal - origin) * ray.dRcp[i];
+        float t1 = (minVal - origin) * ray.inv_dir[i];
+        float t2 = (maxVal - origin) * ray.inv_dir[i];
 
         if (t1 > t2)
           std::swap(t1, t2);
