@@ -97,7 +97,7 @@ class Blockwise : public RenderMode {
     size_t lastdot = outputName.find_last_of(".");
     if (lastdot != std::string::npos)
       outputName.erase(lastdot, std::string::npos);
-    outputName += ".exr";
+    outputName += ".png";
 
     /* Save using the OpenEXR format */
     bitmap->Save(outputName);

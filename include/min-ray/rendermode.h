@@ -17,9 +17,6 @@ class RenderMode : public NoriObject {
   /// Main render process
   virtual void Render(Scene *scene, const std::string &filename) = 0;
 
-  /// Sub-Render process for one block
-  virtual void RenderBlock(const Scene *scene, Sampler *sampler, ImageBlock &block) = 0;
-
   EClassType getClassType() const { return ERenderMode; }
 
  private:

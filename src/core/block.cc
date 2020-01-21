@@ -79,18 +79,20 @@ void ImageBlock::Put(const Point2f &_pos, const Color3f &value) {
     weights_y[idx++] = filter[(int)(std::abs(y - pos.y()) * lookup_factor)];
 
   for (int y = bbox.min.y(), yr = 0; y <= bbox.max.y(); ++y, ++yr)
-    for (int x = bbox.min.x(), xr = 0; x <= bbox.max.x(); ++x, ++xr)
+    for (int x = bbox.min.x(), xr = 0; x <= bbox.max.x(); ++x, ++xr) {
       coeffRef(y, x) += Color4f(value) * weights_x[xr] * weights_y[yr];
+    }
+
 }
 
 void ImageBlock::Put(ImageBlock &b) {
   Vector2i local_offset = b.GetOffset() - offset +
                     Vector2i::Constant(border_size - b.GetBorderSize());
-  Vector2i size = b.GetSize() + Vector2i(2 * b.GetBorderSize());
+  Vector2i local_size = b.GetSize() + Vector2i(2 * b.GetBorderSize());
 
   tbb::mutex::scoped_lock lock(mutex);
 
-  block(local_offset.y(), local_offset.x(), size.y(), size.x()) += b.topLeftCorner(size.y(), size.x());
+  block(local_offset.y(), local_offset.x(), local_size.y(), local_size.x()) += b.topLeftCorner(local_size.y(), local_size.x());
 }
 
 std::string ImageBlock::ToString() const {
@@ -114,8 +116,8 @@ void BlockGenerator::SetBlockCount(const Vector2i &local_size, int blockSize) {
   this->size = local_size;
   block_size = blockSize;
   num_blocks = Vector2i(
-      (int)std::ceil(size.x() / (float)blockSize),
-      (int)std::ceil(size.y() / (float)blockSize));
+      (int)std::ceil(local_size.x() / (float)blockSize),
+      (int)std::ceil(local_size.y() / (float)blockSize));
   blocks_left = num_blocks.x() * num_blocks.y();
   direction = ERight;
   block = Point2i(num_blocks / 2);

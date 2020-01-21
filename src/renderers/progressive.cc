@@ -5,7 +5,6 @@
 #include <min-ray/camera.h>
 #include <min-ray/integrator.h>
 #include <min-ray/preview_gui.h>
-#include <min-ray/parser.h>
 #include <min-ray/sampler.h>
 #include <min-ray/scene.h>
 #include <min-ray/timer.h>
@@ -44,26 +43,34 @@ class Progressive : public RenderMode {
       cout.flush();
       Timer timer;
 
-      tbb::blocked_range<int> range(0, blockGenerator.GetBlockCount());
+      tbb::blocked_range<int> range(0, outputSize.x() * outputSize.y());
 
       auto map = [&](const tbb::blocked_range<int> &range) {
         /* Allocate memory for a small image block to be rendered
-	               by the current thread */
-        ImageBlock block(Vector2i(NORI_BLOCK_SIZE),
-                         camera->GetReconstructionFilter());
-
         /* Create a clone of the sampler for the current thread */
         std::unique_ptr<Sampler> sampler(scene->GetSampler()->Clone());
-
+        sampler->Prepare(result);
         for (int i = range.begin(); i < range.end(); ++i) {
-          /* Request an image block from the block generator */
-          blockGenerator.Next(block);
-          /* Render all contained pixels */
-          RenderBlock(scene, sampler.get(), block);
 
-          /* The image block has been processed. Now add it to
-	                   the "big" block that represents the entire image */
-          result.Put(block);
+          //sampler->Prepare(result);
+
+          const Camera *camera = scene->GetCamera();
+          const Integrator *integrator = scene->GetIntegrator();
+
+          const int x = i % outputSize.x(), y = i / outputSize.x();
+          Point2f pixelSample = Point2f((float) x, (float) y) + sampler->Next2D();
+          Point2f apertureSample = sampler->Next2D();
+
+          /* Sample a ray from the camera */
+          Ray3f ray;
+          Color3f value = camera->SampleRay(ray, pixelSample, apertureSample);
+
+          /* Compute the incident radiance */
+          value *= integrator->Li(scene, sampler.get(), ray);
+
+          /* Store in the image block */
+          result.Put(pixelSample, value);
+
         }
       };
 
@@ -76,9 +83,6 @@ class Progressive : public RenderMode {
 
         /// Default: parallel rendering
         tbb::parallel_for(range, map);
-
-        /// Reset Blockcount for new render step
-        blockGenerator.SetBlockCount(outputSize, NORI_BLOCK_SIZE);
       }
 
       cout << "\n done. (took " << timer.ElapsedString() << ")" << endl;
@@ -101,35 +105,6 @@ class Progressive : public RenderMode {
 
     /* Save using the OpenEXR format */
     bitmap->Save(outputName);
-  }
-
-  void RenderBlock(const Scene *scene, Sampler *sampler, ImageBlock &block) {
-    const Camera *camera = scene->GetCamera();
-    const Integrator *integrator = scene->GetIntegrator();
-
-    Point2i offset = block.GetOffset();
-    Vector2i size = block.GetSize();
-
-    /* Clear the block contents */
-    block.Clear();
-
-    /* For each pixel and pixel sample sample */
-    for (int y = 0; y < size.y(); ++y) {
-      for (int x = 0; x < size.x(); ++x) {
-        Point2f pixelSample = Point2f((float)(x + offset.x()), (float)(y + offset.y())) + sampler->Next2D();
-        Point2f apertureSample = sampler->Next2D();
-
-        /* Sample a ray from the camera */
-        Ray3f ray;
-        Color3f value = camera->SampleRay(ray, pixelSample, apertureSample);
-
-        /* Compute the incident radiance */
-        value *= integrator->Li(scene, sampler, ray);
-
-        /* Store in the image block */
-        block.Put(pixelSample, value);
-      }
-    }
   }
 
   std::string ToString() const {

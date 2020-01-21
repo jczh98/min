@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 
 <scene>
-<rendermode type="progressive"/>
+<rendermode type="blockwise"/>
 	<integrator type="path"/>
 
 	<camera type="perspective">
@@ -16,7 +16,7 @@
 	</camera>
 	
 	<sampler type="independent">
-		<integer name="sampleCount" value="32"/>
+		<integer name="sampleCount" value="128"/>
 	</sampler>
 
 	<mesh type="obj">
