@@ -16,6 +16,7 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(TBB CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
 
 add_subdirectory(ext ext_build)
 add_subdirectory(external/glad)
@@ -53,14 +54,13 @@ file(GLOB IMGUI_SRC
 
 set(MIN_RAY_LIBS
         pugixml glad glfw
-        fmt::fmt fmt::fmt-header-only
+        fmt::fmt
         nlohmann_json nlohmann_json::nlohmann_json
         TBB::tbb
+        spdlog::spdlog
         )
-# The following lines build the main executable. If you add a source
-# code file to Nori, be sure to include it in this list.
-add_executable(min-ray
 
+file(GLOB MIN_RAY_CORE
         # Header files
         include/min-ray/bbox.h
         include/min-ray/bitmap.h
@@ -88,10 +88,15 @@ add_executable(min-ray
         include/min-ray/warp.h
         include/min-ray/rendermode.h
         include/min-ray/preview_gui.h
+        include/min-ray/interface.h
+        include/min-ray/logging.h
 
         # Source code files
         src/core/bitmap.cc
         src/core/block.cc
+        src/core/interface.cc
+        src/core/interfaces.cc
+        src/core/logging.cc
         src/accelerators/accel.cc
         src/core/common.cc
         src/bsdfs/diffuse.cc
@@ -118,11 +123,16 @@ add_executable(min-ray
 
         external/lodepng/lodepng.cpp
         external/lodepng/lodepng_util.cpp
+        )
+
+add_executable(min-ray
+        ${MIN_RAY_CORE}
         ${IMGUI_SRC}
         )
 
 SET_PROPERTY(TARGET min-ray PROPERTY CXX_STANDARD 17)
 SET_PROPERTY(TARGET min-ray PROPERTY CXX_STANDARD_REQUIRED ON)
 
-target_link_libraries(min-ray ${MIN_RAY_LIBS})
-# vim: set et ts=2 sw=2 ft=cmake nospell:
+target_link_libraries(min-ray
+        PRIVATE
+        ${MIN_RAY_LIBS})

@@ -16,6 +16,8 @@
 #include <iostream>
 #include <vector>
 
+#include "interface.h"
+
 #if defined(__NORI_APPLE__NORI_)
 #define PLATFORM_MACOS
 #elif defined(__NORI_linux__NORI_)
