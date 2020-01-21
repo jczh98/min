@@ -56,9 +56,6 @@ if (MSVC)
   # Disable annoying secure CRT warnings
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_CRT_SECURE_NO_WARNINGS")
 
-  # We'll select the TBB library ourselves
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D__TBB_NO_IMPLICIT_LINKAGE")
-
   # Parallel build on MSVC (all targets)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 
@@ -85,16 +82,6 @@ elseif(APPLE)
   string(REGEX REPLACE "^.*X([0-9.]*).sdk$" "\\1" CMAKE_OSX_DEPLOYMENT_TARGET "${CMAKE_OSX_SYSROOT}")
 endif()
 
-# Build Thread Building Blocks (main shared libraries only)
-set(TBB_BUILD_SHARED          OFF  CACHE BOOL " " FORCE)
-set(TBB_BUILD_STATIC          ON  CACHE BOOL " " FORCE)
-set(TBB_BUILD_TBBMALLOC       OFF CACHE BOOL " " FORCE)
-set(TBB_BUILD_TBBMALLOC_PROXY OFF CACHE BOOL " " FORCE)
-set(TBB_BUILD_TESTS           OFF CACHE BOOL " " FORCE)
-
-add_subdirectory(tbb)
-set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
-
 if (APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGL_SILENCE_DEPRECATION=1")
 endif()
@@ -111,8 +98,6 @@ set(TFM_INCLUDE_DIR
   ${CMAKE_CURRENT_SOURCE_DIR}/tinyformat)
 set(HYPOTHESIS_INCLUDE_DIR
   ${CMAKE_CURRENT_SOURCE_DIR}/hypothesis)
-set(TBB_INCLUDE_DIR
-  ${CMAKE_CURRENT_SOURCE_DIR}/tbb/include)
 set(FILESYSTEM_INCLUDE_DIR
   ${CMAKE_CURRENT_SOURCE_DIR}/filesystem)
 set(PUGIXML_INCLUDE_DIR
@@ -139,7 +124,7 @@ set(CompilerFlags
       CMAKE_C_FLAGS_RELWITHDEBINFO COMPILE_DEFINITIONS U_CMAKE_BUILD_TYPE
       CMAKE_MACOSX_RPATH PCG32_INCLUDE_DIR TFM_INCLUDE_DIR
       HYPOTHESIS_INCLUDE_DIR GLFW_INCLUDE_DIR GLEW_INCLUDE_DIR
-	  TBB_INCLUDE_DIR FILESYSTEM_INCLUDE_DIR PUGIXML_INCLUDE_DIR
+	  FILESYSTEM_INCLUDE_DIR PUGIXML_INCLUDE_DIR
 )
 foreach(CompilerFlag ${CompilerFlags})
   set(${CompilerFlag} "${${CompilerFlag}}" PARENT_SCOPE)

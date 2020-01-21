@@ -13,6 +13,9 @@ else ()
 endif ()
 
 find_package(glfw3 CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(TBB CONFIG REQUIRED)
 
 add_subdirectory(ext ext_build)
 add_subdirectory(external/glad)
@@ -22,8 +25,6 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         # tinyformat string formatting library
         ${TFM_INCLUDE_DIR}
-        # Intel Thread Building Blocks
-        ${TBB_INCLUDE_DIR}
         # Pseudorandom number generator
         ${PCG32_INCLUDE_DIR}
         # PugiXML parser
@@ -50,6 +51,12 @@ file(GLOB IMGUI_SRC
         external/imgui/*.h
         )
 
+set(MIN_RAY_LIBS
+        pugixml glad glfw
+        fmt::fmt fmt::fmt-header-only
+        nlohmann_json nlohmann_json::nlohmann_json
+        TBB::tbb
+        )
 # The following lines build the main executable. If you add a source
 # code file to Nori, be sure to include it in this list.
 add_executable(min-ray
@@ -117,5 +124,5 @@ add_executable(min-ray
 SET_PROPERTY(TARGET min-ray PROPERTY CXX_STANDARD 17)
 SET_PROPERTY(TARGET min-ray PROPERTY CXX_STANDARD_REQUIRED ON)
 
-target_link_libraries(min-ray tbb_static pugixml glad glfw)
+target_link_libraries(min-ray ${MIN_RAY_LIBS})
 # vim: set et ts=2 sw=2 ft=cmake nospell:
