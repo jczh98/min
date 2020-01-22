@@ -1,7 +1,7 @@
 # min-ray
 ## Build
 - Install `vcpkg`
-- `vcpkg install tbb nlohmann-json fmt glfw3`
+- `vcpkg install tbb nlohmann-json fmt glfw3 spdlog`
 - `git clone --recursive $url`
 - Typing command line
 ```shell script
