@@ -17,6 +17,7 @@ find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(TBB CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+find_package(Eigen3 CONFIG REQUIRED)
 
 add_subdirectory(ext ext_build)
 add_subdirectory(external/glad)
@@ -39,8 +40,6 @@ include_directories(
 
         external/imgui
         external/imgui/examples
-
-        external/eigen
 )
 
 file(GLOB IMGUI_SRC
@@ -58,6 +57,7 @@ set(MIN_RAY_LIBS
         nlohmann_json nlohmann_json::nlohmann_json
         TBB::tbb
         spdlog::spdlog
+        Eigen3::Eigen
         )
 
 file(GLOB MIN_RAY_CORE
