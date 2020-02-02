@@ -90,6 +90,7 @@ file(GLOB MIN_RAY_CORE
         include/min-ray/preview_gui.h
         include/min-ray/interface.h
         include/min-ray/logging.h
+        include/min-ray/json.h
 
         # Source code files
         src/core/bitmap.cc
