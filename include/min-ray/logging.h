@@ -57,6 +57,13 @@ namespace min::logging {
 #define MIN_ERROR(...) SPD_AUGMENTED_LOG(error, __VA_ARGS__)
 #define MIN_CRITICAL(...) SPD_AUGMENTED_LOG(critical, __VA_ARGS__)
 
+#define assert_info(x, info)               \
+  {                                        \
+    bool ___ret___ = static_cast<bool>(x); \
+    if (!___ret___) {                      \
+      MIN_ERROR(info);                      \
+    }                                      \
+  }
 #define MIN_NOT_IMPLEMENTED MIN_ERROR("Not Implemented.");
 
 class Logger {

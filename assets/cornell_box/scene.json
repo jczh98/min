@@ -1,0 +1,88 @@
+{
+  "renderer": "blockwise",
+  "integrator": "normals",
+  "camera": {
+    "type": "perspective",
+    "props": {
+      "fov": 27.7856,
+      "transform": {
+        "scale": [-1,1,1],
+        "lookat": {
+          "target": [0, 0.893051, 4.41198],
+          "origin": [0, 0.919769, 5.41159],
+          "up": [0, 1, 0]
+        }
+      },
+      "height": 600,
+      "width": 800
+    }
+  },
+  "sampler": {
+    "type": "independent",
+    "props": {
+      "sampleCount": 1
+    }
+  },
+  "meshes": [
+    {
+      "type": "obj",
+      "props": {
+        "filename": "meshes/walls.obj",
+        "bsdf": {
+          "type": "diffuse",
+          "props": {
+            "color": [0.725,0.71,0.68]
+          }
+        }
+      }
+    },
+    {
+      "type": "obj",
+      "props": {
+        "filename": "meshes/rightwall.obj",
+        "bsdf": {
+          "type": "diffuse",
+          "props": {
+            "color": [0.161,0.133,0.427]
+          }
+        }
+      }
+    },
+    {
+      "type": "obj",
+      "props": {
+        "filename": "meshes/leftwall.obj",
+        "bsdf": {
+          "type": "diffuse",
+          "props": {
+            "color": [0.630,0.065,0.05]
+          }
+        }
+      }
+    },
+    {
+      "type": "obj",
+      "props": {
+        "filename": "meshes/sphere1.obj",
+        "bsdf": {
+          "type": "diffuse",
+          "props": {
+            "color": [0.75,0.75,0.25]
+          }
+        }
+      }
+    },
+    {
+      "type": "obj",
+      "props": {
+        "filename": "meshes/light.obj",
+        "light": {
+          "type": "area",
+          "props": {
+            "radiance": [40,40,40]
+          }
+        }
+      }
+    }
+  ]
+}

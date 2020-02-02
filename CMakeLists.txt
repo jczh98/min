@@ -104,22 +104,22 @@ file(GLOB MIN_RAY_CORE
         src/samplers/independent.cc
         src/main.cc
         src/core/mesh.cc
-        src/core/obj.cc
+        src/meshes/obj.cc
         src/core/object.cc
         src/core/preview_gui.cc
         src/core/parser.cc
         src/cameras/perspective.cc
         src/core/proplist.cc
-        src/core/rfilter.cc
+        src/filters/rfilter.cc
         src/core/scene.cc
         src/core/warp.cc
-        src/bsdfs/microfacet.cc
-        src/bsdfs/mirror.cc
-        src/bsdfs/dielectric.cc
+        #src/bsdfs/microfacet.cc
+        #src/bsdfs/mirror.cc
+        #src/bsdfs/dielectric.cc
         src/renderers/blockwise.cc
         src/renderers/progressive.cc
         src/integrators/normals.cc
-        src/integrators/path.cc
+        #src/integrators/path.cc
         src/lights/area_light.cc
 
         external/lodepng/lodepng.cpp

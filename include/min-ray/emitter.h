@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <min-ray/interface.h>
 #include <min-ray/object.h>
 #include <min-ray/scene.h>
 
@@ -58,7 +59,7 @@ struct LightRayQueryRecord {
   }
 };
 
-class Emitter : public NoriObject {
+class Emitter : public Unit {
  protected:
   Mesh *mesh = nullptr;
  public:
@@ -66,7 +67,7 @@ class Emitter : public NoriObject {
   virtual Color3f Evaluate(const LightRayQueryRecord &lRec) const = 0;
   virtual float Pdf(const LightRayQueryRecord &lRec) const = 0;
   void SetMesh(Mesh *mesh) { this->mesh = mesh;}
-  EClassType getClassType() const { return EEmitter; }
 };
+MIN_INTERFACE(Emitter)
 
 }  // namespace min::ray

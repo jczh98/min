@@ -28,50 +28,50 @@ namespace min::ray {
 
 using namespace nlohmann;
 
-template <typename T>
-std::shared_ptr<T> CreateInstance(const std::string& alias);
+template<typename T>
+std::shared_ptr<T> CreateInstance(const std::string &alias);
 
-template <typename T>
-std::shared_ptr<T> CreateInstance(const std::string& alias,
-                                  const json& json);
+template<typename T>
+std::shared_ptr<T> CreateInstance(const std::string &alias,
+                                  const json &json);
 
-template <typename T>
-std::unique_ptr<T> CreateInstanceUnique(const std::string& alias);
+template<typename T>
+std::unique_ptr<T> CreateInstanceUnique(const std::string &alias);
 
-template <typename T>
-std::unique_ptr<T> CreateInstanceUnique(const std::string& alias,
-                                        const json& json);
+template<typename T>
+std::unique_ptr<T> CreateInstanceUnique(const std::string &alias,
+                                        const json &json);
 
-template <typename T>
-T* CreateInstanceRaw(const std::string& alias);
+template<typename T>
+T *CreateInstanceRaw(const std::string &alias);
 
-template <typename T>
-T* CreateInstanceRaw(const std::string& alias,
-                     const json& json);
+template<typename T>
+T *CreateInstanceRaw(const std::string &alias,
+                     const json &json);
 
-template <typename T>
-T* CreateInstancePlacement(const std::string& alias,
-                           void* place);
+template<typename T>
+T *CreateInstancePlacement(const std::string &alias,
+                           void *place);
 
-template <typename T>
-T* CreateInstancePlacement(const std::string& alias,
-                           void* place,
-                           const json& json);
+template<typename T>
+T *CreateInstancePlacement(const std::string &alias,
+                           void *place,
+                           const json &json);
 
-template <typename T>
+template<typename T>
 std::vector<std::string> GetImplementationNames();
 
 class Unit {
  public:
   Unit() {}
-  virtual void initialize(const json& json) {}
+  virtual void initialize(const json &json) {}
 
   virtual std::string name() const {
     MIN_NOT_IMPLEMENTED
     return "";
   }
 
-  virtual std::string GeneralAction(const json& json) {
+  virtual std::string GeneralAction(const json &json) {
     MIN_NOT_IMPLEMENTED
     return "";
   }
@@ -84,28 +84,28 @@ class Unit {
 class ImplementationHolderBase {
  public:
   std::string name;
-  virtual bool has(const std::string& alias) const = 0;
-  virtual void remove(const std::string& alias) = 0;
+  virtual bool has(const std::string &alias) const = 0;
+  virtual void remove(const std::string &alias) = 0;
   virtual std::vector<std::string> GetImplementationNames() const = 0;
 };
 
 class InterfaceHolder {
  public:
-  typedef std::function<void(void*)> RegistrationMethod;
+  typedef std::function<void(void *)> RegistrationMethod;
   std::map<std::string, RegistrationMethod> methods;
-  std::map<std::string, ImplementationHolderBase*> interfaces;
+  std::map<std::string, ImplementationHolderBase *> interfaces;
 
-  void RegisterRegistrationMethod(const std::string& name,
-                                  const RegistrationMethod& method) {
+  void RegisterRegistrationMethod(const std::string &name,
+                                  const RegistrationMethod &method) {
     methods[name] = method;
   }
 
-  void RegisterInterface(const std::string& name,
-                         ImplementationHolderBase* interface_instance) {
+  void RegisterInterface(const std::string &name,
+                         ImplementationHolderBase *interface_instance) {
     interfaces[name] = interface_instance;
   }
 
-  static InterfaceHolder* instance() {
+  static InterfaceHolder *instance() {
     static InterfaceHolder holder;
     return &holder;
   }
@@ -169,18 +169,26 @@ class InterfaceHolder {
     }                                                                                                  \
     std::shared_ptr<T> Create(const std::string& alias) {                                              \
       auto factory = implementation_factories.find(alias);                                             \
+      assert_info(factory != implementation_factories.end(),                                           \
+            "Implementation [" + name + "::" + alias + "] not found!");                                \
       return (factory->second)();                                                                      \
     }                                                                                                  \
     std::unique_ptr<T> CreateUnique(const std::string& alias) {                                        \
       auto factory = implementation_unique_factories.find(alias);                                      \
+      assert_info(factory != implementation_unique_factories.end(),                                    \
+            "Implementation [" + name + "::" + alias + "] not found!");                                \
       return (factory->second)();                                                                      \
     }                                                                                                  \
     T* CreateRaw(const std::string& alias) {                                                           \
       auto factory = implementation_raw_factories.find(alias);                                         \
+      assert_info(factory != implementation_raw_factories.end(),                                       \
+            "Implementation [" + name + "::" + alias + "] not found!");                                \
       return (factory->second)();                                                                      \
     }                                                                                                  \
     T* CreatePlacement(const std::string& alias, void* placement) {                                    \
       auto factory = implementation_placement_factories.find(alias);                                   \
+      assert_info(factory != implementation_placement_factories.end(),                                 \
+            "Implementation [" + name + "::" + alias + "] not found!");                                \
       return (factory->second)(placement);                                                             \
     }                                                                                                  \
     static MIN_IMPLEMENTATION_HOLDER_NAME(T) * instance() {                                            \

@@ -18,8 +18,6 @@ class Accel {
     mesh_offset.push_back(0u);
   }
   ~Accel() {
-    for (auto shape : meshes)
-      delete shape;
     meshes.clear();
     mesh_offset.clear();
     mesh_offset.push_back(0u);
@@ -37,7 +35,7 @@ class Accel {
      *
      * This function can only be used before \ref build() is called
      */
-  void AddMesh(Mesh *mesh);
+  void AddMesh(const std::shared_ptr<Mesh> &mesh);
 
   /// Build the acceleration data structure (currently a no-op)
   void Build();
@@ -124,7 +122,7 @@ class Accel {
     return meshes[shapeIdx]->GetBoundingBox(index);
   }
 
-  std::vector<Mesh *> meshes;
+  std::vector<std::shared_ptr<Mesh>> meshes;
   std::vector<uint32_t> mesh_offset;
   std::vector<BVHNode> nodes;
   std::vector<uint32_t> indices;

@@ -10,11 +10,19 @@ namespace min::ray {
  */
 class GaussianFilter : public ReconstructionFilter {
  public:
-  GaussianFilter(const PropertyList &propList) {
-    /* Half filter size */
-    radius = propList.getFloat("radius", 2.0f);
-    /* Standard deviation of the Gaussian */
-    m_stddev = propList.getFloat("stddev", 0.5f);
+//  GaussianFilter(const PropertyList &propList) {
+//    /* Half filter size */
+//    radius = propList.getFloat("radius", 2.0f);
+//    /* Standard deviation of the Gaussian */
+//    m_stddev = propList.getFloat("stddev", 0.5f);
+//  }
+  GaussianFilter() {
+      radius = 2.0f;
+      m_stddev = 0.5f;
+  }
+  void initialize(const json &json) override {
+    //radius = json.at("radius").get<float>();
+    //m_stddev = json.at("stddev").get<float>();
   }
 
   float Evaluate(float x) const {
@@ -24,28 +32,40 @@ class GaussianFilter : public ReconstructionFilter {
                         std::exp(alpha * radius * radius));
   }
 
-  std::string ToString() const {
-    return tfm::format("GaussianFilter[radius=%f, stddev=%f]", radius, m_stddev);
-  }
+//  std::string ToString() const {
+//    return tfm::format("GaussianFilter[radius=%f, stddev=%f]", radius, m_stddev);
+//  }
 
  protected:
   float m_stddev;
 };
+MIN_IMPLEMENTATION(ReconstructionFilter, GaussianFilter, "gaussian")
 
+/*
+
+
+*/
 /**
  * Separable reconstruction filter by Mitchell and Netravali
  * 
  * D. Mitchell, A. Netravali, Reconstruction filters for computer graphics, 
  * Proceedings of SIGGRAPH 88, Computer Graphics 22(4), pp. 221-228, 1988.
- */
+ *//*
+
 class MitchellNetravaliFilter : public ReconstructionFilter {
  public:
   MitchellNetravaliFilter(const PropertyList &propList) {
-    /* Filter size in pixels */
+    */
+/* Filter size in pixels *//*
+
     radius = propList.getFloat("radius", 2.0f);
-    /* B parameter from the paper */
+    */
+/* B parameter from the paper *//*
+
     m_B = propList.getFloat("B", 1.0f / 3.0f);
-    /* C parameter from the paper */
+    */
+/* C parameter from the paper *//*
+
     m_C = propList.getFloat("C", 1.0f / 3.0f);
   }
 
@@ -106,5 +126,7 @@ NORI_REGISTER_CLASS(GaussianFilter, "gaussian");
 NORI_REGISTER_CLASS(MitchellNetravaliFilter, "mitchell");
 NORI_REGISTER_CLASS(TentFilter, "tent");
 NORI_REGISTER_CLASS(BoxFilter, "box");
+
+*/
 
 }  // namespace min::ray

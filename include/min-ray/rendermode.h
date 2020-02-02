@@ -1,3 +1,6 @@
+#pragma once
+
+#include <min-ray/interface.h>
 #include <min-ray/object.h>
 
 namespace min::ray {
@@ -9,7 +12,7 @@ namespace min::ray {
  * In this example we implemented a progressive render mode for a faster visualization
  * (default: blockwise, new: progressive)
  */
-class RenderMode : public NoriObject {
+class RenderMode : public Unit {
  public:
   /// Release all memory
   virtual ~RenderMode() {}
@@ -17,10 +20,9 @@ class RenderMode : public NoriObject {
   /// Main render process
   virtual void Render(Scene *scene, const std::string &filename) = 0;
 
-  EClassType getClassType() const { return ERenderMode; }
-
  private:
   /* nothing to-do here */
 };
+MIN_INTERFACE(RenderMode)
 
 }  // namespace min::ray

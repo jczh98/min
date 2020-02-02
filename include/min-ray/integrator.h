@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <min-ray/interface.h>
 #include <min-ray/object.h>
 
 namespace min::ray {
@@ -15,7 +16,7 @@ namespace min::ray {
  * the light transport equation---usually favored in certain scenarios, but
  * at the same time affected by its own set of intrinsic limitations.
  */
-class Integrator : public NoriObject {
+class Integrator : public Unit {
  public:
   /// Release all memory
   virtual ~Integrator() {}
@@ -37,11 +38,7 @@ class Integrator : public NoriObject {
      */
   virtual Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const = 0;
 
-  /**
-     * \brief Return the type of object (i.e. Mesh/BSDF/etc.) 
-     * provided by this instance
-     * */
-  EClassType getClassType() const { return EIntegrator; }
 };
+MIN_INTERFACE(Integrator)
 
 }  // namespace min::ray

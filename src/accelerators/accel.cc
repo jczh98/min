@@ -268,7 +268,7 @@ class BVHBuildTask : public tbb::task {
   }
 };
 
-void Accel::AddMesh(Mesh *mesh) {
+void Accel::AddMesh(const std::shared_ptr<Mesh> &mesh) {
   meshes.push_back(mesh);
   mesh_offset.push_back(mesh_offset.back() + mesh->GetTriangleCount());
   bbox.ExpandBy(mesh->GetBoundingBox());
@@ -382,7 +382,7 @@ bool Accel::Intersect(const Ray3f &ray_, Intersection &its, bool shadowRay) cons
     } else {
       for (uint32_t i = node.start(), end = node.end(); i < end; ++i) {
         uint32_t idx = indices[i];
-        const Mesh *shape = meshes[FindMesh(idx)];
+        auto shape = meshes[FindMesh(idx)];
 
         float u, v, t;
         if (shape->Intersect(idx, ray, u, v, t)) {
@@ -391,7 +391,7 @@ bool Accel::Intersect(const Ray3f &ray_, Intersection &its, bool shadowRay) cons
           foundIntersection = true;
           ray.maxt = its.t = t;
           its.uv = Point2f(u, v);
-          its.mesh = shape;
+          its.mesh = shape.get();
           f = idx;
         }
       }

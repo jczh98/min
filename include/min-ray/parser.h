@@ -2,6 +2,7 @@
 #pragma once
 
 #include <min-ray/object.h>
+#include <min-ray/scene.h>
 
 namespace min::ray {
 

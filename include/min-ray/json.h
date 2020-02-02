@@ -74,7 +74,7 @@ struct adl_serializer<Color3f> {
       MIN_ERROR("Invalid JSON type [expected='array', actual='{}']", j.type_name());
     }
     if (j.size() != 3) {
-      MIN_ERROR("Invalid number of elements [expected={}, actual={}]", N, j.size());
+      MIN_ERROR("Invalid number of elements [expected={}, actual={}]", 3, j.size());
     }
     for (int i = 0; i < 3; i++) {
       v[i] = static_cast<float>(j[i]);
@@ -97,7 +97,7 @@ struct adl_serializer<Color4f> {
       MIN_ERROR("Invalid JSON type [expected='array', actual='{}']", j.type_name());
     }
     if (j.size() != 3) {
-      MIN_ERROR("Invalid number of elements [expected={}, actual={}]", N, j.size());
+      MIN_ERROR("Invalid number of elements [expected={}, actual={}]", 4, j.size());
     }
     for (int i = 0; i < 4; i++) {
       v[i] = static_cast<float>(j[i]);

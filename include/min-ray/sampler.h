@@ -1,6 +1,6 @@
-
 #pragma once
 
+#include <min-ray/interface.h>
 #include <min-ray/object.h>
 #include <memory>
 
@@ -42,7 +42,7 @@ class ImageBlock;
  * first n components with respect to the other points that are sampled 
  * within a pixel.
  */
-class Sampler : public NoriObject {
+class Sampler : public Unit {
  public:
   /// Release all memory
   virtual ~Sampler() {}
@@ -80,14 +80,8 @@ class Sampler : public NoriObject {
   /// Return the number of configured pixel samples
   virtual size_t GetSampleCount() const { return sample_count; }
 
-  /**
-     * \brief Return the type of object (i.e. Mesh/Sampler/etc.) 
-     * provided by this instance
-     * */
-  EClassType getClassType() const { return ESampler; }
-
- protected:
   size_t sample_count;
 };
+MIN_INTERFACE(Sampler)
 
 }  // namespace min::ray

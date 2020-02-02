@@ -1,20 +1,25 @@
 #include <min-ray/emitter.h>
+#include <min-ray/json.h>
 
 namespace min::ray {
 
 class AreaEmitter : public Emitter {
  public:
-  AreaEmitter(const PropertyList &props) {
-    radiance = props.getColor("radiance");
-  }
+//  AreaEmitter(const PropertyList &props) {
+//    radiance = props.getColor("radiance");
+//  }
 
-  virtual std::string ToString() const override {
-    return tfm::format(
-        "AreaLight[\n"
-        "  radiance = %s,\n"
-        "]",
-        radiance.ToString());
+  void initialize(const json &json) override {
+
+    radiance = json.at("radiance").get<Color3f>();
   }
+//  virtual std::string ToString() const override {
+//    return tfm::format(
+//        "AreaLight[\n"
+//        "  radiance = %s,\n"
+//        "]",
+//        radiance.ToString());
+//  }
 
   virtual Color3f Evaluate(const LightRayQueryRecord & lRec) const override {
     if(!mesh)
@@ -63,7 +68,7 @@ class AreaEmitter : public Emitter {
  protected:
   Color3f radiance;
 };
-
-NORI_REGISTER_CLASS(AreaEmitter, "area")
+MIN_IMPLEMENTATION(Emitter, AreaEmitter, "area")
+//NORI_REGISTER_CLASS(AreaEmitter, "area")
 }
 

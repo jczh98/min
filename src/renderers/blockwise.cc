@@ -18,20 +18,20 @@ namespace min::ray {
 /// Blockwise render mode
 class Blockwise : public RenderMode {
  public:
-  Blockwise(const PropertyList &) {}
+  //Blockwise(const PropertyList &) {}
 
   virtual ~Blockwise() {}
 
   void Render(Scene *scene, const std::string &filename) {
-    const Camera *camera = scene->GetCamera();
+    const Camera *camera = scene->camera.get();
     Vector2i outputSize = camera->GetOutputSize();
-    scene->GetIntegrator()->Preprocess(scene);
+    scene->integrator->Preprocess(scene);
 
     /* Create a block generator (i.e. a work scheduler) */
     BlockGenerator blockGenerator(outputSize, NORI_BLOCK_SIZE);
 
     /* Allocate memory for the entire output image and clear it */
-    ImageBlock result(outputSize, camera->GetReconstructionFilter());
+    ImageBlock result(outputSize, camera->filter.get());
     result.Clear();
 
     /* Create a window that visualizes the partially rendered result */
@@ -50,10 +50,10 @@ class Blockwise : public RenderMode {
         /* Allocate memory for a small image block to be rendered
 	               by the current thread */
         ImageBlock block(Vector2i(NORI_BLOCK_SIZE),
-                         camera->GetReconstructionFilter());
+                         camera->filter.get());
 
         /* Create a clone of the sampler for the current thread */
-        std::unique_ptr<Sampler> sampler(scene->GetSampler()->Clone());
+        std::unique_ptr<Sampler> sampler(scene->sampler->Clone());
 
         for (int i = range.begin(); i < range.end(); ++i) {
           /* Request an image block from the block generator */
@@ -104,8 +104,8 @@ class Blockwise : public RenderMode {
   }
 
   void RenderBlock(const Scene *scene, Sampler *sampler, ImageBlock &block) {
-    const Camera *camera = scene->GetCamera();
-    const Integrator *integrator = scene->GetIntegrator();
+    const Camera *camera = scene->camera.get();
+    const Integrator *integrator = scene->integrator.get();
 
     Point2i offset = block.GetOffset();
     Vector2i size = block.GetSize();
@@ -140,5 +140,6 @@ class Blockwise : public RenderMode {
 
  private:
 };
-NORI_REGISTER_CLASS(Blockwise, "blockwise");
+MIN_IMPLEMENTATION(RenderMode, Blockwise, "blockwise")
+//NORI_REGISTER_CLASS(Blockwise, "blockwise");
 }  // namespace min::ray

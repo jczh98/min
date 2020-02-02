@@ -1,0 +1,40 @@
+{
+  "renderer": "blockwise",
+  "integrator": "normals",
+  "camera": {
+    "type": "perspective",
+    "props": {
+      "fov": 16,
+      "transform": {
+        "scale": [-1,1,1],
+        "lookat": {
+          "target": [-0.0123771, 0.0540913, -0.239922],
+          "origin": [-0.0315182, 0.284011, 0.7331],
+          "up": [0.00717446, 0.973206, -0.229822]
+        }
+      },
+      "height": 768,
+      "width": 768
+    }
+  },
+  "sampler": {
+    "type": "independent",
+    "props": {
+      "sampleCount": 1
+    }
+  },
+  "meshes": [
+    {
+      "type": "obj",
+      "props": {
+        "filename": "bunny.obj",
+        "bsdf": {
+          "type": "diffuse",
+          "props": {
+            "color": [0.725,0.71,0.68]
+          }
+        }
+      }
+    }
+  ]
+}

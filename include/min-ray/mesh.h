@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <min-ray/interface.h>
 #include <min-ray/bbox.h>
 #include <min-ray/frame.h>
 #include <min-ray/object.h>
@@ -44,7 +45,7 @@ struct Intersection {
   }
 
   /// Return a human-readable summary of the intersection record
-  std::string ToString() const;
+  //std::string ToString() const;
 };
 
 struct SurfaceSample {
@@ -74,13 +75,11 @@ struct SurfaceSample {
  * the specifics of how to create its contents (e.g. by loading from an
  * external file)
  */
-class Mesh : public NoriObject {
+class Mesh : public Unit {
  public:
-  /// Release all memory
-  virtual ~Mesh();
 
   /// Initialize internal data structures (called once by the XML parser)
-  virtual void activate();
+  //virtual void activate();
 
   /// Return the total number of triangles in this shape
   uint32_t GetTriangleCount() const { return (uint32_t)faces.cols(); }
@@ -153,34 +152,30 @@ class Mesh : public NoriObject {
   /// Is this mesh an area emitter?
   bool IsLight() const { return light != nullptr; }
 
+  std::shared_ptr<Emitter> GetLight() { return light; }
+
+  const std::shared_ptr<Emitter> GetLight() const { return light; }
+
   /// Return a pointer to an attached area emitter instance
-  Emitter *GetEmitter() { return light; }
+  Emitter *GetEmitter() { return light.get(); }
 
   /// Return a pointer to an attached area emitter instance (const version)
-  const Emitter *GetEmitter() const { return light; }
+  const Emitter *GetEmitter() const { return light.get(); }
 
   /// Return a pointer to the BSDF associated with this mesh
-  const BSDF *GetBSDF() const { return bsdf; }
+  const BSDF *GetBSDF() const { return bsdf.get(); }
 
   /// Register a child object (e.g. a BSDF) with the mesh
-  virtual void addChild(NoriObject *child);
+  //virtual void addChild(NoriObject *child);
 
   /// Return the name of this mesh
   const std::string &GetName() const { return name_val; }
 
   /// Return a human-readable summary of this instance
-  std::string ToString() const;
-
-  /**
-     * \brief Return the type of object (i.e. Mesh/BSDF/etc.)
-     * provided by this instance
-     * */
-  EClassType getClassType() const { return EMesh; }
+  //std::string ToString() const;
+  void initialize(const json &json) override;
 
   float total_surface_area = 0.0f;
- protected:
-  /// Create an empty mesh
-  Mesh();
 
  protected:
   std::string name_val;            ///< Identifying name
@@ -188,10 +183,11 @@ class Mesh : public NoriObject {
   MatrixXf normals;                  ///< Vertex normals
   MatrixXf texcoords;                 ///< Vertex texture coordinates
   MatrixXu faces;                  ///< Faces
-  BSDF *bsdf = nullptr;        ///< BSDF of the surface
-  Emitter *light = nullptr;  ///< Associated emitter, if any
+  std::shared_ptr<BSDF> bsdf = nullptr;        ///< BSDF of the surface
+  std::shared_ptr<Emitter> light = nullptr;  ///< Associated emitter, if any
   DiscretePDF dpdf;
   BoundingBox3f bound_box;          ///< Bounding box of the mesh
 };
+MIN_INTERFACE(Mesh)
 
 }  // namespace min::ray

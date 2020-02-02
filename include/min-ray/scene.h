@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <min-ray/accel.h>
@@ -13,39 +12,39 @@ namespace min::ray {
  * coordinating rendering jobs. It also provides useful query routines that
  * are mostly used by the \ref Integrator implementations.
  */
-class Scene : public NoriObject {
+class Scene : public Unit {
  public:
   /// Construct a new scene object
-  Scene(const PropertyList &);
+  //Scene(const PropertyList &);
 
   /// Release all memory
-  virtual ~Scene();
+  //virtual ~Scene();
 
   /// Return a pointer to the scene's kd-tree
-  const Accel *GetAccelerator() const { return accelerator; }
+  const std::shared_ptr<Accel> GetAccelerator() const { return accelerator; }
 
-  /// Return a pointer to the scene's integrator
-  const Integrator *GetIntegrator() const { return integrator; }
-
-  /// Return a pointer to the scene's integrator
-  Integrator *GetIntegrator() { return integrator; }
-
-  /// Return a pointer to the scene's camera
-  const Camera *GetCamera() const { return camera; }
-
-  /// Return a pointer to the scene's sample generator (const version)
-  const Sampler *GetSampler() const { return sampler; }
-
-  /// Return a pointer to the scene's sample generator
-  Sampler *GetSampler() { return sampler; }
-
-  /// Return a pointer to the scene's render mode
-  RenderMode *GetRenderMode() { return rendermode; }
+//  /// Return a pointer to the scene's integrator
+//  const Integrator *GetIntegrator() const { return integrator; }
+//
+//  /// Return a pointer to the scene's integrator
+//  Integrator *GetIntegrator() { return integrator; }
+//
+//  /// Return a pointer to the scene's camera
+//  const Camera *GetCamera() const { return camera; }
+//
+//  /// Return a pointer to the scene's sample generator (const version)
+//  const Sampler *GetSampler() const { return sampler; }
+//
+//  /// Return a pointer to the scene's sample generator
+//  Sampler *GetSampler() { return sampler; }
+//
+//  /// Return a pointer to the scene's render mode
+//  RenderMode *GetRenderMode() { return rendermode; }
 
   /// Return a reference to an array containing all meshes
-  const std::vector<Mesh *> &GetMeshes() const { return meshes; }
+  const std::vector<std::shared_ptr<Mesh>> &GetMeshes() const { return meshes; }
 
-  const std::vector<Emitter *> &GetLights() const { return lights; }
+  const std::vector<std::shared_ptr<Emitter>> &GetLights() const { return lights; }
   /**
      * \brief Intersect a ray against all triangles stored in the scene
      * and return detailed intersection information
@@ -95,24 +94,23 @@ class Scene : public NoriObject {
      * Initializes the internal data structures (kd-tree,
      * emitter sampling data structures, etc.)
      */
-  void activate();
+  //void activate();
 
   /// Add a child object to the scene (meshes, integrators etc.)
-  void addChild(NoriObject *obj);
+  //void addChild(NoriObject *obj);
 
   /// Return a string summary of the scene (for debugging purposes)
-  std::string ToString() const;
+  //std::string ToString() const;
+  //void initialize(const json &json) override;
 
-  EClassType getClassType() const { return EScene; }
-
- private:
-  std::vector<Mesh *> meshes;
-  std::vector<Emitter *> lights;
-  Integrator *integrator = nullptr;
-  Sampler *sampler = nullptr;
-  Camera *camera = nullptr;
-  Accel *accelerator = nullptr;
-  RenderMode *rendermode = nullptr;
+  std::vector<std::shared_ptr<Mesh>> meshes;
+  std::vector<std::shared_ptr<Emitter>> lights;
+  std::shared_ptr<Integrator> integrator = nullptr;
+  std::shared_ptr<Sampler> sampler = nullptr;
+  std::shared_ptr<Camera> camera = nullptr;
+  std::shared_ptr<Accel> accelerator = nullptr;
+  std::shared_ptr<RenderMode> rendermode = nullptr;
 };
+MIN_INTERFACE(Scene)
 
 }  // namespace min::ray

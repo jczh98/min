@@ -15,8 +15,11 @@ namespace min::ray {
  */
 class Independent : public Sampler {
  public:
-  Independent(const PropertyList &propList) {
-    sample_count = (size_t)propList.getInteger("sampleCount", 1);
+//  Independent(const PropertyList &propList) {
+//    sample_count = (size_t)propList.getInteger("sampleCount", 1);
+//  }
+  void initialize(const json &json) override {
+    sample_count = json.at("sampleCount").get<int>();
   }
 
   virtual ~Independent() {}
@@ -49,16 +52,13 @@ class Independent : public Sampler {
         m_random.nextFloat());
   }
 
-  std::string ToString() const {
-    return tfm::format("Independent[sampleCount=%i]", sample_count);
-  }
-
- protected:
-  Independent() {}
+//  std::string ToString() const {
+//    return tfm::format("Independent[sampleCount=%i]", sample_count);
+//  }
 
  private:
   pcg32 m_random;
 };
-
-NORI_REGISTER_CLASS(Independent, "independent");
+MIN_IMPLEMENTATION(Sampler, Independent, "independent")
+//NORI_REGISTER_CLASS(Independent, "independent");
 }  // namespace min::ray

@@ -1,6 +1,7 @@
 #include <min-ray/bsdf.h>
 #include <min-ray/frame.h>
 #include <min-ray/warp.h>
+#include <min-ray/json.h>
 
 namespace min::ray {
 
@@ -9,10 +10,12 @@ namespace min::ray {
  */
 class Diffuse : public BSDF {
  public:
-  Diffuse(const PropertyList &propList) {
-    m_albedo = propList.getColor("albedo", Color3f(0.5f));
+//  Diffuse(const PropertyList &propList) {
+//    m_albedo = propList.getColor("albedo", Color3f(0.5f));
+//  }
+  void initialize(const json &json) override {
+    m_albedo = json.at("color").get<Color3f>();
   }
-
   /// Evaluate the BRDF model
   Color3f Evaluate(const BSDFQueryRecord &bRec) const {
     /* This is a smooth BRDF -- return zero if the measure
@@ -71,12 +74,12 @@ class Diffuse : public BSDF {
         m_albedo.ToString());
   }
 
-  EClassType getClassType() const { return EBSDF; }
+  //EClassType getClassType() const { return EBSDF; }
 
  private:
   Color3f m_albedo;
 };
-
-NORI_REGISTER_CLASS(Diffuse, "diffuse");
+MIN_IMPLEMENTATION(BSDF, Diffuse, "diffuse")
+//NORI_REGISTER_CLASS(Diffuse, "diffuse");
 
 }

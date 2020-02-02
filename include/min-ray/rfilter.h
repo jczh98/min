@@ -1,6 +1,6 @@
-
 #pragma once
 
+#include <min-ray/interface.h>
 #include <min-ray/object.h>
 
 /// Reconstruction filters will be tabulated at this resolution
@@ -20,7 +20,7 @@ namespace min::ray {
  *
  * http://graphics.stanford.edu/~mmp/chapters/pbrt_chapter7.pdf
  */
-class ReconstructionFilter : public NoriObject {
+class ReconstructionFilter : public Unit {
  public:
   /// Return the filter radius in fractional pixels
   float GetRadius() const { return radius; }
@@ -28,14 +28,9 @@ class ReconstructionFilter : public NoriObject {
   /// Evaluate the filter function
   virtual float Evaluate(float x) const = 0;
 
-  /**
-     * \brief Return the type of object (i.e. Mesh/Camera/etc.) 
-     * provided by this instance
-     * */
-  EClassType getClassType() const { return EReconstructionFilter; }
-
  protected:
   float radius;
 };
+MIN_INTERFACE(ReconstructionFilter)
 
 }  // namespace min::ray

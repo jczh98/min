@@ -1,5 +1,6 @@
 #pragma once
 
+#include <min-ray/interface.h>
 #include <min-ray/object.h>
 
 namespace min::ray {
@@ -34,7 +35,7 @@ struct BSDFQueryRecord {
 /**
  * \brief Superclass of all bidirectional scattering distribution functions
  */
-class BSDF : public NoriObject {
+class BSDF : public Unit {
  public:
   /**
      * \brief Sample the BSDF and return the importance weight (i.e. the
@@ -80,11 +81,6 @@ class BSDF : public NoriObject {
 
   virtual float Pdf(const BSDFQueryRecord &bRec) const = 0;
 
-  /**
-     * \brief Return the type of object (i.e. Mesh/BSDF/etc.)
-     * provided by this instance
-     * */
-  EClassType getClassType() const { return EBSDF; }
 
   /**
      * \brief Return whether or not this BRDF is diffuse. This
@@ -93,5 +89,6 @@ class BSDF : public NoriObject {
      */
   virtual bool IsDiffuse() const { return false; }
 };
+MIN_INTERFACE(BSDF)
 
 }  // namespace min::ray

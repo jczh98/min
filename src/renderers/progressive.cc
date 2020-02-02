@@ -17,21 +17,21 @@ namespace min::ray {
 /// Progressive render mode
 class Progressive : public RenderMode {
  public:
-  Progressive(const PropertyList &){}
+  //Progressive(const PropertyList &){}
 
   virtual ~Progressive() {}
 
   void Render(Scene *scene, const std::string &filename) {
-    const Camera *camera = scene->GetCamera();
-    Sampler *sampler = scene->GetSampler();
+    const Camera *camera = scene->camera.get();
+    Sampler *sampler = scene->sampler.get();
     Vector2i outputSize = camera->GetOutputSize();
-    scene->GetIntegrator()->Preprocess(scene);
+    scene->integrator->Preprocess(scene);
 
     /* Create a block generator (i.e. a work scheduler) */
     BlockGenerator blockGenerator(outputSize, NORI_BLOCK_SIZE);
 
     /* Allocate memory for the entire output image and clear it */
-    ImageBlock result(outputSize, camera->GetReconstructionFilter());
+    ImageBlock result(outputSize, camera->filter.get());
     result.Clear();
 
     auto gui = std::make_unique<PreviewGUI>(result);
@@ -48,14 +48,14 @@ class Progressive : public RenderMode {
       auto map = [&](const tbb::blocked_range<int> &range) {
         /* Allocate memory for a small image block to be rendered
         /* Create a clone of the sampler for the current thread */
-        std::unique_ptr<Sampler> sampler(scene->GetSampler()->Clone());
+        std::unique_ptr<Sampler> sampler(scene->sampler->Clone());
         sampler->Prepare(result);
         for (int i = range.begin(); i < range.end(); ++i) {
 
           //sampler->Prepare(result);
 
-          const Camera *camera = scene->GetCamera();
-          const Integrator *integrator = scene->GetIntegrator();
+          const Camera *camera = scene->camera.get();
+          const Integrator *integrator = scene->integrator.get();
 
           const int x = i % outputSize.x(), y = i / outputSize.x();
           Point2f pixelSample = Point2f((float) x, (float) y) + sampler->Next2D();
@@ -113,5 +113,6 @@ class Progressive : public RenderMode {
 
  private:
 };
-NORI_REGISTER_CLASS(Progressive, "progressive");
+MIN_IMPLEMENTATION(RenderMode, Progressive, "progressive")
+//NORI_REGISTER_CLASS(Progressive, "progressive");
 }  // namespace min::ray

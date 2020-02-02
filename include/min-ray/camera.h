@@ -1,5 +1,6 @@
 #pragma once
 
+#include <min-ray/interface.h>
 #include <min-ray/object.h>
 
 namespace min::ray {
@@ -13,7 +14,7 @@ namespace min::ray {
  * implement other types (e.g. an environment camera, or a physically-based 
  * camera model that simulates the behavior actual lenses)
  */
-class Camera : public NoriObject {
+class Camera : public Unit {
  public:
   /**
      * \brief Importance sample a ray according to the camera's response function
@@ -43,17 +44,11 @@ class Camera : public NoriObject {
   const Vector2i &GetOutputSize() const { return output_size; }
 
   /// Return the camera's reconstruction filter in image space
-  const ReconstructionFilter *GetReconstructionFilter() const { return rfilter; }
+  //const ReconstructionFilter *GetReconstructionFilter() const { return rfilter; }
 
-  /**
-     * \brief Return the type of object (i.e. Mesh/Camera/etc.) 
-     * provided by this instance
-     * */
-  EClassType getClassType() const { return ECamera; }
-
- protected:
   Vector2i output_size;
-  ReconstructionFilter *rfilter;
+  std::shared_ptr<ReconstructionFilter> filter;
 };
+MIN_INTERFACE(Camera)
 
 }  // namespace min::ray
