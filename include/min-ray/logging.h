@@ -45,6 +45,12 @@ namespace min::logging {
 #define MIN_EXPORT
 #endif
 
+#if defined (WIN32)
+#define MIN_UNREACHABLE __assume(0);
+#else
+#define MIN_UNREACHABLE __builtin_unreachable();
+#endif
+
 #define SPD_AUGMENTED_LOG(X, ...)                                        \
   min::logging::logger.X(                                                \
       fmt::format("[{}@{}] ", __FUNCTION__, __LINE__) + \
@@ -54,8 +60,17 @@ namespace min::logging {
 #define MIN_DEBUG(...) SPD_AUGMENTED_LOG(debug, __VA_ARGS__)
 #define MIN_INFO(...) SPD_AUGMENTED_LOG(info, __VA_ARGS__)
 #define MIN_WARN(...) SPD_AUGMENTED_LOG(warn, __VA_ARGS__)
-#define MIN_ERROR(...) SPD_AUGMENTED_LOG(error, __VA_ARGS__)
-#define MIN_CRITICAL(...) SPD_AUGMENTED_LOG(critical, __VA_ARGS__)
+#define MIN_ERROR(...)                \
+{                                     \
+SPD_AUGMENTED_LOG(error, __VA_ARGS__);\
+MIN_UNREACHABLE;                      \
+}
+
+#define MIN_CRITICAL(...)                \
+{                                        \
+SPD_AUGMENTED_LOG(critical, __VA_ARGS__);\
+MIN_UNREACHABLE;                         \
+}
 
 #define assert_info(x, info)               \
   {                                        \
@@ -64,6 +79,9 @@ namespace min::logging {
       MIN_ERROR(info);                      \
     }                                      \
   }
+#define MIN_STATIC_ASSERT(x) static_assert((x), #x);
+#define MIN_ASSERT(x) MIN_ASSERT_INFO((x), #x)
+#define MIN_ASSERT_INFO assert_info
 #define MIN_NOT_IMPLEMENTED MIN_ERROR("Not Implemented.");
 
 class Logger {
