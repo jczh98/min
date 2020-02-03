@@ -11,7 +11,7 @@ namespace min::ray {
 class ImageBlock : public Eigen::Array<Color4f, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> {
  public:
 
-  ImageBlock(const Vector2i &size, const ReconstructionFilter *filter);
+  ImageBlock(const Vector2i &size, const std::shared_ptr<ReconstructionFilter> filter);
 
   ~ImageBlock();
 

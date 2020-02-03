@@ -6,7 +6,7 @@
 
 namespace min::ray {
 
-ImageBlock::ImageBlock(const Vector2i &local_size, const ReconstructionFilter *local_filter)
+ImageBlock::ImageBlock(const Vector2i &local_size, const std::shared_ptr<ReconstructionFilter> local_filter)
     : offset(0, 0), size(local_size) {
   if (local_filter) {
     // Tabulate the image reconstruction filter for performance reasons

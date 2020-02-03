@@ -12,11 +12,10 @@ namespace min::ray {
 class Integrator : public Unit {
  public:
 
-  virtual ~Integrator() {}
+  virtual void Preprocess(const std::shared_ptr<Scene> scene) {}
 
-  virtual void Preprocess(const Scene *scene) {}
-
-  virtual Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const = 0;
+  virtual Color3f Li(const std::shared_ptr<Scene> scene,
+      const Sampler *sampler, const Ray3f &ray) const = 0;
 
 };
 MIN_INTERFACE(Integrator)

@@ -5,6 +5,7 @@
 #include <min-ray/bitmap.h>
 #include <min-ray/sampler.h>
 #include <min-ray/integrator.h>
+#include <min-ray/scene.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 #include <min-ray/resolver.h>
@@ -15,53 +16,28 @@
 using namespace min::ray;
 
 int main(int argc, char **argv) {
-    //if (argc != 2) {
-    //    cerr << "Syntax: " << argv[0] << " <scene.xml>" << endl;
-    //    return -1;
-    //}
     std::string tmp = "E:\\work\\min-ray\\assets\\bunny\\scene.json";
     fs::path path(tmp);
-    try {
-      GetFileResolver()->Prepend(path.parent_path());
-      std::ifstream is(tmp);
-      json j;
-      is >> j;
-      auto scene = CreateInstance<Scene>("default_scene", j);
-      auto renderer = scene->rendermode;
-      renderer->Render(scene.get(), tmp);
-      //auto renderer = scene->GetRenderMode();
-      //renderer->Render(scene.get(), tmp);
-//        if (path.extension() == "xml") {
-//            /* Add the parent directory of the scene file to the
-//               file resolver. That way, the XML file can reference
-//               resources (OBJ files, textures) using relative paths */
-//            getFileResolver()->prepend(path.parent_path());
-//
-//            std::unique_ptr<NoriObject> root(loadFromXML(tmp));
-//
-//            /* When the XML root object is a scene, start rendering it .. */
-//            if (root->getClassType() == NoriObject::EScene) {
-//            	Scene *scene = static_cast<Scene *>(root.get());
-//            	RenderMode *rendermode = scene->GetRenderMode();
-//            	rendermode->Render(scene, tmp);
-//            }
-//        } else if (path.extension() == "exr") {
-//            ///* Alternatively, provide a basic OpenEXR image viewer */
-//            //Bitmap bitmap(argv[1]);
-//            //ImageBlock block(Vector2i((int) bitmap.cols(), (int) bitmap.rows()), nullptr);
-//            //block.FromBitmap(bitmap);
-//            //nanogui::init();
-//            //NoriScreen *screen = new NoriScreen(block);
-//            //nanogui::mainloop();
-//            //delete screen;
-//            //nanogui::shutdown();
-//        } else {
-//            cerr << "Fatal error: unknown file \"" << argv[1]
-//                 << "\", expected an extension of type .xml or .exr" << endl;
-//        }
-    } catch (const std::exception &e) {
-        cerr << "Fatal error: " << e.what() << endl;
-        return -1;
+    GetFileResolver()->Prepend(path.parent_path());
+    std::ifstream is(tmp);
+    json j;
+    is >> j;
+    auto jsampler = j.at("sampler");
+    auto jrenderer = j.at("renderer");
+    auto jcamera = j.at("camera");
+    auto jmeshes = j.at("meshes");
+    auto scene = CreateInstance<Scene>("default_scene");
+    auto sampler = CreateInstance<Sampler>(jsampler.at("type"), jsampler.at("props"));
+    auto camera = CreateInstance<Camera>(jcamera.at("type"), jcamera.at("props"));
+    auto renderer = CreateInstance<Renderer>(jrenderer.at("type"), jrenderer.at("props"));
+    for (auto jmesh : jmeshes) {
+      auto mesh = CreateInstance<Mesh>(jmesh.at("type"), jmesh.at("props"));
+      scene->AddPrimitive(mesh);
     }
+    scene->Build();
+    scene->sampler = sampler;
+    scene->camera = camera;
+    renderer->scene = scene;
+    renderer->Render();
     return 0;
 }

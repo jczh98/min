@@ -4,7 +4,7 @@
 #include <min-ray/emitter.h>
 #include <min-ray/integrator.h>
 #include <min-ray/mesh.h>
-#include <min-ray/rendermode.h>
+#include <min-ray/renderer.h>
 #include <min-ray/rfilter.h>
 #include <min-ray/sampler.h>
 #include <min-ray/scene.h>
@@ -16,7 +16,7 @@ MIN_INTERFACE_DEF(BSDF, "bsdf")
 MIN_INTERFACE_DEF(Camera, "camera")
 MIN_INTERFACE_DEF(Emitter, "emitter")
 MIN_INTERFACE_DEF(Integrator, "integrator")
-MIN_INTERFACE_DEF(RenderMode, "rendermode")
+MIN_INTERFACE_DEF(Renderer, "renderer")
 MIN_INTERFACE_DEF(ReconstructionFilter, "rfilter")
 MIN_INTERFACE_DEF(Sampler, "sampler")
 MIN_INTERFACE_DEF(Mesh, "mesh")

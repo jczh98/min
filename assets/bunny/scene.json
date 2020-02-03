@@ -1,6 +1,13 @@
 {
-  "renderer": "blockwise",
-  "integrator": "normals",
+  "renderer": {
+    "type": "blockwise",
+    "props": {
+      "integrator": {
+        "type": "normals"
+      },
+      "spp": 1
+    }
+  },
   "camera": {
     "type": "perspective",
     "props": {

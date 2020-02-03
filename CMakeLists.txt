@@ -79,7 +79,7 @@ file(GLOB MIN_RAY_CORE
         include/min-ray/transform.h
         include/min-ray/vector.h
         include/min-ray/warp.h
-        include/min-ray/rendermode.h
+        include/min-ray/renderer.h
         include/min-ray/preview_gui.h
         include/min-ray/interface.h
         include/min-ray/logging.h
@@ -112,7 +112,7 @@ file(GLOB MIN_RAY_CORE
         #src/bsdfs/mirror.cc
         #src/bsdfs/dielectric.cc
         src/renderers/blockwise.cc
-        src/renderers/progressive.cc
+        #src/renderers/progressive.cc
         src/integrators/normals.cc
         #src/integrators/path.cc
         src/lights/area_light.cc
