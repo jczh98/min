@@ -105,7 +105,7 @@ file(GLOB MIN_RAY_CORE
         #src/core/parser.cc
         src/cameras/perspective.cc
         #src/core/proplist.cc
-        src/filters/filter.cc
+        src/filters/*.cc
         src/core/scene.cc
         src/core/sampling.cc
         #src/bsdfs/microfacet.cc
