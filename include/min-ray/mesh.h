@@ -29,12 +29,12 @@ struct Intersection {
   Intersection() : mesh(nullptr) {}
 
   // Transform a direction vector into the local shading frame
-  Vector3f toLocal(const Vector3f &d) const {
+  Vector3f ToLocal(const Vector3f &d) const {
     return shading_frame.ToLocal(d);
   }
 
   // Transform a direction vector from local to world coordinates
-  Vector3f toWorld(const Vector3f &d) const {
+  Vector3f ToWorld(const Vector3f &d) const {
     return shading_frame.ToWorld(d);
   }
 };

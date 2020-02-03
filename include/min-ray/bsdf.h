@@ -16,6 +16,11 @@ struct BSDFSample {
   // Relative refractive index in the sampled direction
   float eta;
 
+  // UV associated with the point
+  Point2f uv;
+  // Point associated with the point
+  Point3f p;
+
   // Measure associated with the sample
   EMeasure measure;
 
