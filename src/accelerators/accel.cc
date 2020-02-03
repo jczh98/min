@@ -310,8 +310,10 @@ void Accel::Build() {
   nodes[0].bbox = bbox;
   indices.resize(size);
 
-  if (sizeof(BVHNode) != 32)
-    throw NoriException("BVH Node is not packed! Investigate compiler settings.");
+  if (sizeof(BVHNode) != 32) {
+    MIN_ERROR("BVH Node is not packed! Investigate compiler settings.");
+  }
+    //throw NoriException("BVH Node is not packed! Investigate compiler settings.");
 
   for (uint32_t i = 0; i < size; ++i)
     indices[i] = i;

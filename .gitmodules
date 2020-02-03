@@ -1,18 +1,3 @@
-[submodule "ext/filesystem"]
-	path = ext/filesystem
-	url = https://github.com/wjakob/filesystem
-[submodule "ext/pugixml"]
-	path = ext/pugixml
-	url = https://github.com/zeux/pugixml
-[submodule "ext/tinyformat"]
-	path = ext/tinyformat
-	url = https://github.com/wjakob/tinyformat
-[submodule "ext/hypothesis"]
-	path = ext/hypothesis
-	url = https://github.com/wjakob/hypothesis
-[submodule "ext/pcg32"]
-	path = ext/pcg32
-	url = https://github.com/wjakob/pcg32
 [submodule "external/lodepng"]
 	path = external/lodepng
 	url = https://github.com/lvandeve/lodepng.git

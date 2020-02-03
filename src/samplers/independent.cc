@@ -1,7 +1,7 @@
 
 #include <min-ray/block.h>
 #include <min-ray/sampler.h>
-#include <pcg32.h>
+#include <min-ray/rng.h>
 
 namespace min::ray {
 
@@ -27,12 +27,12 @@ class Independent : public Sampler {
   std::unique_ptr<Sampler> Clone() const {
     std::unique_ptr<Independent> cloned(new Independent());
     cloned->sample_count = sample_count;
-    cloned->m_random = m_random;
+    cloned->random = random;
     return std::move(cloned);
   }
 
   void Prepare(const ImageBlock &block) {
-    m_random.seed(
+    random.Seed(
         block.GetOffset().x(),
         block.GetOffset().y());
   }
@@ -43,13 +43,13 @@ class Independent : public Sampler {
   }
 
   float Next1D() {
-    return m_random.nextFloat();
+    return random.UniformFloat();
   }
 
   Point2f Next2D() {
     return Point2f(
-        m_random.nextFloat(),
-        m_random.nextFloat());
+        random.UniformFloat(),
+        random.UniformFloat());
   }
 
 //  std::string ToString() const {
@@ -57,7 +57,7 @@ class Independent : public Sampler {
 //  }
 
  private:
-  pcg32 m_random;
+  Rng random;
 };
 MIN_IMPLEMENTATION(Sampler, Independent, "independent")
 //NORI_REGISTER_CLASS(Independent, "independent");

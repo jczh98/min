@@ -46,8 +46,10 @@ Bitmap *ImageBlock::ToBitmap() const {
 }
 
 void ImageBlock::FromBitmap(const Bitmap &bitmap) {
-  if (bitmap.cols() != cols() || bitmap.rows() != rows())
-    throw NoriException("Invalid bitmap dimensions!");
+  if (bitmap.cols() != cols() || bitmap.rows() != rows()) {
+    MIN_ERROR("Invalid bitmap dimensions!");
+  }
+    //throw NoriException("Invalid bitmap dimensions!");
 
   for (int y = 0; y < size.y(); ++y)
     for (int x = 0; x < size.x(); ++x)
@@ -96,7 +98,7 @@ void ImageBlock::Put(ImageBlock &b) {
 }
 
 std::string ImageBlock::ToString() const {
-  return tfm::format("ImageBlock[offset=%s, size=%s]]",
+  return fmt::format("ImageBlock[offset={}, size={}]]",
                      offset.ToString(), size.ToString());
 }
 

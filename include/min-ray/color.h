@@ -60,7 +60,7 @@ struct Color3f : public Eigen::Array3f {
 
   /// Return a human-readable string summary
   std::string ToString() const {
-    return tfm::format("[%f, %f, %f]", coeff(0), coeff(1), coeff(2));
+    return fmt::format("[{}, {}, {}]", coeff(0), coeff(1), coeff(2));
   }
 };
 
@@ -104,7 +104,7 @@ struct Color4f : public Eigen::Array4f {
 
   /// Return a human-readable string summary
   std::string ToString() const {
-    return tfm::format("[%f, %f, %f, %f]", coeff(0), coeff(1), coeff(2), coeff(3));
+    return fmt::format("[{}, {}, {}, {}]", coeff(0), coeff(1), coeff(2), coeff(3));
   }
 };
 

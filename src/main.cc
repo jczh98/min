@@ -7,9 +7,10 @@
 #include <min-ray/integrator.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
-#include <filesystem/resolver.h>
+#include <min-ray/resolver.h>
 #include <thread>
 #include <fstream>
+#include <filesystem>
 
 using namespace min::ray;
 
@@ -19,9 +20,9 @@ int main(int argc, char **argv) {
     //    return -1;
     //}
     std::string tmp = "E:\\work\\min-ray\\assets\\bunny\\scene.json";
-    filesystem::path path(tmp);
+    fs::path path(tmp);
     try {
-      getFileResolver()->prepend(path.parent_path());
+      GetFileResolver()->Prepend(path.parent_path());
       std::ifstream is(tmp);
       json j;
       is >> j;

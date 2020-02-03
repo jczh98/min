@@ -10,12 +10,12 @@
 /* Include the basics needed by any Nori file */
 //#include <ImathPlatform.h>
 #include <stdint.h>
-#include <tinyformat.h>
 #include <Eigen/Core>
 #include <algorithm>
 #include <iostream>
+#include <fmt/format.h>
 #include <vector>
-
+#include "resolver.h"
 #include "interface.h"
 
 #if defined(__NORI_APPLE__NORI_)
@@ -38,12 +38,6 @@
 #define INV_FOURPI 0.07957747154594766788f
 #define SQRT_TWO 1.41421356237309504880f
 #define INV_SQRT_TWO 0.70710678118654752440f
-
-/* Forward declarations */
-namespace filesystem {
-class path;
-class resolver;
-};  // namespace filesystem
 
 namespace min::ray {
 
@@ -132,8 +126,8 @@ class NoriException : public std::runtime_error {
  public:
   /// Variadic template constructor to support printf-style arguments
   template <typename... Args>
-  NoriException(const char *fmt, const Args &... args)
-      : std::runtime_error(tfm::format(fmt, args...)) {}
+  NoriException(const char *format, const Args &... args)
+      : std::runtime_error(fmt::format(format, args...)) {}
 };
 
 /// Return the number of cores (real and virtual)
@@ -244,12 +238,7 @@ extern Point2f sphericalCoordinates(const Vector3f &dir);
  */
 extern float fresnel(float cosThetaI, float extIOR, float intIOR);
 
-/**
- * \brief Return the global file resolver instance
- *
- * This class is used to locate resource files (e.g. mesh or
- * texture files) referenced by a scene being loaded
- */
-extern filesystem::resolver *getFileResolver();
+
+extern Resolver *GetFileResolver();
 
 }  // namespace min::ray

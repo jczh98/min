@@ -67,9 +67,9 @@ class Diffuse : public BSDF {
 
   /// Return a human-readable summary
   std::string ToString() const {
-    return tfm::format(
+    return fmt::format(
         "Diffuse[\n"
-        "  albedo = %s\n"
+        "  albedo = {}\n"
         "]",
         m_albedo.ToString());
   }

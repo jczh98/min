@@ -1,5 +1,3 @@
-
-#include <filesystem/resolver.h>
 #include <min-ray/mesh.h>
 #include <min-ray/json.h>
 #include <min-ray/timer.h>
@@ -16,12 +14,13 @@ class WavefrontOBJ : public Mesh {
   void initialize(const json &json) override {
     typedef std::unordered_map<OBJVertex, uint32_t, OBJVertexHash> VertexMap;
 
-    filesystem::path filename =
-        getFileResolver()->resolve(json.at("filename").get<std::string>());
+    fs::path filename =
+        GetFileResolver()->Resolve(json.at("filename").get<std::string>());
 
-    std::ifstream is(filename.str());
+    std::ifstream is(filename.string());
     if (is.fail())
-      throw NoriException("Unable to open OBJ file \"%s\"!", filename);
+      //throw NoriException("Unable to open OBJ file \"{}\"!", filename);
+      MIN_ERROR("Unable to open OBJ file {}!", filename.string());
     Transform trafo = Transform();
     if (json.contains("transform")) {
       trafo = json.at("transform").get<Transform>();
@@ -109,7 +108,7 @@ class WavefrontOBJ : public Mesh {
         texcoords.col(i) = local_texcoords.at(local_vertices[i].uv - 1);
     }
 
-    name_val = filename.str();
+    name_val = filename.string();
     cout << "done. (V=" << positions.cols() << ", F=" << faces.cols() << ", took "
          << timer.ElapsedString() << " and "
          << memString(faces.size() * sizeof(uint32_t) +
@@ -232,7 +231,8 @@ class WavefrontOBJ : public Mesh {
       std::vector<std::string> tokens = tokenize(string, "/", true);
 
       if (tokens.size() < 1 || tokens.size() > 3)
-        throw NoriException("Invalid vertex data: \"%s\"", string);
+        //throw NoriException("Invalid vertex data: \"{}\"", string);
+        MIN_ERROR("Invalid vertex data: {}", string);
 
       p = toUInt(tokens[0]);
 

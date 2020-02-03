@@ -1,5 +1,3 @@
-
-#include <filesystem/resolver.h>
 #include <min-ray/bitmap.h>
 #include <min-ray/block.h>
 #include <min-ray/camera.h>
@@ -108,7 +106,7 @@ class Progressive : public RenderMode {
   }
 
   std::string ToString() const {
-    return tfm::format("Progressive[]");
+    return fmt::format("Progressive[]");
   }
 
  private:

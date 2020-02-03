@@ -160,9 +160,9 @@ struct DiscretePDF {
      * human-readable string format
      */
   std::string ToString() const {
-    std::string result = tfm::format(
-        "DiscretePDF[sum=%f, "
-        "normalized=%f, pdf = {",
+    std::string result = fmt::format(
+        "DiscretePDF[sum={}, "
+        "normalized={}",
         sum_val, normalized_val);
 
     for (size_t i = 0; i < cdf.size(); ++i) {

@@ -1,5 +1,5 @@
 
-#include <filesystem/resolver.h>
+#include <min-ray/resolver.h>
 #include <min-ray/color.h>
 #include <min-ray/common.h>
 #include <min-ray/transform.h>
@@ -60,14 +60,16 @@ bool toBool(const std::string &str) {
   else if (value == "true")
     return true;
   else
-    throw NoriException("Could not parse boolean value \"%s\"", str);
+    //throw NoriException("Could not parse boolean value \"{}\"", str);
+    MIN_ERROR("Could not parse boolean value \"{}\"", str);
 }
 
 int toInt(const std::string &str) {
   char *end_ptr = nullptr;
   int result = (int)strtol(str.c_str(), &end_ptr, 10);
   if (*end_ptr != '\0')
-    throw NoriException("Could not parse integer value \"%s\"", str);
+    //throw NoriException("Could not parse integer value \"{}\"", str);
+    MIN_ERROR("Could not parse integer value \"{}\"", str);
   return result;
 }
 
@@ -75,7 +77,8 @@ unsigned int toUInt(const std::string &str) {
   char *end_ptr = nullptr;
   unsigned int result = (int)strtoul(str.c_str(), &end_ptr, 10);
   if (*end_ptr != '\0')
-    throw NoriException("Could not parse integer value \"%s\"", str);
+    //throw NoriException("Could not parse integer value \"{}\"", str);
+    MIN_ERROR("Could not parse integer value \"{}\"", str);
   return result;
 }
 
@@ -83,14 +86,16 @@ float toFloat(const std::string &str) {
   char *end_ptr = nullptr;
   float result = (float)strtof(str.c_str(), &end_ptr);
   if (*end_ptr != '\0')
-    throw NoriException("Could not parse floating point value \"%s\"", str);
+    //throw NoriException("Could not parse floating point value \"{}\"", str);
+    MIN_ERROR("Could not parse floating point value \"{}\"", str);
   return result;
 }
 
 Eigen::Vector3f toVector3f(const std::string &str) {
   std::vector<std::string> tokens = tokenize(str);
   if (tokens.size() != 3)
-    throw NoriException("Expected 3 values");
+    //throw NoriException("Expected 3 values");
+    MIN_ERROR("Expected 3 values");
   Eigen::Vector3f result;
   for (int i = 0; i < 3; ++i)
     result[i] = toFloat(tokens[i]);
@@ -160,8 +165,8 @@ std::string memString(size_t size, bool precise) {
   return os.str();
 }
 
-filesystem::resolver *getFileResolver() {
-  static filesystem::resolver *resolver = new filesystem::resolver();
+Resolver *GetFileResolver() {
+  static Resolver *resolver = new Resolver;
   return resolver;
 }
 

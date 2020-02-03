@@ -20,8 +20,9 @@ void Mesh::initialize(const json &json) {
   if (json.contains("light")) {
     auto light_ = CreateInstance<Emitter>(json["light"]["type"], json["light"]["props"]);
     if (this->light)
-      throw NoriException(
-          "Mesh: tried to register multiple Emitter instances!");
+      //throw NoriException(
+      //    "Mesh: tried to register multiple Emitter instances!");
+      MIN_ERROR("Mesh: tried to register multiple Emitter instances!");
     this->light = light_;
     this->light->SetMesh(this);
   }

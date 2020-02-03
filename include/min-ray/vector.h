@@ -148,7 +148,7 @@ struct Normal3f : public Eigen::Matrix<float, 3, 1> {
 
   /// Return a human-readable string summary
   std::string ToString() const {
-    return tfm::format("[%f, %f, %f]", coeff(0), coeff(1), coeff(2));
+    return fmt::format("[{}, {}, {}]", coeff(0), coeff(1), coeff(2));
   }
 };
 

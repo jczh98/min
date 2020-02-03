@@ -1,5 +1,3 @@
-
-#include <filesystem/resolver.h>
 #include <min-ray/bitmap.h>
 #include <min-ray/block.h>
 #include <min-ray/camera.h>
@@ -134,7 +132,7 @@ class Blockwise : public RenderMode {
   }
 
   std::string ToString() const {
-    return tfm::format("Blockwise[]");
+    return fmt::format("Blockwise[]");
   }
 
  private:

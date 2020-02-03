@@ -116,11 +116,11 @@ struct Frame {
 
   /// Return a human-readable string summary of this frame
   std::string ToString() const {
-    return tfm::format(
+    return fmt::format(
         "Frame[\n"
-        "  s = %s,\n"
-        "  t = %s,\n"
-        "  n = %s\n"
+        "  s = {},\n"
+        "  t = {},\n"
+        "  n = {}\n"
         "]",
         s.ToString(), t.ToString(), n.ToString());
   }

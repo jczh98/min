@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 2.8.10)
 
 project(min-ray)
 
+set(CMAKE_CXX_STANDARD  17)
+
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake/")
 
 if (WIN32)
@@ -19,25 +23,11 @@ find_package(TBB CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
 
-add_subdirectory(ext ext_build)
 add_subdirectory(external/glad)
 
 include_directories(
-        # Nori include files
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-        # tinyformat string formatting library
-        ${TFM_INCLUDE_DIR}
-        # Pseudorandom number generator
-        ${PCG32_INCLUDE_DIR}
-        # PugiXML parser
-        ${PUGIXML_INCLUDE_DIR}
-        # Portable filesystem API
-        ${FILESYSTEM_INCLUDE_DIR}
-        # STB Image Write
-        ${STB_IMAGE_WRITE_INCLUDE_DIR}
-        # Lodepng
         external/lodepng
-
         external/imgui
         external/imgui/examples
 )
@@ -52,7 +42,7 @@ file(GLOB IMGUI_SRC
         )
 
 set(MIN_RAY_LIBS
-        pugixml glad glfw
+        glad glfw
         fmt::fmt
         nlohmann_json nlohmann_json::nlohmann_json
         TBB::tbb
@@ -91,6 +81,8 @@ file(GLOB MIN_RAY_CORE
         include/min-ray/interface.h
         include/min-ray/logging.h
         include/min-ray/json.h
+        include/min-ray/resolver.h
+        include/min-ray/rng.h
 
         # Source code files
         src/core/bitmap.cc
@@ -130,9 +122,6 @@ add_executable(min-ray
         ${MIN_RAY_CORE}
         ${IMGUI_SRC}
         )
-
-SET_PROPERTY(TARGET min-ray PROPERTY CXX_STANDARD 17)
-SET_PROPERTY(TARGET min-ray PROPERTY CXX_STANDARD_REQUIRED ON)
 
 target_link_libraries(min-ray
         PRIVATE
