@@ -1,7 +1,9 @@
 #pragma once
 
 #include <min-ray/interface.h>
-#include <min-ray/object.h>
+#include <min-ray/color.h>
+#include <min-ray/vector.h>
+#include <min-ray/transform.h>
 
 /// Reconstruction filters will be tabulated at this resolution
 #define NORI_FILTER_RESOLUTION 32

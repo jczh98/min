@@ -5,7 +5,6 @@
 #include <min-ray/camera.h>
 #include <min-ray/preview_gui.h>
 #include <min-ray/integrator.h>
-#include <min-ray/parser.h>
 #include <min-ray/sampler.h>
 #include <min-ray/scene.h>
 #include <min-ray/timer.h>

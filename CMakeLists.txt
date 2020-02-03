@@ -75,9 +75,9 @@ file(GLOB MIN_RAY_CORE
         include/min-ray/integrator.h
         include/min-ray/emitter.h
         include/min-ray/mesh.h
-        include/min-ray/object.h
-        include/min-ray/parser.h
-        include/min-ray/proplist.h
+        #include/min-ray/object.h
+        #include/min-ray/parser.h
+        #include/min-ray/proplist.h
         include/min-ray/ray.h
         include/min-ray/rfilter.h
         include/min-ray/sampler.h
@@ -105,11 +105,11 @@ file(GLOB MIN_RAY_CORE
         src/main.cc
         src/core/mesh.cc
         src/meshes/obj.cc
-        src/core/object.cc
+        #src/core/object.cc
         src/core/preview_gui.cc
-        src/core/parser.cc
+        #src/core/parser.cc
         src/cameras/perspective.cc
-        src/core/proplist.cc
+        #src/core/proplist.cc
         src/filters/rfilter.cc
         src/core/scene.cc
         src/core/warp.cc

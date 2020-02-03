@@ -1,6 +1,9 @@
 
 #include <filesystem/resolver.h>
-#include <min-ray/object.h>
+#include <min-ray/color.h>
+#include <min-ray/common.h>
+#include <min-ray/transform.h>
+#include <min-ray/vector.h>
 #include <Eigen/Geometry>
 #include <Eigen/LU>
 #include <iomanip>

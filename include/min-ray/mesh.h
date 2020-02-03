@@ -4,8 +4,10 @@
 #include <min-ray/interface.h>
 #include <min-ray/bbox.h>
 #include <min-ray/frame.h>
-#include <min-ray/object.h>
-#include "dpdf.h"
+#include <min-ray/color.h>
+#include <min-ray/vector.h>
+#include <min-ray/transform.h>
+#include <min-ray/dpdf.h>
 
 namespace min::ray {
 

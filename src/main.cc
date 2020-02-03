@@ -1,5 +1,3 @@
-
-#include <min-ray/parser.h>
 #include <min-ray/scene.h>
 #include <min-ray/camera.h>
 #include <min-ray/block.h>

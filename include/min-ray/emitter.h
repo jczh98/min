@@ -2,7 +2,9 @@
 #pragma once
 
 #include <min-ray/interface.h>
-#include <min-ray/object.h>
+#include <min-ray/color.h>
+#include <min-ray/vector.h>
+#include <min-ray/transform.h>
 #include <min-ray/scene.h>
 
 namespace min::ray {
