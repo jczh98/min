@@ -1,6 +1,16 @@
 {
-  "renderer": "blockwise",
-  "integrator": "normals",
+  "renderer": {
+    "type": "blockwise",
+    "props": {
+      "integrator": {
+        "type": "path"
+      },
+      "spp": 5
+    }
+  },
+  "accelerator": {
+    "type": "bvh"
+  },
   "camera": {
     "type": "perspective",
     "props": {
@@ -19,9 +29,7 @@
   },
   "sampler": {
     "type": "independent",
-    "props": {
-      "sampleCount": 1
-    }
+    "props": {}
   },
   "meshes": [
     {
@@ -64,6 +72,18 @@
       "type": "obj",
       "props": {
         "filename": "meshes/sphere1.obj",
+        "bsdf": {
+          "type": "diffuse",
+          "props": {
+            "color": [0.75,0.75,0.25]
+          }
+        }
+      }
+    },
+    {
+      "type": "obj",
+      "props": {
+        "filename": "meshes/sphere2.obj",
         "bsdf": {
           "type": "diffuse",
           "props": {

@@ -7,7 +7,7 @@ class NormalIntegrator : public Integrator {
  public:
 
   Color3f Li(const std::shared_ptr<Scene> scene,
-             const Sampler *sampler, const Ray3f &ray) const override {
+             Sampler *sampler, const Ray3f &ray) const override {
     // Find the surface that is visible in the requested direction
     Intersection its;
     if (!scene->Intersect(ray, its))

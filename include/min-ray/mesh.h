@@ -100,7 +100,9 @@ class Mesh : public Unit {
 
   const std::shared_ptr<Light> GetLight() const { return light; }
 
-  const BSDF *GetBSDF() const { return bsdf.get(); }
+  std::shared_ptr<BSDF> GetBSDF() { return bsdf; }
+
+  const std::shared_ptr<BSDF> GetBSDF() const { return bsdf; }
 
   const std::string &GetName() const { return name_val; }
 

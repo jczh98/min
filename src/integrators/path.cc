@@ -8,26 +8,23 @@ namespace min::ray {
 
 class PathIntegrator : public Integrator {
  public:
-  PathIntegrator(const PropertyList &props) {
-    /* No parameters this time */
-  }
-
-  Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
+  Color3f Li(const std::shared_ptr<Scene> scene,
+             Sampler *sampler, const Ray3f &ray) const {
     // Initial radiance and throughput
     Color3f li = 0, t = 1;
-    Ray3f rayR = ray;
+    Ray3f new_ray = ray;
     float prob = 1;
 
     while (true) {
       Intersection its;
 
-      if (!scene->Intersect(rayR, its))
+      if (!scene->Intersect(new_ray, its))
         return li;
 
       // emitted
       if (its.mesh->IsLight()) {
-        LightRayQueryRecord lRecE(rayR.o, its.p, its.shading_frame.n);
-        li += t*its.mesh->GetEmitter()->Evaluate(lRecE);
+        LightRaySample light_sample(new_ray.o, its.p, its.shading_frame.n);
+        li += t*its.mesh->GetLight()->Evaluate(light_sample);
       }
       // Russian roulette
       prob = std::min(t[0], .99f);
@@ -37,11 +34,11 @@ class PathIntegrator : public Integrator {
       t /= prob;
 
       // BSDF
-      BSDFQueryRecord bRec(its.shading_frame.ToLocal(-rayR.d));
-      Color3f f = its.mesh->GetBSDF()->Sample(bRec, sampler->Next2D());
+      BSDFSample bsdf_sample(its.shading_frame.ToLocal(-new_ray.d));
+      Color3f f = its.mesh->GetBSDF()->Sample(bsdf_sample, sampler->Next2D());
       t *= f;
 
-      rayR = Ray3f(its.p, its.toWorld(bRec.wo));
+      new_ray = Ray3f(its.p, its.toWorld(bsdf_sample.wo));
     }
 
   }
@@ -49,11 +46,9 @@ class PathIntegrator : public Integrator {
   std::string ToString() const {
     return "PathIntegrator[]";
   }
- private:
 
 };
-
-NORI_REGISTER_CLASS(PathIntegrator, "path");
+MIN_IMPLEMENTATION(Integrator, PathIntegrator, "path")
 
 }
 

@@ -6,6 +6,7 @@
 #include <min-ray/sampler.h>
 #include <min-ray/integrator.h>
 #include <min-ray/scene.h>
+#include <min-ray/bsdf.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 #include <min-ray/resolver.h>
@@ -16,7 +17,7 @@
 using namespace min::ray;
 
 int main(int argc, char **argv) {
-    std::string tmp = "E:\\work\\min-ray\\assets\\bunny\\scene.json";
+    std::string tmp = "E:\\work\\min-ray\\assets\\cornell_box\\scene.json";
     fs::path path(tmp);
     GetFileResolver()->Prepend(path.parent_path());
     std::ifstream is(tmp);

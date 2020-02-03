@@ -12,6 +12,9 @@ void Mesh::initialize(const json &json) {
   if (!bsdf && json.contains("bsdf")) {
     bsdf = CreateInstance<BSDF>(json["bsdf"]["type"], json["bsdf"]["props"]);
   }
+  if (!bsdf && !json.contains("bsdf")) {
+    bsdf = CreateInstance<BSDF>("diffuse", {});
+  }
   dpdf.Reserve(GetTriangleCount());
   for(uint32_t i = 0 ; i < GetTriangleCount() ; ++i) {
     dpdf.Append(surface_area(i));

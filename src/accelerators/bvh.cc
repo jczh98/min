@@ -113,40 +113,21 @@ class BVHBuildTask : public tbb::task {
  public:
   /// Build-related parameters
   enum {
-    /// Switch to a serial build when less than 32 triangles are left
+    // Switch to a serial build when less than 32 triangles are left
         SERIAL_THRESHOLD = 32,
 
-    /// Process triangles in batches of 1K for the purpose of parallelization
+    // Process triangles in batches of 1K for the purpose of parallelization
         GRAIN_SIZE = 1000,
 
-    /// Heuristic cost value for traversal operations
+    // Heuristic cost value for traversal operations
         TRAVERSAL_COST = 1,
 
-    /// Heuristic cost value for intersection operations
+    // Heuristic cost value for intersection operations
         INTERSECTION_COST = 1
   };
 
  public:
-  /**
-   * Create a new build task
-   *
-   * \param bvh
-   *    Reference to the underlying BVH
-   *
-   * \param node_idx
-   *    Index of the BVH node that should be built
-   *
-   * \param start
-   *    Start pointer into a list of triangle indices to be processed
-   *
-   * \param end
-   *    End pointer into a list of triangle indices to be processed
-   *
-   *  \param temp
-   *    Pointer into a temporary memory region that can be used for
-   *    construction purposes. The usable length is <tt>end-start</tt>
-   *    unsigned integers.
-   */
+
   BVHBuildTask(BVH &bvh, uint32_t node_idx, uint32_t *start, uint32_t *end, uint32_t *temp)
       : bvh(bvh), node_idx(node_idx), start(start), end(end), temp(temp) { }
 

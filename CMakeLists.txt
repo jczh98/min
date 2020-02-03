@@ -61,7 +61,8 @@ file(GLOB MIN_RAY_CORE
         src/cameras/*.cc
         src/core/*.cc
         src/filters/*.cc
-        src/integrators/normals.cc
+        src/integrators/*.cc
+        src/meshes/obj.cc
         src/lights/*.cc
         src/renderers/blockwise.cc
         src/samplers/*.cc

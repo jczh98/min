@@ -9,7 +9,7 @@ namespace min::ray {
 class Scene : public Unit {
  public:
 
-  void AddPrimitive(const std::shared_ptr<Mesh> mesh) {
+  void AddPrimitive(const std::shared_ptr<Mesh> &mesh) {
     if (!accelerator) {
       MIN_ERROR("Please add accelerator to scene first.");
     }

@@ -9,7 +9,12 @@ class Diffuse : public BSDF {
  public:
 
   void initialize(const json &json) override {
-    albedo = json.at("color").get<Color3f>();
+    if (json.contains("color")) {
+      albedo = json.at("color").get<Color3f>();
+    } else {
+      albedo = Color3f(0.5f, 0.5f, 0.5f);
+    }
+
   }
 
   Color3f Evaluate(const BSDFSample &bsdf_sample) const {
