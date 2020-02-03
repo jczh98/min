@@ -1,5 +1,5 @@
 
-#include <min-ray/rfilter.h>
+#include <min-ray/filter.h>
 
 namespace min::ray {
 

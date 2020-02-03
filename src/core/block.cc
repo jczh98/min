@@ -1,7 +1,7 @@
 #include <min-ray/bbox.h>
 #include <min-ray/bitmap.h>
 #include <min-ray/block.h>
-#include <min-ray/rfilter.h>
+#include <min-ray/filter.h>
 #include <tbb/tbb.h>
 
 namespace min::ray {

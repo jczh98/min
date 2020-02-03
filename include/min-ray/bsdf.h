@@ -7,7 +7,7 @@
 
 namespace min::ray {
 
-struct BSDFQueryRecord {
+struct BSDFSample {
 
   Vector3f wi;
 
@@ -19,22 +19,22 @@ struct BSDFQueryRecord {
   // Measure associated with the sample
   EMeasure measure;
 
-  BSDFQueryRecord(const Vector3f &wi)
+  BSDFSample(const Vector3f &wi)
       : wi(wi), measure(EUnknownMeasure) {}
 
-  BSDFQueryRecord(const Vector3f &wi,
-                  const Vector3f &wo, EMeasure measure)
+  BSDFSample(const Vector3f &wi,
+             const Vector3f &wo, EMeasure measure)
       : wi(wi), wo(wo), measure(measure) {}
 };
 
 class BSDF : public Unit {
  public:
 
-  virtual Color3f Sample(BSDFQueryRecord &bRec, const Point2f &sample) const = 0;
+  virtual Color3f Sample(BSDFSample &bRec, const Point2f &sample) const = 0;
 
-  virtual Color3f Evaluate(const BSDFQueryRecord &bRec) const = 0;
+  virtual Color3f Evaluate(const BSDFSample &bRec) const = 0;
 
-  virtual float Pdf(const BSDFQueryRecord &bRec) const = 0;
+  virtual float Pdf(const BSDFSample &bRec) const = 0;
 
   virtual bool IsDiffuse() const { return false; }
 };

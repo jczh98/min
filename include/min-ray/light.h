@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <min-ray/interface.h>
@@ -31,7 +30,7 @@ struct VisibilityTester {
   }
 };
 
-struct LightRayQueryRecord {
+struct LightRaySample {
   // Origin point from which we sample the emitter
   Point3f ref;
   // Sampled point on the emitter
@@ -46,26 +45,26 @@ struct LightRayQueryRecord {
   Ray3f shadowRay;
 
   // Create an unitialized query record
-  LightRayQueryRecord() { }
+  LightRaySample() { }
 
   // Create a new query record that can be used to sample a emitter
-  LightRayQueryRecord(const Point3f &ref) : ref(ref) { }
+  LightRaySample(const Point3f &ref) : ref(ref) { }
 
-  LightRayQueryRecord(const Point3f &ref, const Point3f &p, const Normal3f &n) :
+  LightRaySample(const Point3f &ref, const Point3f &p, const Normal3f &n) :
       ref(ref), p(p), n(n) {
     wi = (p - ref).normalized();
   }
 };
 
-class Emitter : public Unit {
+class Light : public Unit {
  protected:
   Mesh *mesh = nullptr;
  public:
-  virtual Color3f SampleLe(LightRayQueryRecord &lRec, const Point2f &sample) const = 0;
-  virtual Color3f Evaluate(const LightRayQueryRecord &lRec) const = 0;
-  virtual float Pdf(const LightRayQueryRecord &lRec) const = 0;
+  virtual Color3f SampleLe(LightRaySample &lRec, const Point2f &sample) const = 0;
+  virtual Color3f Evaluate(const LightRaySample &lRec) const = 0;
+  virtual float Pdf(const LightRaySample &lRec) const = 0;
   void SetMesh(Mesh *mesh) { this->mesh = mesh;}
 };
-MIN_INTERFACE(Emitter)
+MIN_INTERFACE(Light)
 
 }  // namespace min::ray

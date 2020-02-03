@@ -7,15 +7,11 @@ namespace min::ray {
 
 class Independent : public Sampler {
  public:
-  void initialize(const json &json) override {
-    sample_count = json.at("sampleCount").get<int>();
-  }
 
   virtual ~Independent() {}
 
   std::unique_ptr<Sampler> Clone() const {
     std::unique_ptr<Independent> cloned(new Independent());
-    cloned->sample_count = sample_count;
     cloned->random = random;
     return std::move(cloned);
   }

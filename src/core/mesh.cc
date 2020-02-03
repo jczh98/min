@@ -1,9 +1,9 @@
 
 #include <min-ray/bbox.h>
 #include <min-ray/bsdf.h>
-#include <min-ray/emitter.h>
+#include <min-ray/light.h>
 #include <min-ray/mesh.h>
-#include <min-ray/warp.h>
+#include <min-ray/sampling.h>
 #include <Eigen/Geometry>
 
 namespace min::ray {
@@ -18,7 +18,7 @@ void Mesh::initialize(const json &json) {
   }
   dpdf.Normalize();
   if (json.contains("light")) {
-    auto light_ = CreateInstance<Emitter>(json["light"]["type"], json["light"]["props"]);
+    auto light_ = CreateInstance<Light>(json["light"]["type"], json["light"]["props"]);
     if (this->light)
       MIN_ERROR("Mesh: tried to register multiple Emitter instances!");
     this->light = light_;

@@ -66,19 +66,19 @@ file(GLOB MIN_RAY_CORE
         include/min-ray/dpdf.h
         include/min-ray/frame.h
         include/min-ray/integrator.h
-        include/min-ray/emitter.h
+        include/min-ray/light.h
         include/min-ray/mesh.h
         #include/min-ray/object.h
         #include/min-ray/parser.h
         #include/min-ray/proplist.h
         include/min-ray/ray.h
-        include/min-ray/rfilter.h
+        include/min-ray/filter.h
         include/min-ray/sampler.h
         include/min-ray/scene.h
         include/min-ray/timer.h
         include/min-ray/transform.h
         include/min-ray/vector.h
-        include/min-ray/warp.h
+        include/min-ray/sampling.h
         include/min-ray/renderer.h
         include/min-ray/preview_gui.h
         include/min-ray/interface.h
@@ -105,9 +105,9 @@ file(GLOB MIN_RAY_CORE
         #src/core/parser.cc
         src/cameras/perspective.cc
         #src/core/proplist.cc
-        src/filters/rfilter.cc
+        src/filters/filter.cc
         src/core/scene.cc
-        src/core/warp.cc
+        src/core/sampling.cc
         #src/bsdfs/microfacet.cc
         #src/bsdfs/mirror.cc
         #src/bsdfs/dielectric.cc

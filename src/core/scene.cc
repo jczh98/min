@@ -1,7 +1,7 @@
 
 #include <min-ray/bitmap.h>
 #include <min-ray/camera.h>
-#include <min-ray/emitter.h>
+#include <min-ray/light.h>
 #include <min-ray/integrator.h>
 #include <min-ray/sampler.h>
 #include <min-ray/scene.h>

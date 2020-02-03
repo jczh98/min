@@ -1,7 +1,7 @@
 
 #include <min-ray/camera.h>
-#include <min-ray/rfilter.h>
-#include <min-ray/warp.h>
+#include <min-ray/filter.h>
+#include <min-ray/sampling.h>
 #include <min-ray/json.h>
 #include <Eigen/Geometry>
 

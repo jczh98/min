@@ -26,9 +26,7 @@
   },
   "sampler": {
     "type": "independent",
-    "props": {
-      "sampleCount": 1
-    }
+    "props": {}
   },
   "meshes": [
     {

@@ -39,7 +39,7 @@ class Scene : public Unit {
   }
 
   std::vector<std::shared_ptr<Mesh>> meshes;
-  std::vector<std::shared_ptr<Emitter>> lights;
+  std::vector<std::shared_ptr<Light>> lights;
   std::shared_ptr<Integrator> integrator = nullptr;
   std::shared_ptr<Sampler> sampler = nullptr;
   std::shared_ptr<Camera> camera = nullptr;

@@ -1,6 +1,6 @@
 #include <min-ray/integrator.h>
 #include <min-ray/scene.h>
-#include <min-ray/emitter.h>
+#include <min-ray/light.h>
 #include <min-ray/bsdf.h>
 #include <min-ray/sampler.h>
 

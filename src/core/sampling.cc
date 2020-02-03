@@ -1,6 +1,6 @@
 #include <min-ray/frame.h>
 #include <min-ray/vector.h>
-#include <min-ray/warp.h>
+#include <min-ray/sampling.h>
 
 namespace min::ray {
 

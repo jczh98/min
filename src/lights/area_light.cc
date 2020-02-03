@@ -1,9 +1,9 @@
-#include <min-ray/emitter.h>
+#include <min-ray/light.h>
 #include <min-ray/json.h>
 
 namespace min::ray {
 
-class AreaEmitter : public Emitter {
+class AreaLight : public Light {
  public:
 
   void initialize(const json &json) override {
@@ -11,7 +11,7 @@ class AreaEmitter : public Emitter {
     radiance = json.at("radiance").get<Color3f>();
   }
 
-  virtual Color3f Evaluate(const LightRayQueryRecord & lRec) const override {
+  virtual Color3f Evaluate(const LightRaySample & lRec) const override {
     if(!mesh) {
       MIN_ERROR("There is no shape attached to this Area light!");
     }
@@ -22,7 +22,7 @@ class AreaEmitter : public Emitter {
       return 0;
   }
 
-  virtual Color3f SampleLe(LightRayQueryRecord & lRec, const Point2f & sample) const override {
+  virtual Color3f SampleLe(LightRaySample & lRec, const Point2f & sample) const override {
     if(!mesh) {
       MIN_ERROR("There is no shape attached to this Area light!");
     }
@@ -43,7 +43,7 @@ class AreaEmitter : public Emitter {
     return Evaluate(lRec) / pdf_val;
   }
 
-  virtual float Pdf(const LightRayQueryRecord &lRec) const override {
+  virtual float Pdf(const LightRaySample &lRec) const override {
     if(!mesh) {
       MIN_ERROR("There is no shape attached to this Area light!");
     }
@@ -61,7 +61,7 @@ class AreaEmitter : public Emitter {
  protected:
   Color3f radiance;
 };
-MIN_IMPLEMENTATION(Emitter, AreaEmitter, "area")
+MIN_IMPLEMENTATION(Light, AreaLight, "area")
 
 }
 

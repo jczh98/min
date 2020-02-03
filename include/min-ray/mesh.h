@@ -96,13 +96,9 @@ class Mesh : public Unit {
 
   bool IsLight() const { return light != nullptr; }
 
-  std::shared_ptr<Emitter> GetLight() { return light; }
+  std::shared_ptr<Light> GetLight() { return light; }
 
-  const std::shared_ptr<Emitter> GetLight() const { return light; }
-
-  Emitter *GetEmitter() { return light.get(); }
-
-  const Emitter *GetEmitter() const { return light.get(); }
+  const std::shared_ptr<Light> GetLight() const { return light; }
 
   const BSDF *GetBSDF() const { return bsdf.get(); }
 
@@ -119,7 +115,7 @@ class Mesh : public Unit {
   MatrixXf texcoords;                 // Vertex texture coordinates
   MatrixXu faces;                  // Faces
   std::shared_ptr<BSDF> bsdf = nullptr;        // BSDF of the surface
-  std::shared_ptr<Emitter> light = nullptr;  // Associated emitter, if any
+  std::shared_ptr<Light> light = nullptr;  // Associated light, if any
   DiscretePDF dpdf;
   BoundingBox3f bound_box;          // Bounding box of the mesh
 };
