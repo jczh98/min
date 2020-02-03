@@ -4,6 +4,16 @@
 
 namespace min::ray {
 
+class Accelerator : public Unit{
+ public:
+  virtual void AddMesh(const std::shared_ptr<Mesh> &mesh) = 0;
+  virtual void Build() = 0;
+  virtual const BoundingBox3f &GetBoundingBox() const = 0;
+  virtual bool Intersect(const Ray3f &ray, Intersection &its, bool shadowRay) const = 0;
+};
+MIN_INTERFACE(Accelerator)
+
+/*
 class Accel {
   friend class BVHBuildTask;
  public:
@@ -95,5 +105,5 @@ class Accel {
   std::vector<uint32_t> indices;
   BoundingBox3f bbox;
 };
-
+*/
 }  // namespace min::ray

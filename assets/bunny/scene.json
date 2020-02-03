@@ -8,6 +8,9 @@
       "spp": 1
     }
   },
+  "accelerator": {
+    "type": "bvh"
+  },
   "camera": {
     "type": "perspective",
     "props": {

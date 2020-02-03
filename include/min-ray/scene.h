@@ -9,11 +9,10 @@ namespace min::ray {
 class Scene : public Unit {
  public:
 
-  Scene() {
-    accelerator = std::make_shared<Accel>();
-  }
-
   void AddPrimitive(const std::shared_ptr<Mesh> mesh) {
+    if (!accelerator) {
+      MIN_ERROR("Please add accelerator to scene first.");
+    }
     accelerator->AddMesh(mesh);
     meshes.emplace_back(mesh);
     if (mesh->IsLight()) {
@@ -22,6 +21,9 @@ class Scene : public Unit {
   }
 
   void Build() {
+    if (!accelerator) {
+      MIN_ERROR("Please add accelerator to scene first.");
+    }
     accelerator->Build();
   }
 
@@ -43,7 +45,7 @@ class Scene : public Unit {
   std::shared_ptr<Integrator> integrator = nullptr;
   std::shared_ptr<Sampler> sampler = nullptr;
   std::shared_ptr<Camera> camera = nullptr;
-  std::shared_ptr<Accel> accelerator = nullptr;
+  std::shared_ptr<Accelerator> accelerator = nullptr;
 };
 MIN_INTERFACE(Scene)
 

@@ -1,11 +1,101 @@
+#pragma once
 
 #include <min-ray/accel.h>
-#include <Eigen/Geometry>
 #include <min-ray/timer.h>
 #include <tbb/tbb.h>
 #include <atomic>
 
 namespace min::ray {
+
+class BVH : public Accelerator {
+ private:
+  struct BVHNode {
+    union {
+      struct {
+        unsigned flag : 1;
+        uint32_t size : 31;
+        uint32_t start;
+      } leaf;
+
+      struct {
+        unsigned flag : 1;
+        uint32_t axis : 31;
+        uint32_t rightChild;
+      } inner;
+
+      uint64_t data;
+    };
+    BoundingBox3f bbox;
+
+    bool isLeaf() const {
+      return leaf.flag == 1;
+    }
+
+    bool isInner() const {
+      return leaf.flag == 0;
+    }
+
+    bool isUnused() const {
+      return data == 0;
+    }
+
+    uint32_t start() const {
+      return leaf.start;
+    }
+
+    uint32_t end() const {
+      return leaf.start + leaf.size;
+    }
+  };
+  friend class BVHBuildTask;
+  std::vector<BVHNode> nodes;
+  std::vector<std::shared_ptr<Mesh>> meshes;
+  std::vector<uint32_t> mesh_offset;
+  std::vector<uint32_t> indices;
+  BoundingBox3f bbox;
+ public:
+  BVH() {
+    mesh_offset.push_back(0u);
+  }
+  ~BVH() {
+    meshes.clear();
+    mesh_offset.clear();
+    mesh_offset.push_back(0u);
+    nodes.clear();
+    indices.clear();
+    bbox.Reset();
+    nodes.shrink_to_fit();
+    meshes.shrink_to_fit();
+    mesh_offset.shrink_to_fit();
+    indices.shrink_to_fit();
+  }
+
+  void AddMesh(const std::shared_ptr<Mesh> &mesh) override ;
+  void Build() override;
+  bool Intersect(const Ray3f &ray, Intersection &its, bool shadowRay) const override;
+
+  const BoundingBox3f &GetBoundingBox() const override { return bbox; }
+
+ private:
+  std::pair<float, uint32_t> statistics(uint32_t node_idx = 0) const;
+
+  uint32_t FindMesh(uint32_t &idx) const {
+    auto it = std::lower_bound(mesh_offset.begin(), mesh_offset.end(), idx+1) - 1;
+    idx -= *it;
+    return (uint32_t) (it - mesh_offset.begin());
+  }
+
+  Point3f GetCentroid(uint32_t index) const {
+    uint32_t shapeIdx = FindMesh(index);
+    return meshes[shapeIdx]->centroid(index);
+  }
+
+  BoundingBox3f GetBoundingBox(uint32_t index) const {
+    uint32_t shapeIdx = FindMesh(index);
+    return meshes[shapeIdx]->GetBoundingBox(index);
+  }
+};
+MIN_IMPLEMENTATION(Accelerator, BVH, "bvh")
 
 struct Bins {
   static const int BIN_COUNT = 16;
@@ -16,7 +106,7 @@ struct Bins {
 
 class BVHBuildTask : public tbb::task {
  private:
-  Accel &bvh;
+  BVH &bvh;
   uint32_t node_idx;
   uint32_t *start, *end, *temp;
 
@@ -57,12 +147,12 @@ class BVHBuildTask : public tbb::task {
    *    construction purposes. The usable length is <tt>end-start</tt>
    *    unsigned integers.
    */
-  BVHBuildTask(Accel &bvh, uint32_t node_idx, uint32_t *start, uint32_t *end, uint32_t *temp)
+  BVHBuildTask(BVH &bvh, uint32_t node_idx, uint32_t *start, uint32_t *end, uint32_t *temp)
       : bvh(bvh), node_idx(node_idx), start(start), end(end), temp(temp) { }
 
   task *execute() {
     uint32_t size = (uint32_t) (end-start);
-    Accel::BVHNode &node = bvh.nodes[node_idx];
+    BVH::BVHNode &node = bvh.nodes[node_idx];
 
     /* Switch to a serial build when less than SERIAL_THRESHOLD triangles are left */
     if (size < SERIAL_THRESHOLD) {
@@ -196,8 +286,8 @@ class BVHBuildTask : public tbb::task {
   }
 
   /// Single-threaded build function
-  static void execute_serially(Accel &bvh, uint32_t node_idx, uint32_t *start, uint32_t *end, uint32_t *temp) {
-    Accel::BVHNode &node = bvh.nodes[node_idx];
+  static void execute_serially(BVH &bvh, uint32_t node_idx, uint32_t *start, uint32_t *end, uint32_t *temp) {
+    BVH::BVHNode &node = bvh.nodes[node_idx];
     uint32_t size = (uint32_t) (end - start);
     float best_cost = (float) INTERSECTION_COST * size;
     int64_t best_index = -1, best_axis = -1;
@@ -268,13 +358,13 @@ class BVHBuildTask : public tbb::task {
   }
 };
 
-void Accel::AddMesh(const std::shared_ptr<Mesh> &mesh) {
+void BVH::AddMesh(const std::shared_ptr<Mesh> &mesh) {
   meshes.push_back(mesh);
   mesh_offset.push_back(mesh_offset.back() + mesh->GetTriangleCount());
   bbox.ExpandBy(mesh->GetBoundingBox());
 }
 
-std::pair<float, uint32_t> Accel::statistics(uint32_t node_idx) const {
+std::pair<float, uint32_t> BVH::statistics(uint32_t node_idx) const {
   const BVHNode &node = nodes[node_idx];
   if (node.isLeaf()) {
     return std::make_pair((float) BVHBuildTask::INTERSECTION_COST * node.leaf.size, 1u);
@@ -294,7 +384,7 @@ std::pair<float, uint32_t> Accel::statistics(uint32_t node_idx) const {
   }
 }
 
-void Accel::Build() {
+void BVH::Build() {
   uint32_t size  = mesh_offset.back();
   if (size == 0)
     return;
@@ -345,7 +435,7 @@ void Accel::Build() {
   nodes = std::move(compactified);
 }
 
-bool Accel::Intersect(const Ray3f &ray_, Intersection &its, bool shadowRay) const {
+bool BVH::Intersect(const Ray3f &ray_, Intersection &its, bool shadowRay) const {
   uint32_t node_idx = 0, stack_idx = 0, stack[64];
 
   its.t = std::numeric_limits<float>::infinity();
@@ -453,4 +543,4 @@ bool Accel::Intersect(const Ray3f &ray_, Intersection &its, bool shadowRay) cons
   return foundIntersection;
 }
 
-}  // namespace min::ray
+}

@@ -26,10 +26,12 @@ int main(int argc, char **argv) {
     auto jrenderer = j.at("renderer");
     auto jcamera = j.at("camera");
     auto jmeshes = j.at("meshes");
+    auto accelerator = CreateInstance<Accelerator>(j["accelerator"]["type"]);
     auto scene = CreateInstance<Scene>("default_scene");
     auto sampler = CreateInstance<Sampler>(jsampler.at("type"), jsampler.at("props"));
     auto camera = CreateInstance<Camera>(jcamera.at("type"), jcamera.at("props"));
     auto renderer = CreateInstance<Renderer>(jrenderer.at("type"), jrenderer.at("props"));
+    scene->accelerator = accelerator;
     for (auto jmesh : jmeshes) {
       auto mesh = CreateInstance<Mesh>(jmesh.at("type"), jmesh.at("props"));
       scene->AddPrimitive(mesh);
@@ -38,6 +40,7 @@ int main(int argc, char **argv) {
     scene->sampler = sampler;
     scene->camera = camera;
     renderer->scene = scene;
+    renderer->filename = tmp;
     renderer->Render();
     return 0;
 }

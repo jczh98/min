@@ -54,68 +54,18 @@ set(MIN_RAY_LIBS
         )
 
 file(GLOB MIN_RAY_CORE
-        # Header files
-        include/min-ray/bbox.h
-        include/min-ray/bitmap.h
-        include/min-ray/block.h
-        include/min-ray/bsdf.h
-        include/min-ray/accel.h
-        include/min-ray/camera.h
-        include/min-ray/color.h
-        include/min-ray/common.h
-        include/min-ray/dpdf.h
-        include/min-ray/frame.h
-        include/min-ray/integrator.h
-        include/min-ray/light.h
-        include/min-ray/mesh.h
-        #include/min-ray/object.h
-        #include/min-ray/parser.h
-        #include/min-ray/proplist.h
-        include/min-ray/ray.h
-        include/min-ray/filter.h
-        include/min-ray/sampler.h
-        include/min-ray/scene.h
-        include/min-ray/timer.h
-        include/min-ray/transform.h
-        include/min-ray/vector.h
-        include/min-ray/sampling.h
-        include/min-ray/renderer.h
-        include/min-ray/preview_gui.h
-        include/min-ray/interface.h
-        include/min-ray/logging.h
-        include/min-ray/json.h
-        include/min-ray/resolver.h
-        include/min-ray/rng.h
+        include/min-ray/*.h
 
-        # Source code files
-        src/core/bitmap.cc
-        src/core/block.cc
-        src/core/interface.cc
-        src/core/interfaces.cc
-        src/core/logging.cc
-        src/accelerators/accel.cc
-        src/core/common.cc
+        src/accelerators/*.cc
         src/bsdfs/diffuse.cc
-        src/samplers/independent.cc
-        src/main.cc
-        src/core/mesh.cc
-        src/meshes/obj.cc
-        #src/core/object.cc
-        src/core/preview_gui.cc
-        #src/core/parser.cc
-        src/cameras/perspective.cc
-        #src/core/proplist.cc
+        src/cameras/*.cc
+        src/core/*.cc
         src/filters/*.cc
-        src/core/scene.cc
-        src/core/sampling.cc
-        #src/bsdfs/microfacet.cc
-        #src/bsdfs/mirror.cc
-        #src/bsdfs/dielectric.cc
-        src/renderers/blockwise.cc
-        #src/renderers/progressive.cc
         src/integrators/normals.cc
-        #src/integrators/path.cc
-        src/lights/area_light.cc
+        src/lights/*.cc
+        src/renderers/blockwise.cc
+        src/samplers/*.cc
+        src/main.cc
         )
 
 add_executable(min-ray
