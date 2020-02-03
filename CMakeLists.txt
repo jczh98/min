@@ -58,6 +58,7 @@ file(GLOB MIN_RAY_CORE
 
         src/accelerators/*.cc
         src/bsdfs/diffuse.cc
+        src/bsdfs/dielectric.cc
         src/cameras/*.cc
         src/core/*.cc
         src/filters/*.cc

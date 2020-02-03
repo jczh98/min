@@ -14,7 +14,6 @@ class Diffuse : public BSDF {
     } else {
       albedo = Color3f(0.5f, 0.5f, 0.5f);
     }
-
   }
 
   Color3f Evaluate(const BSDFSample &bsdf_sample) const {
