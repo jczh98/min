@@ -26,7 +26,7 @@ class Progressive : public RenderMode {
     scene->integrator->Preprocess(scene);
 
     /* Create a block generator (i.e. a work scheduler) */
-    BlockGenerator blockGenerator(outputSize, NORI_BLOCK_SIZE);
+    BlockGenerator blockGenerator(outputSize, MIN_BLOCK_SIZE);
 
     /* Allocate memory for the entire output image and clear it */
     ImageBlock result(outputSize, camera->filter.get());

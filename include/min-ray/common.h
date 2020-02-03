@@ -1,14 +1,12 @@
 #pragma once
 
 #if defined(_MSC_VER)
-/* Disable some warnings on MSVC++ */
+// Disable some warnings on MSVC++
 #pragma warning(disable : 4127 4702 4100 4515 4800 4146 4512)
-#define WIN32_LEAN_AND_MEAN /* Don't ever include MFC on Windows */
-#define NOMINMAX            /* Don't override min/max */
+#define WIN32_LEAN_AND_MEAN // Don't ever include MFC on Windows
+#define NOMINMAX            // Don't override min/max
 #endif
 
-/* Include the basics needed by any Nori file */
-//#include <ImathPlatform.h>
 #include <stdint.h>
 #include <Eigen/Core>
 #include <algorithm>
@@ -18,18 +16,18 @@
 #include "resolver.h"
 #include "interface.h"
 
-#if defined(__NORI_APPLE__NORI_)
+#if defined(__APPLE__)
 #define PLATFORM_MACOS
-#elif defined(__NORI_linux__NORI_)
+#elif defined(__linux__)
 #define PLATFORM_LINUX
 #elif defined(WIN32)
 #define PLATFORM_WINDOWS
 #endif
 
-/* "Ray epsilon": relative error threshold for ray intersection computations */
+// "Ray epsilon": relative error threshold for ray intersection computations
 #define Epsilon 1e-4f
 
-/* A few useful constants */
+// A few useful constants
 #undef M_PI
 
 #define M_PI 3.14159265358979323846f
@@ -41,7 +39,7 @@
 
 namespace min::ray {
 
-/* Forward declarations */
+// Forward declarations
 template <typename Scalar, int Dimension>
 struct TVector;
 template <typename Scalar, int Dimension>
@@ -51,10 +49,6 @@ struct TRay;
 template <typename Point>
 struct TBoundingBox;
 
-/* Basic Nori data structures (vectors, points, rays, bounding boxes,
-   kd-trees) are oblivious to the underlying data type and dimension.
-   The following list of typedefs establishes some convenient aliases
-   for specific types. */
 typedef TVector<float, 1> Vector1f;
 typedef TVector<float, 2> Vector2f;
 typedef TVector<float, 3> Vector3f;
@@ -94,7 +88,7 @@ typedef TBoundingBox<Point4i> BoundingBox4i;
 typedef TRay<Point2f, Vector2f> Ray2f;
 typedef TRay<Point3f, Vector3f> Ray3f;
 
-/// Some more forward declarations
+// Some more forward declarations
 class BSDF;
 class Bitmap;
 class BlockGenerator;
@@ -113,7 +107,7 @@ class ReconstructionFilter;
 class Sampler;
 class Scene;
 
-/// Import cout, cerr, endl for debugging purposes
+// Import cout, cerr, endl for debugging purposes
 using std::cerr;
 using std::cout;
 using std::endl;
@@ -121,74 +115,65 @@ using std::endl;
 typedef Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic> MatrixXf;
 typedef Eigen::Matrix<uint32_t, Eigen::Dynamic, Eigen::Dynamic> MatrixXu;
 
-/// Simple exception class, which stores a human-readable error description
-class NoriException : public std::runtime_error {
- public:
-  /// Variadic template constructor to support printf-style arguments
-  template <typename... Args>
-  NoriException(const char *format, const Args &... args)
-      : std::runtime_error(fmt::format(format, args...)) {}
-};
-
-/// Return the number of cores (real and virtual)
+// Return the number of cores (real and virtual)
 extern int getCoreCount();
 
-/// Indent a string by the specified number of spaces
-extern std::string indent(const std::string &string, int amount = 2);
+// Indent a string by the specified number of spaces
+extern std::string Indent(const std::string &string, int amount = 2);
 
-/// Convert a string to lower case
-extern std::string toLower(const std::string &value);
+// Convert a string to lower case
+extern std::string ToLower(const std::string &value);
 
-/// Convert a string into an boolean value
-extern bool toBool(const std::string &str);
+// Convert a string into an boolean value
+extern bool ToBool(const std::string &str);
 
-/// Convert a string into a signed integer value
-extern int toInt(const std::string &str);
+// Convert a string into a signed integer value
+extern int ToInt(const std::string &str);
 
-/// Convert a string into an unsigned integer value
-extern unsigned int toUInt(const std::string &str);
+// Convert a string into an unsigned integer value
+extern unsigned int ToUInt(const std::string &str);
 
-/// Convert a string into a floating point value
-extern float toFloat(const std::string &str);
+// Convert a string into a floating point value
+extern float ToFloat(const std::string &str);
 
-/// Convert a string into a 3D vector
-extern Eigen::Vector3f toVector3f(const std::string &str);
+// Convert a string into a 3D vector
+extern Eigen::Vector3f ToVector3f(const std::string &str);
 
-/// Tokenize a string into a list by splitting at 'delim'
-extern std::vector<std::string> tokenize(const std::string &s, const std::string &delim = ", ", bool includeEmpty = false);
+// Tokenize a string into a list by splitting at 'delim'
+extern std::vector<std::string> Tokenize(const std::string &s, const std::string &delim = ", ", bool includeEmpty = false);
 
-/// Check if a string ends with another string
-extern bool endsWith(const std::string &value, const std::string &ending);
+// Check if a string ends with another string
+extern bool EndsWith(const std::string &value, const std::string &ending);
 
-/// Convert a time value in milliseconds into a human-readable string
-extern std::string timeString(double time, bool precise = false);
+// Convert a time value in milliseconds into a human-readable string
+extern std::string TimeString(double time, bool precise = false);
 
-/// Convert a memory amount in bytes into a human-readable string
-extern std::string memString(size_t size, bool precise = false);
+// Convert a memory amount in bytes into a human-readable string
+extern std::string MemString(size_t size, bool precise = false);
 
-/// Measures associated with probability distributions
+// Measures associated with probability distributions
 enum EMeasure {
   EUnknownMeasure = 0,
   ESolidAngle,
   EDiscrete
 };
 
-//// Convert radians to degrees
-inline float radToDeg(float value) { return value * (180.0f / M_PI); }
+// Convert radians to degrees
+inline float RadToDeg(float value) { return value * (180.0f / M_PI); }
 
-/// Convert degrees to radians
-inline float degToRad(float value) { return value * (M_PI / 180.0f); }
+// Convert degrees to radians
+inline float DegToRad(float value) { return value * (M_PI / 180.0f); }
 
 #if !defined(_GNU_SOURCE)
-/// Emulate sincosf using sinf() and cosf()
+// Emulate sincosf using sinf() and cosf()
 inline void sincosf(float theta, float *_sin, float *_cos) {
   *_sin = sinf(theta);
   *_cos = cosf(theta);
 }
 #endif
 
-/// Simple floating point clamping function
-inline float clamp(float value, float min, float max) {
+// Simple floating point clamping function
+inline float Clamp(float value, float min, float max) {
   if (value < min)
     return min;
   else if (value > max)
@@ -197,8 +182,8 @@ inline float clamp(float value, float min, float max) {
     return value;
 }
 
-/// Simple integer clamping function
-inline int clamp(int value, int min, int max) {
+// Simple integer clamping function
+inline int Clamp(int value, int min, int max) {
   if (value < min)
     return min;
   else if (value > max)
@@ -207,36 +192,24 @@ inline int clamp(int value, int min, int max) {
     return value;
 }
 
-/// Linearly interpolate between two values
-inline float lerp(float t, float v1, float v2) {
+// Linearly interpolate between two values
+inline float Lerp(float t, float v1, float v2) {
   return ((float)1 - t) * v1 + t * v2;
 }
 
-/// Always-positive modulo operation
-inline int mod(int a, int b) {
+// Always-positive modulo operation
+inline int Mod(int a, int b) {
   int r = a % b;
   return (r < 0) ? r + b : r;
 }
 
-/// Compute a direction for the given coordinates in spherical coordinates
-extern Vector3f sphericalDirection(float theta, float phi);
+// Compute a direction for the given coordinates in spherical coordinates
+extern Vector3f SphericalDirection(float theta, float phi);
 
-/// Compute a direction for the given coordinates in spherical coordinates
-extern Point2f sphericalCoordinates(const Vector3f &dir);
+// Compute a direction for the given coordinates in spherical coordinates
+extern Point2f SphericalCoordinates(const Vector3f &dir);
 
-/**
- * \brief Calculates the unpolarized fresnel reflection coefficient for a 
- * dielectric material. Handles incidence from either side (i.e.
- * \code cosThetaI<0 is allowed).
- *
- * \param cosThetaI
- *      Cosine of the angle between the normal and the incident ray
- * \param extIOR
- *      Refractive index of the side that contains the surface normal
- * \param intIOR
- *      Refractive index of the interior
- */
-extern float fresnel(float cosThetaI, float extIOR, float intIOR);
+extern float Fresnel(float cosThetaI, float extIOR, float intIOR);
 
 
 extern Resolver *GetFileResolver();

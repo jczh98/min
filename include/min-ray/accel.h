@@ -1,16 +1,9 @@
-
 #pragma once
 
 #include <min-ray/mesh.h>
 
 namespace min::ray {
 
-/**
- * \brief Acceleration data structure for ray intersection queries
- *
- * The current implementation falls back to a brute force loop
- * through the geometry.
- */
 class Accel {
   friend class BVHBuildTask;
  public:
@@ -29,39 +22,13 @@ class Accel {
     mesh_offset.shrink_to_fit();
     indices.shrink_to_fit();
   }
-  /**
-     * \brief Register a triangle mesh for inclusion in the acceleration
-     * data structure
-     *
-     * This function can only be used before \ref build() is called
-     */
+
   void AddMesh(const std::shared_ptr<Mesh> &mesh);
 
-  /// Build the acceleration data structure (currently a no-op)
   void Build();
 
-  /// Return an axis-aligned box that bounds the scene
   const BoundingBox3f &GetBoundingBox() const { return bbox; }
 
-  /**
-     * \brief Intersect a ray against all triangles stored in the scene and
-     * return detailed intersection information
-     *
-     * \param ray
-     *    A 3-dimensional ray data structure with minimum/maximum extent
-     *    information
-     *
-     * \param its
-     *    A detailed intersection record, which will be filled by the
-     *    intersection query
-     *
-     * \param shadowRay
-     *    \c true if this is a shadow ray query, i.e. a query that only aims to
-     *    find out whether the ray is blocked or not without returning detailed
-     *    intersection information.
-     *
-     * \return \c true if an intersection was found
-     */
   bool Intersect(const Ray3f &ray, Intersection &its, bool shadowRay) const;
 
  private:
@@ -126,8 +93,7 @@ class Accel {
   std::vector<uint32_t> mesh_offset;
   std::vector<BVHNode> nodes;
   std::vector<uint32_t> indices;
-  //Mesh *mesh = nullptr;  ///< Mesh (only a single one for now)
-  BoundingBox3f bbox;    ///< Bounding box of the entire scene
+  BoundingBox3f bbox;
 };
 
 }  // namespace min::ray

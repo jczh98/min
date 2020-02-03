@@ -25,7 +25,7 @@ class Blockwise : public RenderMode {
     scene->integrator->Preprocess(scene);
 
     /* Create a block generator (i.e. a work scheduler) */
-    BlockGenerator blockGenerator(outputSize, NORI_BLOCK_SIZE);
+    BlockGenerator blockGenerator(outputSize, MIN_BLOCK_SIZE);
 
     /* Allocate memory for the entire output image and clear it */
     ImageBlock result(outputSize, camera->filter.get());
@@ -46,7 +46,7 @@ class Blockwise : public RenderMode {
       auto map = [&](const tbb::blocked_range<int> &range) {
         /* Allocate memory for a small image block to be rendered
 	               by the current thread */
-        ImageBlock block(Vector2i(NORI_BLOCK_SIZE),
+        ImageBlock block(Vector2i(MIN_BLOCK_SIZE),
                          camera->filter.get());
 
         /* Create a clone of the sampler for the current thread */

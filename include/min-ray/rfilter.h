@@ -5,29 +5,17 @@
 #include <min-ray/vector.h>
 #include <min-ray/transform.h>
 
-/// Reconstruction filters will be tabulated at this resolution
-#define NORI_FILTER_RESOLUTION 32
+// Reconstruction filters will be tabulated at this resolution
+#define MIN_FILTER_RESOLUTION 32
 
 namespace min::ray {
 
-/**
- * \brief Generic radially symmetric image reconstruction filter
- *
- * When adding radiance-valued samples to the rendered image, Nori
- * first convolves them with a so-called image reconstruction filter.
- *
- * To learn more about reconstruction filters and sampling theory
- * in general, take a look at the excellenent chapter 7 of PBRT,
- * which is freely available at:
- *
- * http://graphics.stanford.edu/~mmp/chapters/pbrt_chapter7.pdf
- */
 class ReconstructionFilter : public Unit {
  public:
-  /// Return the filter radius in fractional pixels
+  // Return the filter radius in fractional pixels
   float GetRadius() const { return radius; }
 
-  /// Evaluate the filter function
+  // Evaluate the filter function
   virtual float Evaluate(float x) const = 0;
 
  protected:

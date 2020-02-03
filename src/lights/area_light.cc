@@ -5,25 +5,16 @@ namespace min::ray {
 
 class AreaEmitter : public Emitter {
  public:
-//  AreaEmitter(const PropertyList &props) {
-//    radiance = props.getColor("radiance");
-//  }
 
   void initialize(const json &json) override {
 
     radiance = json.at("radiance").get<Color3f>();
   }
-//  virtual std::string ToString() const override {
-//    return tfm::format(
-//        "AreaLight[\n"
-//        "  radiance = %s,\n"
-//        "]",
-//        radiance.ToString());
-//  }
 
   virtual Color3f Evaluate(const LightRayQueryRecord & lRec) const override {
-    if(!mesh)
-      throw NoriException("There is no shape attached to this Area light!");
+    if(!mesh) {
+      MIN_ERROR("There is no shape attached to this Area light!");
+    }
 
     if ((-lRec.wi).dot(lRec.n) >= 0)
       return radiance;
@@ -32,8 +23,9 @@ class AreaEmitter : public Emitter {
   }
 
   virtual Color3f SampleLe(LightRayQueryRecord & lRec, const Point2f & sample) const override {
-    if(!mesh)
-      throw NoriException("There is no shape attached to this Area light!");
+    if(!mesh) {
+      MIN_ERROR("There is no shape attached to this Area light!");
+    }
 
     SurfaceSample sRec;
     mesh->Sample(sample, sRec);
@@ -52,8 +44,9 @@ class AreaEmitter : public Emitter {
   }
 
   virtual float Pdf(const LightRayQueryRecord &lRec) const override {
-    if(!mesh)
-      throw NoriException("There is no shape attached to this Area light!");
+    if(!mesh) {
+      MIN_ERROR("There is no shape attached to this Area light!");
+    }
 
     SurfaceSample sRec(lRec.ref, lRec.p);
     sRec.n = lRec.n;
@@ -69,6 +62,6 @@ class AreaEmitter : public Emitter {
   Color3f radiance;
 };
 MIN_IMPLEMENTATION(Emitter, AreaEmitter, "area")
-//NORI_REGISTER_CLASS(AreaEmitter, "area")
+
 }
 

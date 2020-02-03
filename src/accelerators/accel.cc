@@ -298,10 +298,7 @@ void Accel::Build() {
   uint32_t size  = mesh_offset.back();
   if (size == 0)
     return;
-  cout << "Constructing a SAH BVH (" << meshes.size()
-       << (meshes.size() == 1 ? " shape, " : " shapes, ")
-       << size << " primitives) .. ";
-  cout.flush();
+  MIN_DEBUG("Constructing a SAH BVH ({} shapes, {} primitives) ...", meshes.size(), size);
   Timer timer;
 
   /* Conservative estimate for the total number of nodes */
@@ -313,7 +310,6 @@ void Accel::Build() {
   if (sizeof(BVHNode) != 32) {
     MIN_ERROR("BVH Node is not packed! Investigate compiler settings.");
   }
-    //throw NoriException("BVH Node is not packed! Investigate compiler settings.");
 
   for (uint32_t i = 0; i < size; ++i)
     indices[i] = i;
@@ -343,10 +339,8 @@ void Accel::Build() {
               (skipped - skipped_accum[new_node.inner.rightChild]));
     }
   }
-  cout << "done (took " << timer.ElapsedString() << " and "
-       << memString(sizeof(BVHNode) * nodes.size() + sizeof(uint32_t)*indices.size())
-       << ", SAH cost = " << stats.first
-       << ")." << endl;
+  MIN_DEBUG("Done. (taken {} and {}, , SAH cost = {})", timer.ElapsedString(),
+            MemString(sizeof(BVHNode) * nodes.size() + sizeof(uint32_t)*indices.size()), stats.first);
 
   nodes = std::move(compactified);
 }

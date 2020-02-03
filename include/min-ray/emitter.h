@@ -32,29 +32,25 @@ struct VisibilityTester {
 };
 
 struct LightRayQueryRecord {
-  /// Origin point from which we sample the emitter
+  // Origin point from which we sample the emitter
   Point3f ref;
-  /// Sampled point on the emitter
+  // Sampled point on the emitter
   Point3f p;
-  /// Normal at the emitter point
+  // Normal at the emitter point
   Normal3f n;
-  /// Direction between the hit point and the emitter point
+  // Direction between the hit point and the emitter point
   Vector3f wi;
-  /// Probability
+  // Probability
   float pdf;
-  /// Shadow ray
+  // Shadow ray
   Ray3f shadowRay;
 
-  /// Create an unitialized query record
+  // Create an unitialized query record
   LightRayQueryRecord() { }
 
-  /// Create a new query record that can be used to sample a emitter
+  // Create a new query record that can be used to sample a emitter
   LightRayQueryRecord(const Point3f &ref) : ref(ref) { }
 
-  /**
-   * \brief Create a query record that can be used to query the
-   * sampling density after having intersected an area emitter
-   */
   LightRayQueryRecord(const Point3f &ref, const Point3f &p, const Normal3f &n) :
       ref(ref), p(p), n(n) {
     wi = (p - ref).normalized();

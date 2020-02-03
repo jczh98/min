@@ -1,4 +1,3 @@
-
 #include <min-ray/bbox.h>
 #include <min-ray/bitmap.h>
 #include <min-ray/block.h>
@@ -10,16 +9,16 @@ namespace min::ray {
 ImageBlock::ImageBlock(const Vector2i &local_size, const ReconstructionFilter *local_filter)
     : offset(0, 0), size(local_size) {
   if (local_filter) {
-    /* Tabulate the image reconstruction filter for performance reasons */
+    // Tabulate the image reconstruction filter for performance reasons
     filter_radius = local_filter->GetRadius();
     border_size = (int)std::ceil(filter_radius - 0.5f);
-    this->filter = new float[NORI_FILTER_RESOLUTION + 1];
-    for (int i = 0; i < NORI_FILTER_RESOLUTION; ++i) {
-      float pos = (filter_radius * i) / NORI_FILTER_RESOLUTION;
+    this->filter = new float[MIN_FILTER_RESOLUTION + 1];
+    for (int i = 0; i < MIN_FILTER_RESOLUTION; ++i) {
+      float pos = (filter_radius * i) / MIN_FILTER_RESOLUTION;
       this->filter[i] = local_filter->Evaluate(pos);
     }
-    this->filter[NORI_FILTER_RESOLUTION] = 0.0f;
-    lookup_factor = NORI_FILTER_RESOLUTION / filter_radius;
+    this->filter[MIN_FILTER_RESOLUTION] = 0.0f;
+    lookup_factor = MIN_FILTER_RESOLUTION / filter_radius;
     int weightSize = (int)std::ceil(2 * filter_radius) + 1;
     weights_x = new float[weightSize];
     weights_y = new float[weightSize];
@@ -27,7 +26,7 @@ ImageBlock::ImageBlock(const Vector2i &local_size, const ReconstructionFilter *l
     memset(weights_y, 0, sizeof(float) * weightSize);
   }
 
-  /* Allocate space for pixels and border regions */
+  // Allocate space for pixels and border regions
   resize(size.y() + 2 * border_size, size.x() + 2 * border_size);
 }
 
@@ -49,7 +48,6 @@ void ImageBlock::FromBitmap(const Bitmap &bitmap) {
   if (bitmap.cols() != cols() || bitmap.rows() != rows()) {
     MIN_ERROR("Invalid bitmap dimensions!");
   }
-    //throw NoriException("Invalid bitmap dimensions!");
 
   for (int y = 0; y < size.y(); ++y)
     for (int x = 0; x < size.x(); ++x)
@@ -58,23 +56,23 @@ void ImageBlock::FromBitmap(const Bitmap &bitmap) {
 
 void ImageBlock::Put(const Point2f &_pos, const Color3f &value) {
   if (!value.Valid()) {
-    /* If this happens, go fix your code instead of removing this warning ;) */
-    cerr << "Integrator: computed an invalid radiance value: " << value.ToString() << endl;
+    // If this happens, go fix your code instead of removing this warning.
+    MIN_WARN("Integrator: computed an invalid radiance value: {}", value.ToString());
     return;
   }
 
-  /* Convert to pixel coordinates within the image block */
+  // Convert to pixel coordinates within the image block
   Point2f pos(
       _pos.x() - 0.5f - (offset.x() - border_size),
       _pos.y() - 0.5f - (offset.y() - border_size));
 
-  /* Compute the rectangle of pixels that will need to be updated */
+  // Compute the rectangle of pixels that will need to be updated
   BoundingBox2i bbox(
       Point2i((int)std::ceil(pos.x() - filter_radius), (int)std::ceil(pos.y() - filter_radius)),
       Point2i((int)std::floor(pos.x() + filter_radius), (int)std::floor(pos.y() + filter_radius)));
   bbox.Clip(BoundingBox2i(Point2i(0, 0), Point2i((int)cols() - 1, (int)rows() - 1)));
 
-  /* Lookup values from the pre-rasterized filter */
+  // Lookup values from the pre-rasterized filter
   for (int x = bbox.min.x(), idx = 0; x <= bbox.max.x(); ++x)
     weights_x[idx++] = filter[(int)(std::abs(x - pos.x()) * lookup_factor)];
   for (int y = bbox.min.y(), idx = 0; y <= bbox.max.y(); ++y)

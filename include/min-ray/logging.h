@@ -47,7 +47,7 @@ namespace min::logging {
 
 #define SPD_AUGMENTED_LOG(X, ...)                                        \
   min::logging::logger.X(                                                \
-      fmt::format("[{}:{}@{}] ", __FILENAME__, __FUNCTION__, __LINE__) + \
+      fmt::format("[{}@{}] ", __FUNCTION__, __LINE__) + \
       fmt::format(__VA_ARGS__))
 
 #define MIN_TRACE(...) SPD_AUGMENTED_LOG(trace, __VA_ARGS__)

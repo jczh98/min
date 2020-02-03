@@ -1,4 +1,3 @@
-
 #include <min-ray/resolver.h>
 #include <min-ray/color.h>
 #include <min-ray/common.h>
@@ -22,9 +21,7 @@
 
 namespace min::ray {
 
-std::string indent(const std::string &string, int amount) {
-  /* This could probably be done faster (it's not
-       really speed-critical though) */
+std::string Indent(const std::string &string, int amount) {
   std::istringstream iss(string);
   std::ostringstream oss;
   std::string spacer(amount, ' ');
@@ -40,69 +37,64 @@ std::string indent(const std::string &string, int amount) {
   return oss.str();
 }
 
-bool endsWith(const std::string &value, const std::string &ending) {
+bool EndsWith(const std::string &value, const std::string &ending) {
   if (ending.size() > value.size())
     return false;
   return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-std::string toLower(const std::string &value) {
+std::string ToLower(const std::string &value) {
   std::string result;
   result.resize(value.size());
   std::transform(value.begin(), value.end(), result.begin(), ::tolower);
   return result;
 }
 
-bool toBool(const std::string &str) {
-  std::string value = toLower(str);
+bool ToBool(const std::string &str) {
+  std::string value = ToLower(str);
   if (value == "false")
     return false;
   else if (value == "true")
     return true;
   else
-    //throw NoriException("Could not parse boolean value \"{}\"", str);
     MIN_ERROR("Could not parse boolean value \"{}\"", str);
 }
 
-int toInt(const std::string &str) {
+int ToInt(const std::string &str) {
   char *end_ptr = nullptr;
   int result = (int)strtol(str.c_str(), &end_ptr, 10);
   if (*end_ptr != '\0')
-    //throw NoriException("Could not parse integer value \"{}\"", str);
     MIN_ERROR("Could not parse integer value \"{}\"", str);
   return result;
 }
 
-unsigned int toUInt(const std::string &str) {
+unsigned int ToUInt(const std::string &str) {
   char *end_ptr = nullptr;
   unsigned int result = (int)strtoul(str.c_str(), &end_ptr, 10);
   if (*end_ptr != '\0')
-    //throw NoriException("Could not parse integer value \"{}\"", str);
     MIN_ERROR("Could not parse integer value \"{}\"", str);
   return result;
 }
 
-float toFloat(const std::string &str) {
+float ToFloat(const std::string &str) {
   char *end_ptr = nullptr;
   float result = (float)strtof(str.c_str(), &end_ptr);
   if (*end_ptr != '\0')
-    //throw NoriException("Could not parse floating point value \"{}\"", str);
     MIN_ERROR("Could not parse floating point value \"{}\"", str);
   return result;
 }
 
-Eigen::Vector3f toVector3f(const std::string &str) {
-  std::vector<std::string> tokens = tokenize(str);
+Eigen::Vector3f ToVector3f(const std::string &str) {
+  std::vector<std::string> tokens = Tokenize(str);
   if (tokens.size() != 3)
-    //throw NoriException("Expected 3 values");
     MIN_ERROR("Expected 3 values");
   Eigen::Vector3f result;
   for (int i = 0; i < 3; ++i)
-    result[i] = toFloat(tokens[i]);
+    result[i] = ToFloat(tokens[i]);
   return result;
 }
 
-std::vector<std::string> tokenize(const std::string &string, const std::string &delim, bool includeEmpty) {
+std::vector<std::string> Tokenize(const std::string &string, const std::string &delim, bool includeEmpty) {
   std::string::size_type lastPos = 0, pos = string.find_first_of(delim, lastPos);
   std::vector<std::string> tokens;
 
@@ -119,7 +111,7 @@ std::vector<std::string> tokenize(const std::string &string, const std::string &
   return tokens;
 }
 
-std::string timeString(double time, bool precise) {
+std::string TimeString(double time, bool precise) {
   if (std::isnan(time) || std::isinf(time))
     return "inf";
 
@@ -148,7 +140,7 @@ std::string timeString(double time, bool precise) {
   return os.str();
 }
 
-std::string memString(size_t size, bool precise) {
+std::string MemString(size_t size, bool precise) {
   double value = (double)size;
   const char *suffixes[] = {
       "B", "KiB", "MiB", "GiB", "TiB", "PiB"};
@@ -227,7 +219,7 @@ Transform Transform::operator*(const Transform &t) const {
                    t.inverse * inverse);
 }
 
-Vector3f sphericalDirection(float theta, float phi) {
+Vector3f SphericalDirection(float theta, float phi) {
   float sinTheta, cosTheta, sinPhi, cosPhi;
 
   sincosf(theta, &sinTheta, &cosTheta);
@@ -239,7 +231,7 @@ Vector3f sphericalDirection(float theta, float phi) {
       cosTheta);
 }
 
-Point2f sphericalCoordinates(const Vector3f &v) {
+Point2f SphericalCoordinates(const Vector3f &v) {
   Point2f result(
       std::acos(v.z()),
       std::atan2(v.y(), v.x()));
@@ -259,26 +251,26 @@ void ComputeCoordinateSystem(const Vector3f &a, Vector3f &b, Vector3f &c) {
   b = c.cross(a);
 }
 
-float fresnel(float cosThetaI, float extIOR, float intIOR) {
+float Fresnel(float cosThetaI, float extIOR, float intIOR) {
   float etaI = extIOR, etaT = intIOR;
 
   if (extIOR == intIOR)
     return 0.0f;
 
-  /* Swap the indices of refraction if the interaction starts
-       at the inside of the object */
+  // Swap the indices of refraction if the interaction starts
+  // at the inside of the object
   if (cosThetaI < 0.0f) {
     std::swap(etaI, etaT);
     cosThetaI = -cosThetaI;
   }
 
-  /* Using Snell's law, calculate the squared sine of the
-       angle between the normal and the transmitted ray */
+  // Using Snell's law, calculate the squared sine of the
+  // angle between the normal and the transmitted ray */
   float eta = etaI / etaT,
         sinThetaTSqr = eta * eta * (1 - cosThetaI * cosThetaI);
 
   if (sinThetaTSqr > 1.0f)
-    return 1.0f; /* Total internal reflection! */
+    return 1.0f; // Total internal reflection!
 
   float cosThetaT = std::sqrt(1.0f - sinThetaTSqr);
 

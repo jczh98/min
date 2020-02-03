@@ -3,19 +3,8 @@
 
 namespace min::ray {
 
-/**
- * Windowed Gaussian filter with configurable extent
- * and standard deviation. Often produces pleasing 
- * results, but may introduce too much blurring.
- */
 class GaussianFilter : public ReconstructionFilter {
  public:
-//  GaussianFilter(const PropertyList &propList) {
-//    /* Half filter size */
-//    radius = propList.getFloat("radius", 2.0f);
-//    /* Standard deviation of the Gaussian */
-//    m_stddev = propList.getFloat("stddev", 0.5f);
-//  }
   GaussianFilter() {
       radius = 2.0f;
       m_stddev = 0.5f;
@@ -31,10 +20,6 @@ class GaussianFilter : public ReconstructionFilter {
                     std::exp(alpha * x * x) -
                         std::exp(alpha * radius * radius));
   }
-
-//  std::string ToString() const {
-//    return tfm::format("GaussianFilter[radius=%f, stddev=%f]", radius, m_stddev);
-//  }
 
  protected:
   float m_stddev;
