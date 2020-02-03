@@ -22,14 +22,16 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(TBB CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(Eigen3 CONFIG REQUIRED)
+find_library(lodepng lodepng REQUIRED)
+find_path(lodepng_INCLUDES lodepng.h)
 
 add_subdirectory(external/glad)
 
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-        external/lodepng
         external/imgui
         external/imgui/examples
+        ${lodepng_INCLUDES}
 )
 
 file(GLOB IMGUI_SRC
@@ -48,6 +50,7 @@ set(MIN_RAY_LIBS
         TBB::tbb
         spdlog::spdlog
         Eigen3::Eigen
+        ${lodepng}
         )
 
 file(GLOB MIN_RAY_CORE
@@ -113,9 +116,6 @@ file(GLOB MIN_RAY_CORE
         src/integrators/normals.cc
         #src/integrators/path.cc
         src/lights/area_light.cc
-
-        external/lodepng/lodepng.cpp
-        external/lodepng/lodepng_util.cpp
         )
 
 add_executable(min-ray
