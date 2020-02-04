@@ -47,7 +47,7 @@ void Mesh::Sample(const Point2f &sample, SurfaceSample &surface_sample) const {
     Normal3f n = (p1-p0).cross(p2-p0).normalized();
     surface_sample.n = n;
   }
-  surface_sample.pdf = dpdf.normalized();
+  surface_sample.pdf = 1.0f / dpdf.normalized();
 }
 
 float Mesh::Pdf(const SurfaceSample &surface_sample) const {

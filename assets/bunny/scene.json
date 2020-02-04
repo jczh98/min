@@ -3,9 +3,9 @@
     "type": "blockwise",
     "props": {
       "integrator": {
-        "type": "normals"
+        "type": "ao"
       },
-      "spp": 1
+      "spp": 128
     }
   },
   "accelerator": {
@@ -16,7 +16,6 @@
     "props": {
       "fov": 16,
       "transform": {
-        "scale": [-1,1,1],
         "lookat": {
           "target": [-0.0123771, 0.0540913, -0.239922],
           "origin": [-0.0315182, 0.284011, 0.7331],

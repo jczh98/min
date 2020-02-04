@@ -30,7 +30,11 @@ class PerspectiveCamera : public Camera {
         Eigen::DiagonalMatrix<float, 3>(Vector3f(-0.5f, -0.5f * aspect, 1.0f)) *
             Eigen::Translation<float, 3>(-1.0f, -1.0f / aspect, 0.0f) * perspective)
         .Inverse();
-    filter = CreateInstance<ReconstructionFilter>("gaussian");
+    if (json.contains("filter")) {
+      filter = CreateInstance<ReconstructionFilter>(json["filter"]);
+    } else {
+      filter = CreateInstance<ReconstructionFilter>("gaussian");
+    }
   }
 
   Color3f SampleRay(Ray3f &ray,

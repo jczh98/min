@@ -23,8 +23,10 @@ float Warp::SquareToTentPdf(const Point2f &p) {
 }
 
 Point2f Warp::SquareToUniformDisk(const Point2f &sample) {
-  MIN_ERROR("Warp::squareToUniformDisk() is not yet implemented!");
-  return {};
+  float r = sqrt(sample.x());
+  float theta = 2.0f * M_PI * sample.y();
+  Point2f res(r * cos(theta), r * sin(theta));
+  return res;
 }
 
 float Warp::SquareToUniformDiskPdf(const Point2f &p) {
@@ -53,6 +55,8 @@ float Warp::SquareToUniformHemispherePdf(const Vector3f &v) {
 }
 
 Vector3f Warp::SquareToCosineHemisphere(const Point2f &sample) {
+  Point2f disk = SquareToUniformDisk(sample);
+  return Vector3f(disk.x(), disk.y(), sqrt(1.0f - disk.squaredNorm()));
   float phi = 2 * M_PI * sample[0];
   float theta = acos(sqrt(sample[1]));
   return Vector3f(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
