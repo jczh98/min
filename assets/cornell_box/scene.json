@@ -74,10 +74,8 @@
       "props": {
         "filename": "meshes/sphere1.obj",
         "bsdf": {
-          "type": "diffuse",
-          "props": {
-            "color": [0.75,0.75,0.25]
-          }
+          "type": "microfacet",
+          "props": {}
         }
       }
     },
@@ -86,10 +84,8 @@
       "props": {
         "filename": "meshes/sphere2.obj",
         "bsdf": {
-          "type": "diffuse",
-          "props": {
-            "color": [0.75,0.75,0.25]
-          }
+          "type": "dielectric",
+          "props": {}
         }
       }
     },

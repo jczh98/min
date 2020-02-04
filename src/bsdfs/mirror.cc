@@ -4,34 +4,31 @@
 
 namespace min::ray {
 
-/// Ideal mirror BRDF
+// Ideal mirror BRDF
 class Mirror : public BSDF {
  public:
-  Mirror(const PropertyList &) {}
 
-  Color3f Evaluate(const BSDFQueryRecord &) const {
-    /* Discrete BRDFs always evaluate to zero in Nori */
+  Color3f Evaluate(const BSDFSample &) const override{
     return Color3f(0.0f);
   }
 
-  float Pdf(const BSDFQueryRecord &) const {
-    /* Discrete BRDFs always evaluate to zero in Nori */
+  float Pdf(const BSDFSample &) const override{
     return 0.0f;
   }
 
-  Color3f Sample(BSDFQueryRecord &bRec, const Point2f &) const {
-    if (Frame::CosTheta(bRec.wi) <= 0)
+  Color3f Sample(BSDFSample &bsdf_sample, const Point2f &) const override {
+    if (Frame::CosTheta(bsdf_sample.wi) <= 0)
       return Color3f(0.0f);
 
     // Reflection in local coordinates
-    bRec.wo = Vector3f(
-        -bRec.wi.x(),
-        -bRec.wi.y(),
-        bRec.wi.z());
-    bRec.measure = EDiscrete;
+    bsdf_sample.wo = Vector3f(
+        -bsdf_sample.wi.x(),
+        -bsdf_sample.wi.y(),
+        bsdf_sample.wi.z());
+    bsdf_sample.measure = EDiscrete;
 
-    /* Relative index of refraction: no change */
-    bRec.eta = 1.0f;
+    // Relative index of refraction
+    bsdf_sample.eta = 1.0f;
 
     return Color3f(1.0f);
   }
@@ -40,6 +37,6 @@ class Mirror : public BSDF {
     return "Mirror[]";
   }
 };
+MIN_IMPLEMENTATION(BSDF, Mirror, "mirror")
 
-NORI_REGISTER_CLASS(Mirror, "mirror");
 }  // namespace min::ray

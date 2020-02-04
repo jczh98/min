@@ -31,21 +31,37 @@ class Dielectric : public BSDF {
   }
 
   Color3f Sample(BSDFSample &bsdf_sample, const Point2f &sample) const override {
-    if (Fresnel(Frame::CosTheta(bsdf_sample.wi), ext_ior, int_ior)) {
-      bsdf_sample.wo = Vector3f(-bsdf_sample.wi.x(), -bsdf_sample.wi.y(), bsdf_sample.wi.z());
-      bsdf_sample.eta = 1.0f;
-    } else {
-      bsdf_sample.eta = ext_ior / int_ior;
-      Vector3f n = Vector3f(0, 0, 1);
-      if (Frame::CosTheta(bsdf_sample.wi) <= 0.0f) {
-        bsdf_sample.eta = 1.0 / bsdf_sample.eta;
-        n *= -1;
-      }
-      bsdf_sample.wo = (-bsdf_sample.eta * (bsdf_sample.wi - (bsdf_sample.wi.dot(n) * n)) - n * sqrt(1 - pow(bsdf_sample.eta, 2) * (1 - pow(bsdf_sample.wi.dot(n), 2)))).normalized();
-      bsdf_sample.eta = int_ior / ext_ior;
-    }
     bsdf_sample.measure = EDiscrete;
-    return Color3f(1.0f);
+    if (Frame::CosTheta(bsdf_sample.wi) == 0.0f)
+      return Color3f(0.0f);
+    float eta1, eta2;
+    Vector3f n;
+    if (Frame::CosTheta(bsdf_sample.wi) <= 0.0f) {
+      eta1 = int_ior;
+      eta2 = ext_ior;
+      n = Vector3f(0, 0, -1.0f);
+    }
+    else {
+      eta1 = ext_ior;
+      eta2 = int_ior;
+      n = Vector3f(0, 0, 1.0f);
+    }
+    float fresPos = Fresnel(fabs(Frame::CosTheta(bsdf_sample.wi)), eta1, eta2);
+    if (sample.x() > fresPos) {
+      float eta = eta1 / eta2;
+      float cost = bsdf_sample.wi.dot(n);
+      cost = sqrt(1.0f - eta * eta * (1 - cost * cost));
+      Vector3f wt = - cost * n;
+      wt -= eta * (bsdf_sample.wi - bsdf_sample.wi.dot(n) * n);
+      bsdf_sample.wo = wt;
+      bsdf_sample.eta = eta;
+    }
+    else {
+      bsdf_sample.wo = 2 * n * bsdf_sample.wi.dot(n) - bsdf_sample.wi;
+      bsdf_sample.eta = 1.0f;
+    }
+    if (Frame::CosTheta(bsdf_sample.wo) == 0.0f) return Color3f(0.0f);
+    return Color3f(bsdf_sample.eta * bsdf_sample.eta);
   }
 
   std::string ToString() const {

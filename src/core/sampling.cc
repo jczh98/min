@@ -68,8 +68,9 @@ float Warp::SquareToCosineHemispherePdf(const Vector3f &v) {
 }
 
 Vector3f Warp::SquareToBeckmann(const Point2f &sample, float alpha) {
-  MIN_ERROR("Warp::squareToBeckmann() is not yet implemented!");
-  return {};
+  float phi = 2 * M_PI * sample[0];
+  float theta = atan(alpha * sqrt(log(1/(1-sample[1]))));
+  return Vector3f(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
 }
 
 float Warp::SquareToBeckmannPdf(const Vector3f &m, float alpha) {

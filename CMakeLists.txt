@@ -57,8 +57,7 @@ file(GLOB MIN_RAY_CORE
         include/min-ray/*.h
 
         src/accelerators/*.cc
-        src/bsdfs/diffuse.cc
-        src/bsdfs/dielectric.cc
+        src/bsdfs/*.cc
         src/cameras/*.cc
         src/core/*.cc
         src/filters/*.cc
