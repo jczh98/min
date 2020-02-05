@@ -5,7 +5,7 @@
       "integrator": {
         "type": "path"
       },
-      "spp": 10
+      "spp": 256
     }
   },
   "accelerator": {
