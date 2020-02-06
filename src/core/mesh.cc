@@ -3,17 +3,17 @@
 #include <min-ray/bsdf.h>
 #include <min-ray/light.h>
 #include <min-ray/mesh.h>
-#include <min-ray/sampling.h>
+#include <min-ray/warp.h>
 #include <Eigen/Geometry>
+#include <min-ray/json.h>
 
 namespace min::ray {
 
-void Mesh::initialize(const json &json) {
-  if (!bsdf && json.contains("bsdf")) {
-    bsdf = CreateInstance<BSDF>(json["bsdf"]["type"], json["bsdf"]["props"]);
-  }
-  if (!bsdf && !json.contains("bsdf")) {
-    bsdf = CreateInstance<BSDF>("diffuse", {});
+void Mesh::initialize(const Json &json) {
+  if (!bsdf) {
+    auto bsdf_json = rjson::AtOrEmpty(json, "bsdf");
+    bsdf = CreateInstance<BSDF>(rjson::GetOrDefault<std::string>(bsdf_json, "type", "diffuse"),
+        rjson::GetProps(bsdf_json));
   }
   dpdf.Reserve(GetTriangleCount());
   for(uint32_t i = 0 ; i < GetTriangleCount() ; ++i) {
@@ -34,7 +34,7 @@ void Mesh::Sample(const Point2f &sample, SurfaceSample &surface_sample) const {
   Point2f s = sample;
   size_t idT = dpdf.SampleReuse(s.x());
 
-  Vector3f bc = Warp::SquareToUniformTriangle(s);
+  Vector3f bc = warp::SquareToUniformTriangle(s);
 
   surface_sample.p = GetInterpolatedVertex(idT,bc);
   if (normals.size() > 0) {

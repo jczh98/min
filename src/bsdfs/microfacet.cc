@@ -1,7 +1,7 @@
 
 #include <min-ray/bsdf.h>
 #include <min-ray/frame.h>
-#include <min-ray/sampling.h>
+#include <min-ray/warp.h>
 #include <min-ray/json.h>
 
 namespace min::ray {
@@ -69,11 +69,11 @@ class Microfacet : public BSDF {
 
     if (sample.x() < ks) {
       Point2f sample(sample.x() / ks, sample.y());
-      Vector3f wh = Warp::SquareToBeckmann(sample, alpha);
+      Vector3f wh = warp::SquareToBeckmann(sample, alpha);
       bsdf_sample.wo = ((2.f * wh.dot(bsdf_sample.wi) * wh) - bsdf_sample.wi).normalized();
     } else {
       Point2f sample((sample.x() - ks) / (1 - ks), sample.y());
-      bsdf_sample.wo = Warp::SquareToCosineHemisphere(sample);
+      bsdf_sample.wo = warp::SquareToCosineHemisphere(sample);
     }
 
     if (Frame::CosTheta(bsdf_sample.wo) <= 0)

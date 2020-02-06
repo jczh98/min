@@ -39,6 +39,9 @@
 
 namespace min::ray {
 
+constexpr float kPi = 3.14159265358979323846f;
+constexpr float kInvPi = 0.31830988618379067154f;
+
 // Forward declarations
 template <typename Scalar, int Dimension>
 struct TVector;

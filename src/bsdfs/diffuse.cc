@@ -1,6 +1,6 @@
 #include <min-ray/bsdf.h>
 #include <min-ray/frame.h>
-#include <min-ray/sampling.h>
+#include <min-ray/warp.h>
 #include <min-ray/json.h>
 
 namespace min::ray {
@@ -8,43 +8,35 @@ namespace min::ray {
 class Diffuse : public BSDF {
  public:
 
-  void initialize(const json &json) override {
-    if (json.contains("color")) {
-      albedo = json.at("color").get<Color3f>();
-    } else {
-      albedo = Color3f(0.5f, 0.5f, 0.5f);
-    }
+  void initialize(const Json &json) override {
+    albedo = rjson::GetOrDefault(json, "color", Color3f(0.5f));
   }
 
-  Color3f Evaluate(const BSDFSample &bsdf_sample) const {
-    // This is a smooth BRDF -- return zero if the measure is wrong, or when queried for illumination on the backside
-    if (bsdf_sample.measure != ESolidAngle || Frame::CosTheta(bsdf_sample.wi) <= 0 || Frame::CosTheta(bsdf_sample.wo) <= 0)
-      return Color3f(0.0f);
-    return albedo * INV_PI;
+  Color3f Evaluate(const Vector3f &wo, const Vector3f &wi) const override {
+    if (Frame::CosTheta(wi) * Frame::CosTheta(wo) > 0) {
+      return albedo * kPi;
+    }
+    return Color3f(0.0f);
   }
 
   // Compute the density of \ref sample() wrt. solid angles
-  float Pdf(const BSDFSample &bsdf_sample) const {
-    if (bsdf_sample.measure != ESolidAngle || Frame::CosTheta(bsdf_sample.wi) <= 0 || Frame::CosTheta(bsdf_sample.wo) <= 0)
-      return 0.0f;
-
-    return INV_PI * Frame::CosTheta(bsdf_sample.wo);
+  float Pdf(const Vector3f &wo, const Vector3f &wi) const override {
+    if (Frame::CosTheta(wi) * Frame::CosTheta(wo) > 0) {
+      return std::abs(Frame::CosTheta(wi)) * kInvPi;
+    }
+    return 0;
   }
 
-  Color3f Sample(BSDFSample &bsdf_sample, const Point2f &sample) const {
-    if (Frame::CosTheta(bsdf_sample.wi) <= 0)
-      return Color3f(0.0f);
-    bsdf_sample.measure = ESolidAngle;
-
-    bsdf_sample.wo = Warp::SquareToCosineHemisphere(sample);
-
-    bsdf_sample.eta = 1.0f;
-
-    return albedo;
+  Color3f Sample(BSDFSample &bsdf_sample, const Point2f &sample) const override {
+    bsdf_sample.wi = warp::SquareToCosineHemisphere(sample);
+    bsdf_sample.sampled_type = GetBSDFType();
+    if (bsdf_sample.wo.z() < 0) bsdf_sample.wo.z() *= -1;
+    bsdf_sample.pdf = Pdf(bsdf_sample.wo, bsdf_sample.wi);
+    return Evaluate(bsdf_sample.wo, bsdf_sample.wi);
   }
 
-  bool isDiffuse() const {
-    return true;
+  Type GetBSDFType() const override {
+    return Type(kDiffuse | kReflection);
   }
 
   std::string ToString() const {

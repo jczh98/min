@@ -6,7 +6,7 @@ namespace min::ray {
 class AreaLight : public Light {
  public:
 
-  void initialize(const json &json) override {
+  void initialize(const Json &json) override {
 
     radiance = json.at("radiance").get<Color3f>();
   }

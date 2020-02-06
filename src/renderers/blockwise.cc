@@ -9,6 +9,7 @@
 #include <tbb/blocked_range.h>
 #include <tbb/parallel_for.h>
 #include <thread>
+#include <min-ray/json.h>
 
 namespace min::ray {
 
@@ -16,8 +17,8 @@ namespace min::ray {
 class Blockwise : public Renderer {
  public:
 
-  void initialize(const json &json) override {
-    integrator = CreateInstance<Integrator>(json["integrator"]["type"]);
+  void initialize(const Json &json) override {
+    integrator = CreateInstance<Integrator>(json["integrator"]["type"], rjson::GetProps(json["integrator"]));
     spp = json["spp"].get<int>();
   }
 

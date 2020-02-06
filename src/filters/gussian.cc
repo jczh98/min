@@ -1,18 +1,16 @@
 #pragma once
 
 #include <min-ray/filter.h>
+#include <min-ray/json.h>
 
 namespace min::ray {
 
 class GaussianFilter : public ReconstructionFilter {
  public:
-  GaussianFilter() {
-    radius = 2.0f;
-    stddev = 0.5f;
-  }
-  void initialize(const json &json) override {
-    radius = json.at("radius").get<float>();
-    stddev = json.at("stddev").get<float>();
+
+  void initialize(const Json &json) override {
+    radius = rjson::GetOrDefault(json, "radius", 2.0f);
+    stddev = rjson::GetOrDefault(json, "stddev", 0.5f);
   }
 
   float Evaluate(float x) const {

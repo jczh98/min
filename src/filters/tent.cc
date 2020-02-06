@@ -1,6 +1,7 @@
 #pragma once
 
 #include <min-ray/filter.h>
+#include <min-ray/json.h>
 
 namespace min::ray {
 
@@ -8,6 +9,10 @@ class TentFilter : public ReconstructionFilter {
  public:
   TentFilter() {
     radius = 1.0f;
+  }
+
+  void initialize(const Json &json) override {
+    radius = rjson::GetOrDefault(json, "radius", 1.0f);
   }
 
   float Evaluate(float x) const {

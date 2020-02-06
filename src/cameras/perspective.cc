@@ -1,7 +1,7 @@
 
 #include <min-ray/camera.h>
 #include <min-ray/filter.h>
-#include <min-ray/sampling.h>
+#include <min-ray/warp.h>
 #include <min-ray/json.h>
 #include <Eigen/Geometry>
 
@@ -9,7 +9,7 @@ namespace min::ray {
 
 class PerspectiveCamera : public Camera {
  public:
-  void initialize(const json &json) override {
+  void initialize(const Json &json) override {
     output_size.x() = json.at("width").get<int>();
     output_size.y() = json.at("height").get<int>();
     m_invOutputSize = output_size.cast<float>().cwiseInverse();
@@ -30,11 +30,9 @@ class PerspectiveCamera : public Camera {
         Eigen::DiagonalMatrix<float, 3>(Vector3f(-0.5f, -0.5f * aspect, 1.0f)) *
             Eigen::Translation<float, 3>(-1.0f, -1.0f / aspect, 0.0f) * perspective)
         .Inverse();
-    if (json.contains("filter")) {
-      filter = CreateInstance<ReconstructionFilter>(json["filter"]);
-    } else {
-      filter = CreateInstance<ReconstructionFilter>("gaussian");
-    }
+    auto filter_json = rjson::AtOrEmpty(json, "filter");
+    filter = CreateInstance<ReconstructionFilter>(rjson::GetOrDefault<std::string>(filter_json, "type", "guassian"),
+        rjson::GetProps(filter_json));
   }
 
   Color3f SampleRay(Ray3f &ray,

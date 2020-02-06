@@ -1,13 +1,15 @@
 #pragma once
 
 #include <min-ray/filter.h>
+#include <min-ray/json.h>
 
 namespace min::ray {
 
 class BoxFilter : public ReconstructionFilter {
  public:
-  BoxFilter() {
-    radius = 0.5f;
+
+  void initialize(const Json &json) override {
+    radius = rjson::GetOrDefault(json, "radius", 0.5f);
   }
 
   float Evaluate(float) const {

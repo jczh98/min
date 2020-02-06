@@ -5,7 +5,7 @@
       "integrator": {
         "type": "path"
       },
-      "spp": 256
+      "spp": 1
     }
   },
   "accelerator": {
@@ -25,12 +25,13 @@
       },
       "height": 600,
       "width": 800,
-      "filter": "box"
+      "filter": {
+        "type": "box"
+      }
     }
   },
   "sampler": {
-    "type": "independent",
-    "props": {}
+    "type": "independent"
   },
   "meshes": [
     {
@@ -74,8 +75,10 @@
       "props": {
         "filename": "meshes/sphere1.obj",
         "bsdf": {
-          "type": "microfacet",
-          "props": {}
+          "type": "diffuse",
+          "props": {
+            "color": [0.630,0.065,0.05]
+          }
         }
       }
     },
@@ -84,8 +87,10 @@
       "props": {
         "filename": "meshes/sphere2.obj",
         "bsdf": {
-          "type": "dielectric",
-          "props": {}
+          "type": "diffuse",
+          "props": {
+            "color": [0.630,0.065,0.05]
+          }
         }
       }
     },

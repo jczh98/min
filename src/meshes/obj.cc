@@ -8,7 +8,7 @@ namespace min::ray {
 
 class WavefrontOBJ : public Mesh {
  public:
-  void initialize(const json &json) override {
+  void initialize(const Json &json) override {
     typedef std::unordered_map<OBJVertex, uint32_t, OBJVertexHash> VertexMap;
 
     fs::path filename =

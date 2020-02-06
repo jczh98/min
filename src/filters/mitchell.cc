@@ -1,15 +1,17 @@
 #pragma once
 
 #include <min-ray/filter.h>
+#include <min-ray/json.h>
 
 namespace min::ray {
 
 class MitchellNetravaliFilter : public ReconstructionFilter {
  public:
-  MitchellNetravaliFilter() {
-    radius = 2.0f;
-    B = 1.0f/3.0f;
-    C = 1.0f/3.0f;
+
+  void initialize(const Json &json) override {
+    radius = rjson::GetOrDefault(json, "radius", 2.0f);
+    B = rjson::GetOrDefault(json, "B", 1.0f / 3.0f);
+    C = rjson::GetOrDefault(json, "C", 1.0f / 3.0f);
   }
 
   float Evaluate(float x) const {

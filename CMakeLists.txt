@@ -57,11 +57,11 @@ file(GLOB MIN_RAY_CORE
         include/min-ray/*.h
 
         src/accelerators/*.cc
-        src/bsdfs/*.cc
+        src/bsdfs/diffuse.cc
         src/cameras/*.cc
         src/core/*.cc
         src/filters/*.cc
-        src/integrators/*.cc
+        src/integrators/path.cc
         src/meshes/obj.cc
         src/lights/*.cc
         src/renderers/blockwise.cc

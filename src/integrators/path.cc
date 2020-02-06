@@ -8,6 +8,13 @@ namespace min::ray {
 
 class PathIntegrator : public Integrator {
  public:
+
+  static float MisWeight(float pdf_a, float pdf_b) {
+    pdf_a *= pdf_a;
+    pdf_b *= pdf_b;
+    return pdf_a / (pdf_a + pdf_b);
+  }
+
   Color3f Li(const std::shared_ptr<Scene> scene,
              Sampler *sampler, const Ray3f &ray) const {
     // Initial radiance and throughput
@@ -51,11 +58,11 @@ class PathIntegrator : public Integrator {
       float pdf_nee = random_light->Pdf(light_sample_nee);
 
       // BSDF
-      BSDFSample bsdf_sample_nee(its.shading_frame.ToLocal(-new_ray.d), its.shading_frame.ToLocal(light_sample_nee.wi), ESolidAngle);
+      BSDFSample bsdf_sample_nee(its.shading_frame.ToLocal(light_sample_nee.wi), its.shading_frame.ToLocal(-new_ray.d), ESolidAngle);
       bsdf_sample_nee.uv = its.uv;
-      Color3f f_nee = its.mesh->GetBSDF()->Evaluate(bsdf_sample_nee);
-      if (pdf_nee + its.mesh->GetBSDF()->Pdf(bsdf_sample_nee) != 0)
-        w_nee = pdf_nee / (pdf_nee + its.mesh->GetBSDF()->Pdf(bsdf_sample_nee));
+      Color3f f_nee = its.mesh->GetBSDF()->Evaluate(bsdf_sample_nee.wo, bsdf_sample_nee.wi);
+      if (pdf_nee + its.mesh->GetBSDF()->Pdf(bsdf_sample_nee.wo, bsdf_sample_nee.wi) != 0)
+        w_nee = pdf_nee / (pdf_nee + its.mesh->GetBSDF()->Pdf(bsdf_sample_nee.wo, bsdf_sample_nee.wi));
 
       // Check if shadow ray is occluded
       Intersection its_nee;
@@ -70,10 +77,10 @@ class PathIntegrator : public Integrator {
       Color3f f = its.mesh->GetBSDF()->Sample(bsdf_sample, sampler->Next2D());
       t *= f;
       // Shoot next ray
-      new_ray = Ray3f(its.p, its.ToWorld(bsdf_sample.wo));
+      new_ray = Ray3f(its.p, its.ToWorld(bsdf_sample.wi));
 
       // Mats weights for next Le
-      float pdf_mats = its.mesh->GetBSDF()->Pdf(bsdf_sample);
+      float pdf_mats = its.mesh->GetBSDF()->Pdf(bsdf_sample.wo, bsdf_sample.wi);
 
       Intersection new_its;
       if (scene->Intersect(new_ray, new_its)) {

@@ -21,7 +21,7 @@
 // SOFTWARE.
 #pragma once
 
-#include <nlohmann/json.hpp>
+#include "json_type.h"
 #include "logging.h"
 
 namespace min::ray {
@@ -33,21 +33,21 @@ std::shared_ptr<T> CreateInstance(const std::string &alias);
 
 template<typename T>
 std::shared_ptr<T> CreateInstance(const std::string &alias,
-                                  const json &json);
+                                  const Json &json);
 
 template<typename T>
 std::unique_ptr<T> CreateInstanceUnique(const std::string &alias);
 
 template<typename T>
 std::unique_ptr<T> CreateInstanceUnique(const std::string &alias,
-                                        const json &json);
+                                        const Json &json);
 
 template<typename T>
 T *CreateInstanceRaw(const std::string &alias);
 
 template<typename T>
 T *CreateInstanceRaw(const std::string &alias,
-                     const json &json);
+                     const Json &json);
 
 template<typename T>
 T *CreateInstancePlacement(const std::string &alias,
@@ -56,7 +56,7 @@ T *CreateInstancePlacement(const std::string &alias,
 template<typename T>
 T *CreateInstancePlacement(const std::string &alias,
                            void *place,
-                           const json &json);
+                           const Json &json);
 
 template<typename T>
 std::vector<std::string> GetImplementationNames();
@@ -64,14 +64,14 @@ std::vector<std::string> GetImplementationNames();
 class Unit {
  public:
   Unit() {}
-  virtual void initialize(const json &json) {}
+  virtual void initialize(const Json &json) {}
 
   virtual std::string name() const {
     MIN_NOT_IMPLEMENTED
     return "";
   }
 
-  virtual std::string GeneralAction(const json &json) {
+  virtual std::string GeneralAction(const Json &json) {
     MIN_NOT_IMPLEMENTED
     return "";
   }
@@ -204,7 +204,7 @@ class InterfaceHolder {
   }                                                                                                 \
   template <>                                                                                       \
   std::shared_ptr<class_name> CreateInstance(const std::string& alias,                              \
-                                             const json& json) {                                    \
+                                             const Json& json) {                                    \
     auto instance = CreateInstance<class_name>(alias);                                              \
     instance->initialize(json);                                                                     \
     return instance;                                                                                \
@@ -215,7 +215,7 @@ class InterfaceHolder {
   }                                                                                                 \
   template <>                                                                                       \
   std::unique_ptr<class_name> CreateInstanceUnique(const std::string& alias,                        \
-                                                   const json& json) {                              \
+                                                   const Json& json) {                              \
     auto instance = CreateInstanceUnique<class_name>(alias);                                        \
     instance->initialize(json);                                                                     \
     return instance;                                                                                \
@@ -226,7 +226,7 @@ class InterfaceHolder {
   }                                                                                                 \
   template <>                                                                                       \
   class_name* CreateInstanceRaw(const std::string& alias,                                           \
-                                const json& json) {                                                 \
+                                const Json& json) {                                                 \
     auto instance = CreateInstanceRaw<class_name>(alias);                                           \
     instance->initialize(json);                                                                     \
     return instance;                                                                                \
@@ -237,7 +237,7 @@ class InterfaceHolder {
   }                                                                                                 \
   template <>                                                                                       \
   class_name* CreateInstancePlacement(const std::string& alias, void* place,                        \
-                                      const json& json) {                                           \
+                                      const Json& json) {                                           \
     auto instance = CreateInstancePlacement<class_name>(alias, place);                              \
     instance->initialize(json);                                                                     \
     return instance;                                                                                \
