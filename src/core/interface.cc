@@ -1,1 +1,1 @@
-#include <min-ray/interface.h>
+#pragma once

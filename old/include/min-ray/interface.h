@@ -22,7 +22,7 @@
 #pragma once
 
 #include "json_type.h"
-#include "util.h"
+#include "logging.h"
 
 namespace min::ray {
 

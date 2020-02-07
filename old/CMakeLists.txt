@@ -8,20 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake/")
 
-if (MSVC)
-    link_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/lib)
-    set(CMAKE_CXX_FLAGS
-            "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++17 /MP /D \"_CRT_SECURE_NO_WARNINGS\" /D \"_ENABLE_EXTENDED_ALIGNED_STORAGE\"")
-else()
-    if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-        message("Clang compiler detected. Using std=c++17.")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fsized-deallocation")
-    else()
-        message(FATAL_ERROR "clang-6/7 is the only supported compiler for Taichi compiler development")
-    endif()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall ")
-endif ()
-
 if (WIN32)
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/")
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_ROOT}/Modules")
@@ -33,7 +19,9 @@ endif ()
 find_package(glfw3 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(TBB CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+find_package(Eigen3 CONFIG REQUIRED)
 find_library(lodepng lodepng REQUIRED)
 find_path(lodepng_INCLUDES lodepng.h)
 
@@ -59,7 +47,9 @@ set(MIN_RAY_LIBS
         glad glfw
         fmt::fmt
         nlohmann_json nlohmann_json::nlohmann_json
+        TBB::tbb
         spdlog::spdlog
+        Eigen3::Eigen
         ${lodepng}
         )
 
