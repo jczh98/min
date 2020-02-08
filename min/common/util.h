@@ -88,6 +88,10 @@ static_assert(__cplusplus >= 201402L, "C++14 required.");
 #define MIN_CPP14
 #endif
 
+#ifdef MIN_COMPILER_MSVC
+#define NOMINMAX
+#endif
+
 // Do not disable assert...
 #ifdef NDEBUG
 #undef NDEBUG

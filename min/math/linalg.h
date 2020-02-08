@@ -87,7 +87,7 @@ struct VectorND : public VectorNDBase<dim__, T, ISE> {
   template<int dim_, typename T_, InstSetExt ISE_>
   explicit MIN_FORCE_INLINE VectorND(const VectorND<dim_, T_, ISE_> &o)
       : VectorND() {
-    for (int i = 0; i < std::min(dim_, dim__); i++) {
+    for (int i = 0; i < std::min<int>(dim_, dim__); i++) {
       d[i] = o[i];
     }
   }
@@ -162,7 +162,7 @@ struct VectorND : public VectorNDBase<dim__, T, ISE> {
     for (int i = 0; i < dim_ - 1; i++) {
       this->d[i] = o[i];
     }
-    this->d[dim - 1] = extra;
+    this->d[kDim - 1] = extra;
   }
 
   // Convert from std::vector
@@ -420,6 +420,514 @@ using Vector1i = VectorND<1, int, kDefaultInstructionSet>;
 using Vector2i = VectorND<2, int, kDefaultInstructionSet>;
 using Vector3i = VectorND<3, int, kDefaultInstructionSet>;
 using Vector4i = VectorND<4, int, kDefaultInstructionSet>;
+
+//******************************************************************************
+//                           N dimensional matrix
+//******************************************************************************
+
+template <int dim__, typename T, InstSetExt ISE = kDefaultInstructionSet>
+struct MatrixND {
+  static constexpr int kDim = dim__;
+  using Vector = VectorND<kDim, T, ISE>;
+  Vector d[kDim];
+
+  MIN_FORCE_INLINE MatrixND() {
+    for (int i = 0; i < kDim; i++) {
+      d[i] = VectorND<kDim, T, ISE>();
+    }
+  }
+
+  template <int dim_, typename T_, InstSetExt ISE_>
+  MIN_FORCE_INLINE explicit MatrixND(const MatrixND<dim_, T_, ISE_> &o)
+      : MatrixND() {
+    for (int i = 0; i < std::min(dim_, dim__); i++) {
+      for (int j = 0; j < std::min(dim_, dim__); j++) {
+        d[i][j] = o[i][j];
+      }
+    }
+  }
+
+  MIN_FORCE_INLINE MatrixND(T v) : MatrixND() {
+    for (int i = 0; i < kDim; i++) {
+      d[i][i] = v;
+    }
+  }
+
+  MIN_FORCE_INLINE MatrixND(const MatrixND &o) {
+    *this = o;
+  }
+
+  // Diagonal assigment
+  MIN_FORCE_INLINE explicit MatrixND(Vector v) : MatrixND() {
+    for (int i = 0; i < kDim; i++)
+      this->d[i][i] = v[i];
+  }
+
+  MIN_FORCE_INLINE explicit MatrixND(Vector v0, Vector v1) {
+    static_assert(kDim == 2, "Matrix dim must be 2");
+    this->d[0] = v0;
+    this->d[1] = v1;
+  }
+
+  MIN_FORCE_INLINE explicit MatrixND(Vector v0, Vector v1, Vector v2) {
+    static_assert(kDim == 3, "Matrix dim must be 3");
+    this->d[0] = v0;
+    this->d[1] = v1;
+    this->d[2] = v2;
+  }
+
+  MIN_FORCE_INLINE explicit MatrixND(Vector v0,
+                                    Vector v1,
+                                    Vector v2,
+                                    Vector v3) {
+    static_assert(kDim == 4, "Matrix dim must be 4");
+    this->d[0] = v0;
+    this->d[1] = v1;
+    this->d[2] = v2;
+    this->d[3] = v3;
+  }
+
+  // Function intialization
+  template <
+      typename F,
+      std::enable_if_t<std::is_convertible<
+          F,
+          std::function<VectorND<dim__, T, ISE>(int)>>::value,
+                       int> = 0>
+  MIN_FORCE_INLINE explicit MatrixND(const F &f) {
+    for (int i = 0; i < kDim; i++)
+      this->d[i] = f(i);
+  }
+
+  MIN_FORCE_INLINE MatrixND &operator=(const MatrixND &o) {
+    for (int i = 0; i < kDim; i++) {
+      this->d[i] = o[i];
+    }
+    return *this;
+  }
+
+  MIN_FORCE_INLINE VectorND<kDim, T, ISE> &operator[](int i) {
+    return d[i];
+  }
+
+  MIN_FORCE_INLINE T &operator()(int i, int j) {
+    return d[j][i];
+  }
+
+  MIN_FORCE_INLINE const T &operator()(int i, int j) const {
+    return d[j][i];
+  }
+
+  MIN_FORCE_INLINE const VectorND<kDim, T, ISE> &operator[](int i) const {
+    return d[i];
+  }
+
+  template <int dim_ = kDim, typename T_ = T, InstSetExt ISE_ = ISE>
+  MIN_FORCE_INLINE VectorND<kDim, T, ISE> operator*(
+      const VectorND<kDim, T, ISE> &o) const {
+    VectorND<kDim, T, ISE> ret = d[0] * o[0];
+    for (int i = 1; i < kDim; i++)
+      ret += d[i] * o[i];
+    return ret;
+  }
+
+  template <int dim_ = kDim, typename T_ = T, InstSetExt ISE_ = ISE>
+  MIN_FORCE_INLINE MatrixND operator*(const MatrixND &o) const {
+    MatrixND ret;
+    for (int i = 0; i < kDim; i++) {
+      for (int j = 0; j < kDim; j++) {
+        T tmp = 0;
+        for (int k = 0; k < kDim; k++) {
+          tmp += (*this)[i][k] * o[k][j];
+        }
+        ret[i][j] = tmp;
+      }
+    }
+    return ret;
+  }
+
+  MIN_FORCE_INLINE MatrixND operator+(const MatrixND &o) const {
+    return MatrixND([=](int i) { return this->d[i] + o[i]; });
+  }
+
+  MIN_FORCE_INLINE MatrixND operator-(const MatrixND &o) const {
+    return MatrixND([=](int i) { return this->d[i] - o[i]; });
+  }
+
+  MIN_FORCE_INLINE MatrixND &operator+=(const MatrixND &o) {
+    return this->set([&](int i) { return this->d[i] + o[i]; });
+  }
+
+  MIN_FORCE_INLINE MatrixND &operator-=(const MatrixND &o) {
+    return this->set([&](int i) { return this->d[i] - o[i]; });
+  }
+
+  MIN_FORCE_INLINE MatrixND operator-() const {
+    return MatrixND([=](int i) { return -this->d[i]; });
+  }
+
+  MIN_FORCE_INLINE bool operator==(const MatrixND &o) const {
+    for (int i = 0; i < kDim; i++)
+      for (int j = 0; j < kDim; j++)
+        if (d[i][j] != o[i][j])
+          return false;
+    return true;
+  }
+
+  MIN_FORCE_INLINE bool operator!=(const MatrixND &o) const {
+    for (int i = 0; i < kDim; i++)
+      for (int j = 0; j < kDim; j++)
+        if (d[i][j] != o[i][j])
+          return true;
+    return false;
+  }
+
+  MIN_FORCE_INLINE MatrixND Transpose() const {
+    MatrixND ret;
+    for (int i = 0; i < kDim; i++) {
+      for (int j = 0; j < kDim; j++) {
+        ret[i][j] = d[j][i];
+      }
+    }
+    return ret;
+  }
+
+  MIN_FORCE_INLINE MatrixND ElementwiseProduct(const MatrixND<kDim, T> &o) const {
+    MatrixND ret;
+    for (int i = 0; i < kDim; i++) {
+      ret[i] = this->d[i] * o[i];
+    }
+    return ret;
+  }
+
+  std::string ToString() const {
+    if (kDim == 4) {
+      return fmt::format("[{} {} {} {}\n"
+                  " {} {} {} {}\n"
+                  " {} {} {} {}\n"
+                  " {} {} {} {}]",
+                  d[0][0], d[0][1], d[0][2], d[0][3],
+                  d[1][0], d[1][1], d[1][2], d[1][3],
+                  d[2][0], d[2][1], d[2][2], d[2][3],
+                  d[3][0], d[3][1], d[3][2], d[3][3]);
+    }
+    if (kDim == 3) {
+      return fmt::format("[{} {} {}\n"
+                         " {} {} {}\n"
+                         " {} {} {}]",
+                         d[0][0], d[0][1], d[0][2],
+                         d[1][0], d[1][1], d[1][2],
+                         d[2][0], d[2][1], d[2][2]);
+    }
+    if (kDim == 2) {
+      return fmt::format("[{} {}\n"
+                         " {} {}]",
+                         d[0][0], d[0][1],
+                         d[1][0], d[1][1]);
+    }
+  }
+};
+
+template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE MatrixND<dim, T, ISE> operator
+*(const T a, const MatrixND<dim, T, ISE> &M) {
+  MatrixND<dim, T, ISE> ret;
+  for (int i = 0; i < dim; i++) {
+    ret[i] = a * M[i];
+  }
+  return ret;
+}
+
+template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE MatrixND<dim, T, ISE> operator*(const MatrixND<dim, T, ISE> &M,
+                                                const T a) {
+  return a * M;
+}
+
+template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE MatrixND<dim, T, ISE> Transpose(
+    const MatrixND<dim, T, ISE> &mat) {
+  return mat.Transpose();
+}
+
+template <typename T, int dim, InstSetExt ISE = kDefaultInstructionSet>
+using TMatrix = MatrixND<dim, T, ISE>;
+
+using Matrix2 = MatrixND<2, Float, kDefaultInstructionSet>;
+using Matrix3 = MatrixND<3, Float, kDefaultInstructionSet>;
+using Matrix4 = MatrixND<4, Float, kDefaultInstructionSet>;
+
+using Matrix2f = MatrixND<2, float32, kDefaultInstructionSet>;
+using Matrix3f = MatrixND<3, float32, kDefaultInstructionSet>;
+using Matrix4f = MatrixND<4, float32, kDefaultInstructionSet>;
+
+using Matrix2d = MatrixND<2, float64, kDefaultInstructionSet>;
+using Matrix3d = MatrixND<3, float64, kDefaultInstructionSet>;
+using Matrix4d = MatrixND<4, float64, kDefaultInstructionSet>;
+
+template <typename T, InstSetExt ISE>
+MIN_FORCE_INLINE Float Determinant(const MatrixND<2, T, ISE> &mat) {
+  return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
+}
+
+template <typename T, InstSetExt ISE>
+MIN_FORCE_INLINE T Determinant(const MatrixND<3, T, ISE> &mat) {
+  return mat[0][0] * (mat[1][1] * mat[2][2] - mat[2][1] * mat[1][2]) -
+      mat[1][0] * (mat[0][1] * mat[2][2] - mat[2][1] * mat[0][2]) +
+      mat[2][0] * (mat[0][1] * mat[1][2] - mat[1][1] * mat[0][2]);
+}
+
+template <InstSetExt ISE, typename T>
+MIN_FORCE_INLINE MatrixND<2, T, ISE> Inverse(const MatrixND<2, T, ISE> &mat) {
+  T det = Determinant(mat);
+  return static_cast<T>(1) / det *
+      MatrixND<2, T, ISE>(VectorND<2, T, ISE>(mat[1][1], -mat[0][1]),
+      VectorND<2, T, ISE>(-mat[1][0], mat[0][0]));
+}
+
+template <InstSetExt ISE, typename T>
+MatrixND<3, T, ISE> Inverse(const MatrixND<3, T, ISE> &mat) {
+  T det = Determinant(mat);
+  return T(1.0) / det *
+      MatrixND<3, T, ISE>(
+      VectorND<3, T, ISE>(mat[1][1] * mat[2][2] - mat[2][1] * mat[1][2],
+                          mat[2][1] * mat[0][2] - mat[0][1] * mat[2][2],
+                          mat[0][1] * mat[1][2] - mat[1][1] * mat[0][2]),
+          VectorND<3, T, ISE>(mat[2][0] * mat[1][2] - mat[1][0] * mat[2][2],
+                              mat[0][0] * mat[2][2] - mat[2][0] * mat[0][2],
+                              mat[1][0] * mat[0][2] - mat[0][0] * mat[1][2]),
+          VectorND<3, T, ISE>(
+              mat[1][0] * mat[2][1] - mat[2][0] * mat[1][1],
+              mat[2][0] * mat[0][1] - mat[0][0] * mat[2][1],
+              mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1]));
+}
+
+template <typename T, InstSetExt ISE>
+T Determinant(const MatrixND<4, T, ISE> &m) {
+  // This function is adopted from GLM
+  /*
+  ================================================================================
+  OpenGL Mathematics (GLM)
+  --------------------------------------------------------------------------------
+  GLM is licensed under The Happy Bunny License and MIT License
+  ================================================================================
+  The Happy Bunny License (Modified MIT License)
+  --------------------------------------------------------------------------------
+  Copyright (c) 2005 - 2014 G-Truc Creation
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  Restrictions:
+   By making use of the Software for military purposes, you choose to make a
+   Bunny unhappy.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+  ================================================================================
+  The MIT License
+  --------------------------------------------------------------------------------
+  Copyright (c) 2005 - 2014 G-Truc Creation
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+   */
+
+  T Coef00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
+  T Coef02 = m[1][2] * m[3][3] - m[3][2] * m[1][3];
+  T Coef03 = m[1][2] * m[2][3] - m[2][2] * m[1][3];
+
+  T Coef04 = m[2][1] * m[3][3] - m[3][1] * m[2][3];
+  T Coef06 = m[1][1] * m[3][3] - m[3][1] * m[1][3];
+  T Coef07 = m[1][1] * m[2][3] - m[2][1] * m[1][3];
+
+  T Coef08 = m[2][1] * m[3][2] - m[3][1] * m[2][2];
+  T Coef10 = m[1][1] * m[3][2] - m[3][1] * m[1][2];
+  T Coef11 = m[1][1] * m[2][2] - m[2][1] * m[1][2];
+
+  T Coef12 = m[2][0] * m[3][3] - m[3][0] * m[2][3];
+  T Coef14 = m[1][0] * m[3][3] - m[3][0] * m[1][3];
+  T Coef15 = m[1][0] * m[2][3] - m[2][0] * m[1][3];
+
+  T Coef16 = m[2][0] * m[3][2] - m[3][0] * m[2][2];
+  T Coef18 = m[1][0] * m[3][2] - m[3][0] * m[1][2];
+  T Coef19 = m[1][0] * m[2][2] - m[2][0] * m[1][2];
+
+  T Coef20 = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+  T Coef22 = m[1][0] * m[3][1] - m[3][0] * m[1][1];
+  T Coef23 = m[1][0] * m[2][1] - m[2][0] * m[1][1];
+
+  using Vector = VectorND<4, T, ISE>;
+
+  Vector Fac0(Coef00, Coef00, Coef02, Coef03);
+  Vector Fac1(Coef04, Coef04, Coef06, Coef07);
+  Vector Fac2(Coef08, Coef08, Coef10, Coef11);
+  Vector Fac3(Coef12, Coef12, Coef14, Coef15);
+  Vector Fac4(Coef16, Coef16, Coef18, Coef19);
+  Vector Fac5(Coef20, Coef20, Coef22, Coef23);
+
+  Vector Vec0(m[1][0], m[0][0], m[0][0], m[0][0]);
+  Vector Vec1(m[1][1], m[0][1], m[0][1], m[0][1]);
+  Vector Vec2(m[1][2], m[0][2], m[0][2], m[0][2]);
+  Vector Vec3(m[1][3], m[0][3], m[0][3], m[0][3]);
+
+  Vector Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
+  Vector Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+  Vector Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
+  Vector Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
+
+  Vector SignA(+1, -1, +1, -1);
+  Vector SignB(-1, +1, -1, +1);
+  MatrixND<4, T, ISE> Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA,
+                              Inv3 * SignB);
+
+  Vector Row0(Inverse[0][0], Inverse[1][0], Inverse[2][0], Inverse[3][0]);
+
+  Vector Dot0(m[0] * Row0);
+  T Dot1 = (Dot0.x + Dot0.y) + (Dot0.z + Dot0.w);
+
+  return Dot1;
+}
+
+template <typename T, InstSetExt ISE>
+MatrixND<4, T, ISE> Inverse(const MatrixND<4, T, ISE> &m) {
+  // This function is copied from GLM
+  /*
+  ================================================================================
+  OpenGL Mathematics (GLM)
+  --------------------------------------------------------------------------------
+  GLM is licensed under The Happy Bunny License and MIT License
+  ================================================================================
+  The Happy Bunny License (Modified MIT License)
+  --------------------------------------------------------------------------------
+  Copyright (c) 2005 - 2014 G-Truc Creation
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  Restrictions:
+   By making use of the Software for military purposes, you choose to make a
+   Bunny unhappy.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+  ================================================================================
+  The MIT License
+  --------------------------------------------------------------------------------
+  Copyright (c) 2005 - 2014 G-Truc Creation
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+   */
+
+  T Coef00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
+  T Coef02 = m[1][2] * m[3][3] - m[3][2] * m[1][3];
+  T Coef03 = m[1][2] * m[2][3] - m[2][2] * m[1][3];
+
+  T Coef04 = m[2][1] * m[3][3] - m[3][1] * m[2][3];
+  T Coef06 = m[1][1] * m[3][3] - m[3][1] * m[1][3];
+  T Coef07 = m[1][1] * m[2][3] - m[2][1] * m[1][3];
+
+  T Coef08 = m[2][1] * m[3][2] - m[3][1] * m[2][2];
+  T Coef10 = m[1][1] * m[3][2] - m[3][1] * m[1][2];
+  T Coef11 = m[1][1] * m[2][2] - m[2][1] * m[1][2];
+
+  T Coef12 = m[2][0] * m[3][3] - m[3][0] * m[2][3];
+  T Coef14 = m[1][0] * m[3][3] - m[3][0] * m[1][3];
+  T Coef15 = m[1][0] * m[2][3] - m[2][0] * m[1][3];
+
+  T Coef16 = m[2][0] * m[3][2] - m[3][0] * m[2][2];
+  T Coef18 = m[1][0] * m[3][2] - m[3][0] * m[1][2];
+  T Coef19 = m[1][0] * m[2][2] - m[2][0] * m[1][2];
+
+  T Coef20 = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+  T Coef22 = m[1][0] * m[3][1] - m[3][0] * m[1][1];
+  T Coef23 = m[1][0] * m[2][1] - m[2][0] * m[1][1];
+
+  using Vector = VectorND<4, T, ISE>;
+
+  Vector Fac0(Coef00, Coef00, Coef02, Coef03);
+  Vector Fac1(Coef04, Coef04, Coef06, Coef07);
+  Vector Fac2(Coef08, Coef08, Coef10, Coef11);
+  Vector Fac3(Coef12, Coef12, Coef14, Coef15);
+  Vector Fac4(Coef16, Coef16, Coef18, Coef19);
+  Vector Fac5(Coef20, Coef20, Coef22, Coef23);
+
+  Vector Vec0(m[1][0], m[0][0], m[0][0], m[0][0]);
+  Vector Vec1(m[1][1], m[0][1], m[0][1], m[0][1]);
+  Vector Vec2(m[1][2], m[0][2], m[0][2], m[0][2]);
+  Vector Vec3(m[1][3], m[0][3], m[0][3], m[0][3]);
+
+  Vector Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
+  Vector Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+  Vector Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
+  Vector Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
+
+  Vector SignA(+1, -1, +1, -1);
+  Vector SignB(-1, +1, -1, +1);
+  MatrixND<4, T, ISE> Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA,
+                              Inv3 * SignB);
+
+  Vector Row0(Inverse[0][0], Inverse[1][0], Inverse[2][0], Inverse[3][0]);
+
+  Vector Dot0(m[0] * Row0);
+  T Dot1 = (Dot0.x + Dot0.y) + (Dot0.z + Dot0.w);
+
+  T OneOverDeterminant = static_cast<T>(1) / Dot1;
+
+  return Inverse * OneOverDeterminant;
+}
+
+template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE MatrixND<dim, T, ISE> Inverse(const MatrixND<dim, T, ISE> &m) {
+  return Inverse(m);
+}
+
+MIN_FORCE_INLINE Vector3 MultiplyMatrix4(const Matrix4 &m,
+                                         const Vector3 &v,
+                                         Float w) {
+  return Vector3(m * Vector4(v, w));
+}
 
 }
 
