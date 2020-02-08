@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8.10)
 
 project(min-ray)
 
+enable_testing()
+
 set(CMAKE_CXX_STANDARD  17)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -36,11 +38,12 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_library(lodepng lodepng REQUIRED)
 find_path(lodepng_INCLUDES lodepng.h)
+find_package(GTest CONFIG REQUIRED)
 
 add_subdirectory(external/glad)
 
 include_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}
         external/imgui
         external/imgui/examples
         ${lodepng_INCLUDES}
@@ -61,29 +64,27 @@ set(MIN_RAY_LIBS
         nlohmann_json nlohmann_json::nlohmann_json
         spdlog::spdlog
         ${lodepng}
+        GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
         )
 
 file(GLOB MIN_RAY_CORE
-        include/min-ray/*.h
-
-        src/accelerators/*.cc
-        src/bsdfs/diffuse.cc
-        src/cameras/*.cc
-        src/core/*.cc
-        src/filters/*.cc
-        src/integrators/path.cc
-        src/meshes/obj.cc
-        src/lights/*.cc
-        src/renderers/blockwise.cc
-        src/samplers/*.cc
-        src/main.cc
+        min/*/*.h
+        min/*/*.cc
         )
 
 add_executable(min-ray
         ${MIN_RAY_CORE}
         ${IMGUI_SRC}
+        min/main.cc
         )
 
 target_link_libraries(min-ray
+        PRIVATE
+        ${MIN_RAY_LIBS})
+
+# Tests
+add_executable(tests min/tests.cc)
+add_test(tests tests)
+target_link_libraries(tests
         PRIVATE
         ${MIN_RAY_LIBS})
