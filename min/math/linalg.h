@@ -1,5 +1,6 @@
 #pragma once
 
+#include "scalar.h"
 #include <min/common/util.h>
 #include <functional>
 
@@ -346,6 +347,18 @@ struct VectorND : public VectorNDBase<dim__, T, ISE> {
     return std::sqrt(LengthSquared());
   }
 
+  bool IsNormal() const {
+    for (int i = 0; i < dim; i++) {
+      if (!min::IsNormal(this->d[i]))
+        return false;
+    }
+    return true;
+  }
+
+  bool Abnormal() const {
+    return !this->IsNormal();
+  }
+
   std::string ToString() const {
     if (kDim == 1) return fmt::format("[{}]", d[0]);
     if (kDim == 2) return fmt::format("[{} {}]", d[0], d[1]);
@@ -353,9 +366,6 @@ struct VectorND : public VectorNDBase<dim__, T, ISE> {
     if (kDim == 4) return fmt::format("[{} {} {} {}]", d[0], d[1], d[2], d[3]);
   }
 };
-
-template<typename T, int dim, InstSetExt ISE = kDefaultInstructionSet>
-using TVector = VectorND<dim, T, ISE>;
 
 template<int dim, typename T, InstSetExt ISE>
 MIN_FORCE_INLINE VectorND<dim, T, ISE> operator
@@ -400,6 +410,54 @@ MIN_FORCE_INLINE T Dot(const VectorND<dim, T, ISE> &a,
                       const VectorND<dim, T, ISE> &b) {
   return a.Dot(b);
 }
+
+template <int dim, typename T>
+MIN_FORCE_INLINE VectorND<dim, T> Min(const VectorND<dim, T> &a,
+                                     const VectorND<dim, T> &b) {
+  VectorND<dim, T> ret;
+  for (int i = 0; i < dim; i++) {
+    ret[i] = std::min(a[i], b[i]);
+  }
+  return ret;
+}
+
+template <int dim, typename T>
+MIN_FORCE_INLINE VectorND<dim, T> Max(const VectorND<dim, T> &a,
+                                     const VectorND<dim, T> &b) {
+  VectorND<dim, T> ret;
+  for (int i = 0; i < dim; i++) {
+    ret[i] = std::max(a[i], b[i]);
+  }
+  return ret;
+}
+
+template <int dim, typename T>
+MIN_FORCE_INLINE VectorND<dim, T> Ceil(const VectorND<dim, T> &v) {
+  VectorND<dim, T> ret;
+  for (int i = 0; i < dim; i++) {
+    ret[i] = std::ceil(v[i]);
+  }
+  return ret;
+}
+
+template <int dim, typename T>
+MIN_FORCE_INLINE VectorND<dim, T> Floor(const VectorND<dim, T> &v) {
+  VectorND<dim, T> ret;
+  for (int i = 0; i < dim; i++) {
+    ret[i] = std::floor(v[i]);
+  }
+  return ret;
+}
+
+template <typename T, int dim, InstSetExt ISE = kDefaultInstructionSet>
+using TVector = VectorND<dim, T, ISE>;
+
+template <typename T, InstSetExt ISE = kDefaultInstructionSet>
+using TVector2 = VectorND<2, T, ISE>;
+template <typename T, InstSetExt ISE = kDefaultInstructionSet>
+using TVector3 = VectorND<3, T, ISE>;
+template <typename T, InstSetExt ISE = kDefaultInstructionSet>
+using TVector4 = VectorND<4, T, ISE>;
 
 using Vector1 = VectorND<1, Float, kDefaultInstructionSet>;
 using Vector2 = VectorND<2, Float, kDefaultInstructionSet>;
