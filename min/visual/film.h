@@ -40,10 +40,6 @@ class Film : public Unit {
   std::string filename;
   Bounds2i cropped_pixel_bounds;
 
-  void initialize(const Json &json) override {
-
-  }
-
   void Initialize(const Point2i &resolution, const Bounds2f &crop_window,
                   std::unique_ptr<Filter> filt, Float diagona,
                   const std::string &filenam, Float scal, Float max_sample_luminanc) {
@@ -58,7 +54,7 @@ class Film : public Unit {
                          std::ceil(full_resolution.y * crop_window.pmin.y)),
                  Point2i(std::ceil(full_resolution.x * crop_window.pmax.x),
                          std::ceil(full_resolution.y * crop_window.pmax.y)));
-    MIN_INFO("Created film with full resolution {}. Crop window of {} -> croppedPixelBounds {}", crop_window.ToString(), cropped_pixel_bounds.ToString());
+    MIN_INFO("Created film with full resolution {}. Crop window of {} -> croppedPixelBounds {}", resolution.ToString(),crop_window.ToString(), cropped_pixel_bounds.ToString());
 
     // Allocate film image storage
     pixels = std::unique_ptr<Pixel[]>(new Pixel[cropped_pixel_bounds.Area()]);
@@ -81,7 +77,10 @@ class Film : public Unit {
   void SetImage(Spectrum *img) const;
   void WriteImage(Float splatScale = 1);
   void Clear();
+  void initialize(const Json &json) override;
 };
+
+MIN_INTERFACE(Film)
 
 class FilmTile {
   const Bounds2i pixel_bounds;

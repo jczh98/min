@@ -2,6 +2,17 @@
 
 namespace min {
 
+void Film::initialize(const Json &json) {
+  auto resolution = Value(json, "resolution", Point2i(800, 600));
+  auto crop_window = Bounds2f(Point2f(0, 0), Point2f(1, 1));
+  auto scal = Value(json, "scale", 1.0f);
+  auto diagona = Value(json, "diagonal", 35.0f);
+  auto max_sample_luminanc = Value(json, "max_sample_luminance", kInfinity);
+  auto filenam = Value<std::string>(json, "filename", "");
+  auto filt = CreateInstanceUnique<Filter>(Value<std::string>(json, "filter", "box"));
+  Initialize(resolution, crop_window, std::move(filt), diagona, filenam, scal, max_sample_luminanc);
+}
+
 Bounds2i Film::GetSampleBounds() const {
   Bounds2f floatBounds(Floor(Point2f(cropped_pixel_bounds.pmin) +
                            Vector2f(0.5f, 0.5f) - filter->radius),
@@ -94,5 +105,7 @@ void Film::WriteImage(Float splatScale) {
   MIN_INFO("Writing image {} with bounds {}", filename, cropped_pixel_bounds.ToString());
   //WriteImage(filename, &rgb[0], cropped_pixel_bounds, full_resolution);
 }
+MIN_IMPLEMENTATION(Film, Film, "film")
+
 }
 

@@ -146,7 +146,7 @@ inline Bounds2iIterator begin(const Bounds2i &b) {
 }
 
 inline Bounds2iIterator end(const Bounds2i &b) {
-  Point2i pend(b.pmin.x, b.pmax.x);
+  Point2i pend(b.pmin.x, b.pmax.y);
   if (b.pmin.x >= b.pmax.x || b.pmin.y >= b.pmax.y) pend = b.pmin;
   return Bounds2iIterator(b, pend);
 }
