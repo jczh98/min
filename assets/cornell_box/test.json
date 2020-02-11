@@ -1,0 +1,34 @@
+{
+  "renderer":{
+    "type": "pt",
+    "props": {
+      "sampler": {
+        "type": "random",
+        "props": {
+          "spp": 1
+        }
+      }
+    }
+  },
+  "film": {
+    "filename": "x",
+    "resolution": [800, 600],
+    "filter": {
+      "type": "box"
+    }
+  },
+  "camera": {
+    "type": "perspective",
+    "props": {
+      "fov": 27.7856,
+      "transform": {
+        "scale": [-1,1,1],
+        "lookat": {
+          "target": [0, 0.893051, 4.41198],
+          "origin": [0, 0.919769, 5.41159],
+          "up": [0, 1, 0]
+        }
+      }
+    }
+  }
+}

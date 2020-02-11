@@ -38,6 +38,7 @@ class Film;
 class FilmTile;
 class Intersection;
 class SurfaceIntersection;
+class Scene;
 }
 
 

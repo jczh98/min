@@ -132,7 +132,7 @@ struct VectorND : public VectorNDBase<dim__, T, ISE> {
   }
 
   explicit MIN_FORCE_INLINE VectorND(T v0, T v1) {
-    static_assert(kDim == 2, "Vector dim must be 2");
+      static_assert(kDim == 2, "Vector dim must be 2");
     this->d[0] = v0;
     this->d[1] = v1;
   }

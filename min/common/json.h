@@ -5,6 +5,18 @@
 
 namespace min {
 
+inline Json AtOrEmpty(Json j, std::string key) {
+  if (j.contains(key)) {
+    return j.at(key);
+  } else {
+    return {};
+  }
+}
+
+inline Json GetProps(Json j) {
+  return AtOrEmpty(j, "props");
+}
+
 template <typename T>
 T Value(const Json &json, const std::string &key, const T &default_value) {
   if (json.find(key) != json.end()) {

@@ -9,7 +9,7 @@ void Film::initialize(const Json &json) {
   auto diagona = Value(json, "diagonal", 35.0f);
   auto max_sample_luminanc = Value(json, "max_sample_luminance", kInfinity);
   auto filenam = Value<std::string>(json, "filename", "");
-  auto filt = CreateInstanceUnique<Filter>(Value<std::string>(json, "filter", "box"));
+  auto filt = CreateInstanceUnique<Filter>(json["filter"]["type"], GetProps(json["filter"]));
   Initialize(resolution, crop_window, std::move(filt), diagona, filenam, scal, max_sample_luminanc);
 }
 
