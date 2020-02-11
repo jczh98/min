@@ -348,7 +348,7 @@ struct VectorND : public VectorNDBase<dim__, T, ISE> {
   }
 
   bool IsNormal() const {
-    for (int i = 0; i < dim; i++) {
+    for (int i = 0; i < kDim; i++) {
       if (!min::IsNormal(this->d[i]))
         return false;
     }
@@ -449,6 +449,12 @@ MIN_FORCE_INLINE VectorND<dim, T> Floor(const VectorND<dim, T> &v) {
   return ret;
 }
 
+template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE VectorND<dim, T, ISE> Normalize(
+    const VectorND<dim, T, ISE> &a) {
+  return (T(1) / a.Length()) * a;
+}
+
 template <typename T, int dim, InstSetExt ISE = kDefaultInstructionSet>
 using TVector = VectorND<dim, T, ISE>;
 
@@ -488,6 +494,10 @@ struct MatrixND {
   static constexpr int kDim = dim__;
   using Vector = VectorND<kDim, T, ISE>;
   Vector d[kDim];
+
+  MIN_FORCE_INLINE static MatrixND Identidy() {
+    return MatrixND(1.0_f);
+  }
 
   MIN_FORCE_INLINE MatrixND() {
     for (int i = 0; i < kDim; i++) {
@@ -532,6 +542,17 @@ struct MatrixND {
     this->d[0] = v0;
     this->d[1] = v1;
     this->d[2] = v2;
+  }
+
+  MIN_FORCE_INLINE explicit MatrixND(Float t00, Float t01, Float t02, Float t03,
+                                     Float t10, Float t11, Float t12, Float t13,
+                                     Float t20, Float t21, Float t22, Float t23,
+                                     Float t30, Float t31, Float t32, Float t33) {
+    static_assert(kDim == 4, "Matrix dim must be 4");
+    this->d[0] = v0;
+    this->d[1] = v1;
+    this->d[2] = v2;
+    this->d[3] = v3;
   }
 
   MIN_FORCE_INLINE explicit MatrixND(Vector v0,

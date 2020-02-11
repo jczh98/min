@@ -31,10 +31,37 @@ class PathTracer : public Renderer {
         MIN_INFO("Starting image tile {}", tile_bounds.ToString());
         auto film_tile = film->GetFilmTile(tile_bounds);
         for (Point2i pixel : tile_bounds) {
-          tile_sampler->StartPixel(pixel);
+          for (int s = 0; s < tile_sampler->spp; s++) {
+            tile_sampler->StartPixel(pixel);
+            Ray ray;
+            auto pfilm = (Point2f)pixel + sampler->Get2D();
+            auto ray_weight = camera->GenerateRay(pfilm,sampler->Get2D(), sampler->Get1D(), ray);
+            Spectrum L(0.f);
+            if (ray_weight > 0) L = Li(ray, scene, *tile_sampler);
+            if (L.Abnormal()) {
+              MIN_WARN("Not a number radiance value returned for pixel ({}, {}), sample {}. Setting to black.",
+                       pixel.x, pixel.y, s);
+              L = Spectrum(0.f);
+            } else if (L.y < -1e-5) {
+              MIN_WARN("Negative luminance value, {}, returned for pixel ({}, {}), sample {}. Setting to black.",
+                       L.y, pixel.x, pixel.y, s);
+              L = Spectrum(0.f);
+            } else if (std::isinf(L.y)) {
+              MIN_WARN("Infinite luminance value returne returned for pixel ({}, {}), sample {}. Setting to black.",
+                       pixel.x, pixel.y, s);
+              L = Spectrum(0.f);
+            }
+            film_tile->AddSample(pfilm, L, ray_weight);
+          }
+
         }
+        film->MergeFilmTile(std::move(film_tile));
       }
     }
+  }
+
+  Spectrum Li(const Ray &ray, const std::shared_ptr<Scene> &scene, Sampler &sampler) {
+    return Spectrum(0);
   }
 };
 MIN_IMPLEMENTATION(Renderer, PathTracer, "pt")

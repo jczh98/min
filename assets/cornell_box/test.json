@@ -30,5 +30,79 @@
         }
       }
     }
-  }
+  },
+  "shapes": [
+    {
+      "type": "obj",
+      "props": {
+        "filename": "meshes/walls.obj",
+        "bsdf": {
+          "type": "diffuse",
+          "props": {
+            "color": [0.725,0.71,0.68]
+          }
+        }
+      }
+    },
+    {
+      "type": "obj",
+      "props": {
+        "filename": "meshes/rightwall.obj",
+        "bsdf": {
+          "type": "diffuse",
+          "props": {
+            "color": [0.161,0.133,0.427]
+          }
+        }
+      }
+    },
+    {
+      "type": "obj",
+      "props": {
+        "filename": "meshes/leftwall.obj",
+        "bsdf": {
+          "type": "diffuse",
+          "props": {
+            "color": [0.630,0.065,0.05]
+          }
+        }
+      }
+    },
+    {
+      "type": "obj",
+      "props": {
+        "filename": "meshes/sphere1.obj",
+        "bsdf": {
+          "type": "diffuse",
+          "props": {
+            "color": [0.630,0.065,0.05]
+          }
+        }
+      }
+    },
+    {
+      "type": "obj",
+      "props": {
+        "filename": "meshes/sphere2.obj",
+        "bsdf": {
+          "type": "diffuse",
+          "props": {
+            "color": [0.630,0.065,0.05]
+          }
+        }
+      }
+    },
+    {
+      "type": "obj",
+      "props": {
+        "filename": "meshes/light.obj",
+        "light": {
+          "type": "area",
+          "props": {
+            "radiance": [15,15,15]
+          }
+        }
+      }
+    }
+  ]
 }
