@@ -10,17 +10,17 @@
       }
     }
   },
-  "film": {
-    "filename": "x",
-    "resolution": [800, 600],
-    "filter": {
-      "type": "box"
-    }
-  },
   "camera": {
     "type": "perspective",
     "props": {
       "fov": 27.7856,
+      "film": {
+        "filename": "x",
+        "resolution": [800, 600],
+        "filter": {
+          "type": "box"
+        }
+      },
       "transform": {
         "scale": [-1,1,1],
         "lookat": {

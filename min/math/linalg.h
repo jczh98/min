@@ -455,6 +455,38 @@ MIN_FORCE_INLINE VectorND<dim, T, ISE> Normalize(
   return (T(1) / a.Length()) * a;
 }
 
+template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE VectorND<dim, T, ISE> Permute(
+    const VectorND<dim, T, ISE> &a, const VectorND<dim, int, ISE> &permute) {
+  VectorND<dim, T> ret;
+  for (int i = 0; i < dim; i++) {
+    ret[i] = a[permute[i]];
+  }
+  return ret;
+}
+
+template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE VectorND<dim, T, ISE> Abs(
+    const VectorND<dim, T, ISE> &a) {
+  VectorND<dim, T> ret;
+  for (int i = 0; i < dim; i++) {
+    ret[i] = std::abs(a[i]);
+  }
+  return ret;
+}
+
+template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE VectorND<dim, T, ISE> MaxComp(
+    const VectorND<dim, T, ISE> &a) {
+  return a.MaxComp();
+}
+
+template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE VectorND<dim, T, ISE> MinComp(
+    const VectorND<dim, T, ISE> &a) {
+  return a.MinComp();
+}
+
 template <typename T, int dim, InstSetExt ISE = kDefaultInstructionSet>
 using TVector = VectorND<dim, T, ISE>;
 
@@ -549,10 +581,10 @@ struct MatrixND {
                                      Float t20, Float t21, Float t22, Float t23,
                                      Float t30, Float t31, Float t32, Float t33) {
     static_assert(kDim == 4, "Matrix dim must be 4");
-    this->d[0] = v0;
-    this->d[1] = v1;
-    this->d[2] = v2;
-    this->d[3] = v3;
+    this->d[0] = Vector(t00, t01, t02, t03);
+    this->d[1] = Vector(t10, t11, t12, t13);
+    this->d[2] = Vector(t20, t21, t22, t23);
+    this->d[3] = Vector(t30, t31, t32, t33);
   }
 
   MIN_FORCE_INLINE explicit MatrixND(Vector v0,

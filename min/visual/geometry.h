@@ -11,6 +11,13 @@ using TPoint3 = TVector3<T>;
 template<typename T>
 using TPoint4 = TVector4<T>;
 
+template<typename T>
+using TNormal2 = TVector2<T>;
+template<typename T>
+using TNormal3 = TVector3<T>;
+template<typename T>
+using TNormal4 = TVector4<T>;
+
 class Ray {
  public:
   Ray() : tmax(kInfinity), time(0.0f) {}
@@ -149,6 +156,22 @@ inline Bounds2iIterator end(const Bounds2i &b) {
   Point2i pend(b.pmin.x, b.pmax.y);
   if (b.pmin.x >= b.pmax.x || b.pmin.y >= b.pmax.y) pend = b.pmin;
   return Bounds2iIterator(b, pend);
+}
+
+template <typename T>
+Bounds3<T> Union(const Bounds3<T> &b, const TPoint3<T> &p) {
+  Bounds3<T> ret;
+  ret.pmin = Min(b.pmin, p);
+  ret.pmax = Max(b.pmax, p);
+  return ret;
+}
+
+template <typename T>
+Bounds3<T> Union(const Bounds3<T> &b, const Bounds3<T> &b2) {
+  Bounds3<T> ret;
+  ret.pmin = Min(b.pmin, b2.pmin);
+  ret.pmax = Max(b.pmax, b2.pmax);
+  return ret;
 }
 
 }

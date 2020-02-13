@@ -13,9 +13,7 @@ int main() {
     std::ifstream is(tmp);
     Json j;
     is >> j;
-    auto film = CreateInstance<Film>("film", j.at("film"));
     auto camera = CreateInstance<Camera>(j["camera"]["type"], GetProps(j.at("camera")));
-    camera->SetFilm(film);
     auto scene = CreateInstance<Scene>("scene", "");
     scene->SetCamera(camera);
     auto renderer = CreateInstance<Renderer>(j["renderer"]["type"], GetProps(j.at("renderer")));

@@ -36,6 +36,7 @@ class PathTracer : public Renderer {
             Ray ray;
             auto pfilm = (Point2f)pixel + sampler->Get2D();
             auto ray_weight = camera->GenerateRay(pfilm,sampler->Get2D(), sampler->Get1D(), ray);
+            //MIN_DEBUG("o : {} d : {}", ray.o.ToString(), ray.d.ToString());
             Spectrum L(0.f);
             if (ray_weight > 0) L = Li(ray, scene, *tile_sampler);
             if (L.Abnormal()) {

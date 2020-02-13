@@ -1,12 +1,17 @@
 #pragma once
 
 #include "defs.h"
+#include "geometry.h"
 
 namespace min {
 
 class Transform {
   Matrix4f m, inv;
  public:
+  static Transform Identity() {
+    return Transform(Matrix4f::Identidy(), Matrix4f::Identidy());
+  }
+
   Transform() {}
   Transform(const Matrix4f &mat) {
     m = mat;
@@ -37,6 +42,11 @@ class Transform {
       }
     return false;
   }
+
+  Transform operator*(const Transform &t2) const {
+    return Transform(m * t2.m, t2.inv * inv);
+  }
+
   bool IsIdentity() const {
     return (m[0][0] == 1.f && m[0][1] == 0.f && m[0][2] == 0.f &&
         m[0][3] == 0.f && m[1][0] == 0.f && m[1][1] == 1.f &&
@@ -47,9 +57,39 @@ class Transform {
   }
   const Matrix4f &GetMatrix() const { return m; }
   const Matrix4f &GetInverseMatrix() const { return inv; }
+
+  template<typename T>
+  MIN_FORCE_INLINE TPoint3<T> ToPoint(const TPoint3<T> &p) const {
+    T x = p.x, y = p.y, z = p.z;
+    T xp = m[0][0] * x + m[0][1] * y + m[0][2] * z + m[0][3];
+    T yp = m[1][0] * x + m[1][1] * y + m[1][2] * z + m[1][3];
+    T zp = m[2][0] * x + m[2][1] * y + m[2][2] * z + m[2][3];
+    T wp = m[3][0] * x + m[3][1] * y + m[3][2] * z + m[3][3];
+    if (wp == 1)
+      return TPoint3<T>(xp, yp, zp);
+    else
+      return TPoint3<T>(xp, yp, zp) / wp;
+  }
+
+  template <typename T>
+  MIN_FORCE_INLINE TVector3<T> ToVector(const TVector3<T> &v) const {
+    T x = v.x, y = v.y, z = v.z;
+    return TVector3<T>(m[0][0] * x + m[0][1] * y + m[0][2] * z,
+                      m[1][0] * x + m[1][1] * y + m[1][2] * z,
+                      m[2][0] * x + m[2][1] * y + m[2][2] * z);
+  }
+
+  template <typename T>
+  MIN_FORCE_INLINE TNormal3<T> ToNormal(const TNormal3<T> &n) const {
+    T x = n.x, y = n.y, z = n.z;
+    return TNormal3<T>(inv[0][0] * x + inv[1][0] * y + inv[2][0] * z,
+                      inv[0][1] * x + inv[1][1] * y + inv[2][1] * z,
+                      inv[0][2] * x + inv[1][2] * y + inv[2][2] * z);
+  }
+
 };
 
-Transform Translate(const Vector3f &delta) {
+MIN_FORCE_INLINE Transform Translate(const Vector3f &delta) {
   Matrix4f m(Vector4f(1, 0, 0, delta.x),
       Vector4f(0, 1, 0, delta.y),
       Vector4f(0, 0, 1, delta.z),
@@ -61,13 +101,13 @@ Transform Translate(const Vector3f &delta) {
   return Transform(m, minv);
 }
 
-Transform Scale(Float x, Float y, Float z) {
+MIN_FORCE_INLINE Transform Scale(Float x, Float y, Float z) {
   Matrix4f m(x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1);
   Matrix4f minv(1 / x, 0, 0, 0, 0, 1 / y, 0, 0, 0, 0, 1 / z, 0, 0, 0, 0, 1);
   return Transform(m, minv);
 }
 
-Transform RotateX(Float theta) {
+MIN_FORCE_INLINE Transform RotateX(Float theta) {
   Float sinTheta = std::sin(Radians(theta));
   Float cosTheta = std::cos(Radians(theta));
   Matrix4f m(1, 0, 0, 0, 0, cosTheta, -sinTheta, 0, 0, sinTheta, cosTheta, 0,
@@ -75,7 +115,7 @@ Transform RotateX(Float theta) {
   return Transform(m, Transpose(m));
 }
 
-Transform RotateY(Float theta) {
+MIN_FORCE_INLINE Transform RotateY(Float theta) {
   Float sinTheta = std::sin(Radians(theta));
   Float cosTheta = std::cos(Radians(theta));
   Matrix4f m(cosTheta, 0, sinTheta, 0, 0, 1, 0, 0, -sinTheta, 0, cosTheta, 0,
@@ -83,7 +123,7 @@ Transform RotateY(Float theta) {
   return Transform(m, Transpose(m));
 }
 
-Transform RotateZ(Float theta) {
+MIN_FORCE_INLINE Transform RotateZ(Float theta) {
   Float sinTheta = std::sin(Radians(theta));
   Float cosTheta = std::cos(Radians(theta));
   Matrix4f m(cosTheta, -sinTheta, 0, 0, sinTheta, cosTheta, 0, 0, 0, 0, 1, 0,
@@ -91,7 +131,7 @@ Transform RotateZ(Float theta) {
   return Transform(m, Transpose(m));
 }
 
-Transform Rotate(Float theta, const Vector3f &axis) {
+MIN_FORCE_INLINE Transform Rotate(Float theta, const Vector3f &axis) {
   Vector3f a = Normalize(axis);
   Float sinTheta = std::sin(Radians(theta));
   Float cosTheta = std::cos(Radians(theta));
@@ -115,7 +155,7 @@ Transform Rotate(Float theta, const Vector3f &axis) {
   return Transform(m, Transpose(m));
 }
 
-Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up) {
+MIN_FORCE_INLINE Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up) {
   Matrix4f cameraToWorld;
   // Initialize fourth column of viewing matrix
   cameraToWorld[0][3] = pos.x;
@@ -150,19 +190,42 @@ Transform LookAt(const Point3f &pos, const Point3f &look, const Vector3f &up) {
   return Transform(Inverse(cameraToWorld), cameraToWorld);
 }
 
-Transform Orthographic(Float zNear, Float zFar) {
+MIN_FORCE_INLINE Transform Orthographic(Float zNear, Float zFar) {
   return Scale(1, 1, 1 / (zFar - zNear)) * Translate(Vector3f(0, 0, -zNear));
 }
 
-Transform Perspective(Float fov, Float n, Float f) {
+MIN_FORCE_INLINE Transform Perspective(Float fov, Float znear, Float zfar) {
   // Perform projective divide for perspective projection
-  Matrix4f persp(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, f / (f - n), -f * n / (f - n),
+  Matrix4f persp(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, zfar / (zfar - znear), -zfar * znear / (zfar - znear),
                   0, 0, 1, 0);
 
   // Scale canonical perspective view to specified field of view
   Float invTanAng = 1 / std::tan(Radians(fov) / 2);
   return Scale(invTanAng, invTanAng, 1) * Transform(persp);
 }
+
+
+}
+
+namespace nlohmann {
+
+template <>
+struct adl_serializer<Transform> {
+  static void from_json(const json& j, Transform &v) {
+    auto transform = Transform::Identity();
+    if (j.contains("scale")) {
+      auto vec = j.at("scale").get<Vector3f>();
+      transform = transform * Scale(vec.x, vec.y, vec.z);
+    }
+    if (j.contains("lookat")) {
+      auto target = j.at("lookat").at("target").get<Vector3f>();
+      auto origin = j.at("lookat").at("origin").get<Vector3f>();
+      auto up = j.at("lookat").at("up").get<Vector3f>();
+      transform = transform * LookAt(origin, target, up);
+    }
+    v = Inverse(transform);
+  }
+};
 
 }
 

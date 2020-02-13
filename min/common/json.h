@@ -55,5 +55,4 @@ struct adl_serializer<TVector<T, N>> {
   }
 };
 
-
 }
