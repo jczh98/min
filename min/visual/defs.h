@@ -4,6 +4,7 @@
 #include <min/common/interface.h>
 #include <min/common/json.h>
 #include <min/math/math.h>
+#include <filesystem>
 
 namespace min {
 
@@ -16,11 +17,11 @@ using Point2f = Vector2f;
 using Point2 = Vector2;
 
 using Normal3f = Vector3f;
-using Norma3 = Vector3;
-using Norma3d = Vector3d;
-using Norma3i = Vector3i;
-using Norma2i = Vector2i;
-using Norma2f = Vector2f;
+using Normal3 = Vector3;
+using Normal3d = Vector3d;
+using Normal3i = Vector3i;
+using Normal2i = Vector2i;
+using Normal2f = Vector2f;
 
 // Forward declaration
 class Film;
@@ -28,6 +29,9 @@ class FilmTile;
 class Intersection;
 class SurfaceIntersection;
 class Scene;
+
+namespace fs = std::filesystem;
+
 }
 
 

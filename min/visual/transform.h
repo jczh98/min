@@ -8,11 +8,10 @@ namespace min {
 class Transform {
   Matrix4f m, inv;
  public:
-  static Transform Identity() {
-    return Transform(Matrix4f::Identidy(), Matrix4f::Identidy());
+  Transform() {
+    m = Matrix4f::Identidy();
+    inv = Matrix4f::Identidy();
   }
-
-  Transform() {}
   Transform(const Matrix4f &mat) {
     m = mat;
     inv = Inverse(mat);
@@ -212,7 +211,7 @@ namespace nlohmann {
 template <>
 struct adl_serializer<Transform> {
   static void from_json(const json& j, Transform &v) {
-    auto transform = Transform::Identity();
+    auto transform = Transform();
     if (j.contains("scale")) {
       auto vec = j.at("scale").get<Vector3f>();
       transform = transform * Scale(vec.x, vec.y, vec.z);

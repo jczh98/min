@@ -6,6 +6,7 @@
 #include <min/visual/sampler.h>
 #include <min/visual/camera.h>
 #include <min/visual/scene.h>
+#include <min/visual/aggregate.h>
 
 namespace min {
 
@@ -15,5 +16,6 @@ MIN_INTERFACE_DEF(Renderer, "renderer")
 MIN_INTERFACE_DEF(Sampler, "sampler")
 MIN_INTERFACE_DEF(Camera, "camera")
 MIN_INTERFACE_DEF(Scene, "scene")
+MIN_INTERFACE_DEF(Aggregate, "aggregate")
 
 }

@@ -37,6 +37,7 @@ TEST(MatrixTest, Trivial) {
   std::cout << Transpose(m41).ToString() << std::endl;
   std::cout << Inverse(m41).ToString() << std::endl;
 }
+using namespace min;
 int main() {
   testing::InitGoogleTest();
   RUN_ALL_TESTS();

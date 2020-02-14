@@ -3,11 +3,15 @@
 #include <min/visual/camera.h>
 #include <min/visual/renderer.h>
 #include <min/visual/scene.h>
+#include <min/visual/aggregate.h>
 #include <fstream>
 
 using namespace min;
 
 int main() {
+  Json js;
+  js["filename"] = "E:\\work\\min-ray\\assets\\bunny\\bunny.obj";
+  auto aggregate = CreateInstance<Aggregate>("obj", js);
   try {
     std::string tmp = "E:\\work\\min-ray\\assets\\cornell_box\\test.json";
     std::ifstream is(tmp);

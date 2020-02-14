@@ -13,6 +13,7 @@ struct SurfaceSample {
 class Shape : public Unit {
   Transform object2world, world2object;
  public:
+  Shape(const Transform &object2world, const Transform &world2object) : object2world(object2world), world2object(world2object) {}
   virtual Bounds3f WorldBound() const = 0;
   virtual Bounds3f ObjectBound() const = 0;
   virtual bool Intersect(const Ray &ray, SurfaceIntersection &isect) const = 0;
