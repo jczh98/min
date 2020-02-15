@@ -17,5 +17,6 @@ MIN_INTERFACE_DEF(Sampler, "sampler")
 MIN_INTERFACE_DEF(Camera, "camera")
 MIN_INTERFACE_DEF(Scene, "scene")
 MIN_INTERFACE_DEF(Aggregate, "aggregate")
+MIN_INTERFACE_DEF(Accelerator, "accelerator")
 
 }

@@ -1,0 +1,54 @@
+{
+  "renderer":{
+    "type": "pt",
+    "props": {
+      "sampler": {
+        "type": "random",
+        "props": {
+          "spp": 1
+        }
+      }
+    }
+  },
+  "camera": {
+    "type": "perspective",
+    "props": {
+      "fov": 27.7856,
+      "film": {
+        "filename": "x",
+        "resolution": [800, 600],
+        "filter": {
+          "type": "box"
+        }
+      },
+      "transform": {
+        "scale": [-1,1,1],
+        "lookat": {
+          "target": [0, 0.893051, 4.41198],
+          "origin": [0, 0.919769, 5.41159],
+          "up": [0, 1, 0]
+        }
+      }
+    }
+  },
+  "accelerator": {
+    "type": "bvh",
+    "props": {
+      "maxnodeprims": 4
+    }
+  },
+  "shapes": [
+    {
+      "type": "obj",
+      "props": {
+        "filename": "E:\\work\\min-ray\\assets\\bunny\\bunny.obj",
+        "bsdf": {
+          "type": "diffuse",
+          "props": {
+            "color": [0.725,0.71,0.68]
+          }
+        }
+      }
+    }
+  ]
+}

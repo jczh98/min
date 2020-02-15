@@ -18,6 +18,7 @@ static constexpr Float kInv4Pi = 0.07957747154594766788;
 static constexpr Float kPiOver2 = 1.57079632679489661923;
 static constexpr Float kPiOver4 = 0.78539816339744830961;
 static constexpr Float kSqrt2 = 1.41421356237309504880;
+static constexpr Float kMachineEpsilon = std::numeric_limits<Float>::epsilon() * 0.5;
 
 template<typename T>
 MIN_FORCE_INLINE T Clamp(const T &a, const T &min, const T &max) noexcept {
@@ -46,6 +47,10 @@ MIN_FORCE_INLINE bool IsNormal(T m) noexcept {
 template<typename T>
 MIN_FORCE_INLINE bool Abnormal(T m) noexcept {
   return !IsNormal(m);
+}
+
+MIN_FORCE_INLINE Float Gamma(int n) {
+  return (n * kMachineEpsilon) / (1 - n * kMachineEpsilon);
 }
 
 MIN_FORCE_INLINE Float Radians(Float deg) { return (kPi / 180) * deg; }

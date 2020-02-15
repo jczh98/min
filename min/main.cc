@@ -9,20 +9,24 @@
 using namespace min;
 
 int main() {
-  Json js;
-  js["filename"] = "E:\\work\\min-ray\\assets\\bunny\\bunny.obj";
-  auto aggregate = CreateInstance<Aggregate>("obj", js);
   try {
-    std::string tmp = "E:\\work\\min-ray\\assets\\cornell_box\\test.json";
+    std::string tmp = "E:\\work\\min-ray\\assets\\bunny\\test.json";
     std::ifstream is(tmp);
     Json j;
     is >> j;
     auto camera = CreateInstance<Camera>(j["camera"]["type"], GetProps(j.at("camera")));
     auto scene = CreateInstance<Scene>("scene", "");
+    auto accel = CreateInstance<Accelerator>(j["accelerator"]["type"], GetProps(j["accelerator"]));
     scene->SetCamera(camera);
+    scene->SetAccelerator(accel);
+    for (auto jshape : j["shapes"]) {
+      auto aggregate = CreateInstance<Aggregate>(jshape["type"], GetProps(jshape));
+      scene->AddShape(aggregate->shapes);
+    }
+    scene->Build();
     auto renderer = CreateInstance<Renderer>(j["renderer"]["type"], GetProps(j.at("renderer")));
     renderer->SetScene(scene);
-    renderer->Render();    
+    //renderer->Render();
   } catch (std::exception &e) {
     std::cout << e.what() << std::endl;
   }

@@ -94,6 +94,67 @@ class Bounds3 {
         pmax(std::max(p1.x, p2.x), std::max(p1.y, p2.y),
              std::max(p1.z, p2.z)) {}
 
+
+  const Point3<T> &operator[](int i) const {
+    MIN_ASSERT(i == 0 || i == 1);
+    return i == 0 ? pmin : pmax;
+  }
+
+  Point3<T> &operator[](int i) {
+    MIN_ASSERT(i == 0 || i == 1);
+    return i == 0 ? pmin : pmax;
+  }
+
+  TVector3<T> Diagonal() const { return pmax - pmin; }
+
+  T SurfaceArea() const {
+    TVector3<T> d = Diagonal();
+    return d.x * d.y * d.z;
+  }
+
+  int MaximumExtent() const {
+    TVector3<T> d = Diagonal();
+    if (d.x > d.y && d.x > d.z) return 0;
+    else if (d.y > d.z) return 1;
+    else return 2;
+  }
+
+  TVector3<T> Offset(const Point3<T> &p) const {
+    TVector3<T> o = p - pmin;
+    if (pmax.x > pmin.x) o.x /= pmax.x - pmin.x;
+    if (pmax.y > pmin.y) o.y /= pmax.y - pmin.y;
+    if (pmax.z > pmin.z) o.z /= pmax.z - pmin.z;
+    return o;
+  }
+
+  inline bool IntersectP(const Ray &ray, const Vector3f &invDir,
+                                     const int dirIsNeg[3]) const {
+    const Bounds3f &bounds = *this;
+    // Check for ray intersection against $x$ and $y$ slabs
+    Float tMin = (bounds[dirIsNeg[0]].x - ray.o.x) * invDir.x;
+    Float tMax = (bounds[1 - dirIsNeg[0]].x - ray.o.x) * invDir.x;
+    Float tyMin = (bounds[dirIsNeg[1]].y - ray.o.y) * invDir.y;
+    Float tyMax = (bounds[1 - dirIsNeg[1]].y - ray.o.y) * invDir.y;
+
+    // Update _tMax_ and _tyMax_ to ensure robust bounds intersection
+    tMax *= 1 + 2 * Gamma(3);
+    tyMax *= 1 + 2 * Gamma(3);
+    if (tMin > tyMax || tyMin > tMax) return false;
+    if (tyMin > tMin) tMin = tyMin;
+    if (tyMax < tMax) tMax = tyMax;
+
+    // Check for ray intersection against $z$ slab
+    Float tzMin = (bounds[dirIsNeg[2]].z - ray.o.z) * invDir.z;
+    Float tzMax = (bounds[1 - dirIsNeg[2]].z - ray.o.z) * invDir.z;
+
+    // Update _tzMax_ to ensure robust bounds intersection
+    tzMax *= 1 + 2 * Gamma(3);
+    if (tMin > tzMax || tzMin > tMax) return false;
+    if (tzMin > tMin) tMin = tzMin;
+    if (tzMax < tMax) tMax = tzMax;
+    return (tMin < ray.tmax) && (tMax > 0);
+  }
+
   Point3<T> pmin, pmax;
 };
 

@@ -7,7 +7,11 @@ void Scene::initialize(const Json &json) {
 }
 
 bool Scene::Intersect(const Ray &ray, SurfaceIntersection &isect) const {
-  return false;
+  return accelerator->Intersect(ray, isect);
+}
+
+void Scene::Build() {
+  accelerator->Build();
 }
 MIN_IMPLEMENTATION(Scene, Scene, "scene")
 

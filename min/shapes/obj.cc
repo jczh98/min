@@ -78,7 +78,6 @@ class Obj : public Aggregate {
  public:
   void initialize(const Json &json) override {
     typedef std::unordered_map<OBJVertex, uint32_t, OBJVertexHash> VertexMap;
-    std::cout << json.dump() << std::endl;
     fs::path filename = json.at("filename").get<std::string>();
     std::ifstream is(filename.string());
     if (is.fail())
@@ -148,11 +147,10 @@ class Obj : public Aggregate {
     }
     int n_tri = local_indices.size() / 3;
     int n_vex = local_vertices.size();
-    MIN_DEBUG("{} {}", (int) local_vertices.size(), (int) local_indices.size());
     //int *faces = new int[local_indices.size() / 3];
     int *vertex_indices = new int[local_indices.size()];
     //memcpy(faces, local_indices.data(), sizeof(uint32_t) * local_indices.size());
-    for (uint32 i = 0; i < local_vertices.size(); ++i) {
+    for (uint32 i = 0; i < local_indices.size(); ++i) {
       vertex_indices[i] = local_indices[i];
     }
 
