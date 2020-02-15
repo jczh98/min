@@ -28,7 +28,7 @@ class PathTracer : public Renderer {
         int y0 = sample_bounds.pmin.y + tile.y * kTileSize;
         int y1 = std::min(y0 + kTileSize, sample_bounds.pmax.y);
         Bounds2i tile_bounds(Point2i(x0, y0), Point2i(x1, y1));
-        MIN_INFO("Starting image tile {}", tile_bounds.ToString());
+        //MIN_INFO("Starting image tile {}", tile_bounds.ToString());
         auto film_tile = film->GetFilmTile(tile_bounds);
         for (Point2i pixel : tile_bounds) {
           for (int s = 0; s < tile_sampler->spp; s++) {
@@ -59,10 +59,15 @@ class PathTracer : public Renderer {
         film->MergeFilmTile(std::move(film_tile));
       }
     }
+    film->WriteImage();
   }
 
   Spectrum Li(const Ray &ray, const std::shared_ptr<Scene> &scene, Sampler &sampler) {
-    return Spectrum(0);
+    SurfaceIntersection isect;
+    if (!scene->Intersect(ray, isect)) {
+      return Spectrum(0);
+    }
+    return Spectrum(isect.shading_frame.n);
   }
 };
 MIN_IMPLEMENTATION(Renderer, PathTracer, "pt")

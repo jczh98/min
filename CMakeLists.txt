@@ -47,6 +47,7 @@ include_directories(
         external/imgui
         external/imgui/examples
         ${lodepng_INCLUDES}
+        ${Stb_INCLUDE_DIR}
 )
 
 file(GLOB IMGUI_SRC

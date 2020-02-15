@@ -1,4 +1,5 @@
 #include "film.h"
+#include "image.h"
 
 namespace min {
 
@@ -103,7 +104,7 @@ void Film::WriteImage(Float splatScale) {
 
   // Write RGB image
   MIN_INFO("Writing image {} with bounds {}", filename, cropped_pixel_bounds.ToString());
-  //WriteImage(filename, &rgb[0], cropped_pixel_bounds, full_resolution);
+  min::WriteImage(filename, &rgb[0], cropped_pixel_bounds, full_resolution);
 }
 MIN_IMPLEMENTATION(Film, Film, "film")
 

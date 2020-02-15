@@ -13,20 +13,19 @@
   "camera": {
     "type": "perspective",
     "props": {
-      "fov": 27.7856,
+      "fov": 16,
       "film": {
-        "filename": "x",
-        "resolution": [800, 600],
+        "filename": "E:\\work\\min-ray\\assets\\bunny\\bunny.png",
+        "resolution": [768, 768],
         "filter": {
           "type": "box"
         }
       },
       "transform": {
-        "scale": [-1,1,1],
         "lookat": {
-          "target": [0, 0.893051, 4.41198],
-          "origin": [0, 0.919769, 5.41159],
-          "up": [0, 1, 0]
+          "target": [-0.0123771, 0.0540913, -0.239922],
+          "origin": [-0.0315182, 0.284011, 0.7331],
+          "up": [0.00717446, 0.973206, -0.229822]
         }
       }
     }

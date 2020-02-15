@@ -26,7 +26,7 @@ int main() {
     scene->Build();
     auto renderer = CreateInstance<Renderer>(j["renderer"]["type"], GetProps(j.at("renderer")));
     renderer->SetScene(scene);
-    //renderer->Render();
+    renderer->Render();
   } catch (std::exception &e) {
     std::cout << e.what() << std::endl;
   }
