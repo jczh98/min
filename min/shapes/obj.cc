@@ -105,6 +105,7 @@ class Obj : public Aggregate {
       if (prefix == "v") {
         Point3f p;
         line >> p.x >> p.y >> p.z;
+        p = trafo.ToPoint(p);
         local_positions.push_back(p);
       } else if (prefix == "vt") {
         Point2f tc;
@@ -113,7 +114,7 @@ class Obj : public Aggregate {
       } else if (prefix == "vn") {
         Normal3f n;
         line >> n.x >> n.y >> n.z;
-        local_normals.push_back(n);
+        local_normals.push_back(Normalize(trafo.ToNormal(n)));
       } else if (prefix == "f") {
         std::string v1, v2, v3, v4;
         line >> v1 >> v2 >> v3 >> v4;

@@ -41,6 +41,9 @@
       "type": "obj",
       "props": {
         "filename": "E:\\work\\min-ray\\assets\\bunny\\bunny.obj",
+        "transform": {
+          "scale": [1,1,-1]
+        },
         "bsdf": {
           "type": "diffuse",
           "props": {

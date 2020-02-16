@@ -71,6 +71,16 @@ void Film::SetImage(Spectrum *img) const {
   }
 }
 
+std::vector<Spectrum> Film::GetImage(){
+  std::vector<Spectrum> ret;
+  int nPixels = cropped_pixel_bounds.Area();
+  for (int i = 0; i < nPixels; ++i) {
+    Pixel &p = pixels[i];
+    ret.emplace_back(p.value);
+  }
+  return ret;
+}
+
 void Film::WriteImage(Float splatScale) {
   // Convert image to RGB and compute final pixel values
   MIN_INFO("Converting image to RGB and computing final weighted pixel values");

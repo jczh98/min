@@ -75,6 +75,7 @@ class Film : public Unit {
   std::unique_ptr<FilmTile> GetFilmTile(const Bounds2i &sample_bounds);
   void MergeFilmTile(std::unique_ptr<FilmTile> tile);
   void SetImage(Spectrum *img) const;
+  std::vector<Spectrum> GetImage();
   void WriteImage(Float splatScale = 1);
   void Clear();
   void initialize(const Json &json) override;

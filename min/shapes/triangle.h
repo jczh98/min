@@ -133,9 +133,9 @@ class Triangle : public Shape {
     isect.time = ray.time;
     isect.shape = this;
     isect.face_index = face_index;
-    isect.geo_frame = Frame(Normalize(Cross((p1 - p0), (p2 - p0))));
+    isect.geo_frame = Frame(Normalize(Cross((p0 - p2), (p1 - p2))));
     if (mesh->n) {
-      auto ns = (b0 * mesh->n[v[0]] + b1 * mesh->n[v[1]] + b2 * mesh->n[v[2]]);
+      auto ns = Normalize((b0 * mesh->n[v[0]] + b1 * mesh->n[v[1]] + b2 * mesh->n[v[2]]));
       if (ns.LengthSquared() > 0) {
         isect.shading_frame = Frame(ns);
       } else {
