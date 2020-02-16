@@ -39,6 +39,7 @@ find_package(spdlog CONFIG REQUIRED)
 find_library(lodepng lodepng REQUIRED)
 find_path(lodepng_INCLUDES lodepng.h)
 find_package(GTest CONFIG REQUIRED)
+find_package(TBB CONFIG REQUIRED)
 
 add_subdirectory(external/glad)
 
@@ -66,6 +67,7 @@ set(MIN_RAY_LIBS
         spdlog::spdlog
         ${lodepng}
         GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
+        TBB::tbb
         )
 
 file(GLOB MIN_RAY_CORE
