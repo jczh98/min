@@ -11,13 +11,13 @@ struct Frame {
 
   void ComputeCoordinateSystem(const Vector3 &a, Vector3 &b, Vector3 &c) {
     if (std::abs(a.x) > std::abs(a.y)) {
-      float invLen = 1.0f / std::sqrt(a.x * a.x + a.z * a.z);
-      c = Vector3f(a.z * invLen, 0.0f, -a.x * invLen);
+      Float inv_len = 1.0f / std::sqrt(a.x * a.x + a.z * a.z);
+      c = Vector3f(-a.z * inv_len, 0.0f, a.x * inv_len);
     } else {
-      float invLen = 1.0f / std::sqrt(a.y * a.y + a.z * a.z);
-      c = Vector3f(0.0f, a.z * invLen, -a.y * invLen);
+      Float inv_len = 1.0f / std::sqrt(a.y * a.y + a.z * a.z);
+      c = Vector3f(0.0f, a.z * inv_len, -a.y * inv_len);
     }
-    b = Cross(c, a);
+    b = Normalize(Cross(c, a));
   }
 
   Frame() {}

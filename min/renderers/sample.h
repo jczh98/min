@@ -1,3 +1,5 @@
+#pragma once
+
 #include <min/visual/renderer.h>
 #include <min/visual/scene.h>
 #include <min/visual/film.h>
@@ -8,7 +10,7 @@
 
 namespace min {
 
-class PathTracer : public Renderer {
+class SampleRenderer : public Renderer {
   std::shared_ptr<Sampler> sampler;
  public:
   void initialize(const Json &json) override {
@@ -69,15 +71,9 @@ class PathTracer : public Renderer {
     film->WriteImage();
   }
 
-  Spectrum Li(const Ray &ray, const std::shared_ptr<Scene> &scene, Sampler &sampler) {
-    SurfaceIntersection isect;
-    if (!scene->Intersect(ray, isect)) {
-      return Spectrum(0);
-    }
-    return Spectrum(Abs(isect.shading_frame.n));
-  }
+  virtual Spectrum Li(const Ray &ray, const std::shared_ptr<Scene> &scene, Sampler &sampler) = 0;
 };
-MIN_IMPLEMENTATION(Renderer, PathTracer, "pt")
+
 
 }
 

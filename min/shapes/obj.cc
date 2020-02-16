@@ -106,7 +106,7 @@ class Obj : public Aggregate {
         Point3f p;
         line >> p.x >> p.y >> p.z;
         p = trafo.ToPoint(p);
-        local_positions.push_back(p);
+        local_positions.push_back (p);
       } else if (prefix == "vt") {
         Point2f tc;
         line >> tc.x >> tc.y;

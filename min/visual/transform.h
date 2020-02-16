@@ -86,6 +86,19 @@ class Transform {
                       inv[0][2] * x + inv[1][2] * y + inv[2][2] * z);
   }
 
+  MIN_FORCE_INLINE Bounds3f ToBounds3(const Bounds3f &b) const {
+    const Transform &M = *this;
+    Bounds3f ret(M.ToPoint(Point3f(b.pmin.x, b.pmin.y, b.pmin.z)));
+    ret = Union(ret, M.ToPoint(Point3f(b.pmax.x, b.pmin.y, b.pmin.z)));
+    ret = Union(ret, M.ToPoint(Point3f(b.pmin.x, b.pmax.y, b.pmin.z)));
+    ret = Union(ret, M.ToPoint(Point3f(b.pmin.x, b.pmin.y, b.pmax.z)));
+    ret = Union(ret, M.ToPoint(Point3f(b.pmin.x, b.pmax.y, b.pmax.z)));
+    ret = Union(ret, M.ToPoint(Point3f(b.pmax.x, b.pmax.y, b.pmin.z)));
+    ret = Union(ret, M.ToPoint(Point3f(b.pmax.x, b.pmin.y, b.pmax.z)));
+    ret = Union(ret, M.ToPoint(Point3f(b.pmax.x, b.pmax.y, b.pmax.z)));
+    return ret;
+  }
+
 };
 
 MIN_FORCE_INLINE Transform Translate(const Vector3f &delta) {
@@ -173,7 +186,7 @@ MIN_FORCE_INLINE Transform LookAt(const Point3f &pos, const Point3f &look, const
     return Transform();
   }
   Vector3f right = Normalize(Cross(Normalize(up), dir));
-  Vector3f newUp = Cross(dir, right);
+  Vector3f newUp = Normalize(Cross(dir, right));
   cameraToWorld[0][0] = right.x;
   cameraToWorld[1][0] = right.y;
   cameraToWorld[2][0] = right.z;

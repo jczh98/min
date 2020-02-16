@@ -13,7 +13,7 @@
   "camera": {
     "type": "perspective",
     "props": {
-      "fov": 16,
+      "fov": 60,
       "film": {
         "filename": "E:\\work\\min-ray\\assets\\bunny\\bunny.png",
         "resolution": [768, 768],
@@ -23,9 +23,9 @@
       },
       "transform": {
         "lookat": {
-          "target": [-0.0123771, 0.0540913, -0.239922],
-          "origin": [-0.0315182, 0.284011, 0.7331],
-          "up": [0.00717446, 0.973206, -0.229822]
+          "target": [0, 0, 0],
+          "origin": [6, 6, 0],
+          "up": [0, 1, 0]
         }
       }
     }
@@ -38,15 +38,17 @@
   },
   "shapes": [
     {
-      "type": "obj",
+      "type": "sphere",
       "props": {
-        "filename": "E:\\work\\min-ray\\assets\\bunny\\bunny.obj",
-        "bsdf": {
-          "type": "diffuse",
-          "props": {
-            "color": [0.725,0.71,0.68]
-          }
-        }
+        "radius": 2,
+        "center": [0, 0, -2]
+      }
+    },
+    {
+      "type": "sphere",
+      "props": {
+        "radius": 1,
+        "center": [0, 0, 1]
       }
     }
   ]

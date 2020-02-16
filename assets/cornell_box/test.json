@@ -1,6 +1,6 @@
 {
   "renderer":{
-    "type": "pt",
+    "type": "ao",
     "props": {
       "sampler": {
         "type": "random",
@@ -15,7 +15,7 @@
     "props": {
       "fov": 27.7856,
       "film": {
-        "filename": "x",
+        "filename": "E:\\work\\min-ray\\assets\\cornell_box\\test.png",
         "resolution": [800, 600],
         "filter": {
           "type": "box"
@@ -30,11 +30,17 @@
       }
     }
   },
+  "accelerator": {
+    "type": "bvh",
+    "props": {
+      "maxnodeprims": 4
+    }
+  },
   "shapes": [
     {
       "type": "obj",
       "props": {
-        "filename": "meshes/walls.obj",
+        "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/walls.obj",
         "bsdf": {
           "type": "diffuse",
           "props": {
@@ -46,7 +52,7 @@
     {
       "type": "obj",
       "props": {
-        "filename": "meshes/rightwall.obj",
+        "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/rightwall.obj",
         "bsdf": {
           "type": "diffuse",
           "props": {
@@ -58,7 +64,7 @@
     {
       "type": "obj",
       "props": {
-        "filename": "meshes/leftwall.obj",
+        "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/leftwall.obj",
         "bsdf": {
           "type": "diffuse",
           "props": {
@@ -70,7 +76,7 @@
     {
       "type": "obj",
       "props": {
-        "filename": "meshes/sphere1.obj",
+        "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/sphere1.obj",
         "bsdf": {
           "type": "diffuse",
           "props": {
@@ -82,7 +88,7 @@
     {
       "type": "obj",
       "props": {
-        "filename": "meshes/sphere2.obj",
+        "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/sphere2.obj",
         "bsdf": {
           "type": "diffuse",
           "props": {
@@ -94,7 +100,7 @@
     {
       "type": "obj",
       "props": {
-        "filename": "meshes/light.obj",
+        "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/light.obj",
         "light": {
           "type": "area",
           "props": {

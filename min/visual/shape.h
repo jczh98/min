@@ -11,6 +11,7 @@ struct SurfaceSample {
 };
 
 class Shape : public Unit {
+ protected:
   Transform object2world, world2object;
  public:
   Shape(const Transform &object2world, const Transform &world2object) : object2world(object2world), world2object(world2object) {}
