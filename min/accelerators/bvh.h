@@ -19,7 +19,8 @@ class BVHAccel : public Accelerator {
   void initialize(const Json &json) override;
   Bounds3f WorldBound() const override ;
   ~BVHAccel();
-  bool Intersect(const Ray &ray, SurfaceIntersection &isect) const override ;
+  bool Intersect(const Ray &ray, SurfaceIntersection &isect) const override;
+  bool IntersectP(const Ray &ray) const override;
   void AddShape(const std::vector<std::shared_ptr<Shape>> &shape) override;
   void Build() override;
  private:

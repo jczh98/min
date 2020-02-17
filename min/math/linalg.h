@@ -237,6 +237,11 @@ struct VectorND : public VectorNDBase<dim__, T, ISE> {
     return *this;
   }
 
+  MIN_FORCE_INLINE VectorND &operator+=(T o) {
+    (*this) = (*this) + VectorND(o);
+    return *this;
+  }
+
   MIN_FORCE_INLINE VectorND &operator-=(const VectorND &o) {
     (*this) = (*this) - o;
     return *this;

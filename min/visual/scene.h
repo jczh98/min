@@ -15,6 +15,7 @@ class Scene : public Unit{
   std::shared_ptr<Accelerator> accelerator;
   const Bounds3f &WorldBound() { return world_bound; }
   bool Intersect(const Ray &ray, SurfaceIntersection &isect) const;
+  bool IntersectP(const Ray &ray) const;
   void SetCamera(const std::shared_ptr<Camera> &camera) { this->camera = camera; }
   void SetAccelerator(const std::shared_ptr<Accelerator> &accel) { accelerator = accel; }
   void AddShape(const std::vector<std::shared_ptr<Shape>> &shapes) { accelerator->AddShape(shapes); }

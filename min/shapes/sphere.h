@@ -54,6 +54,21 @@ class Sphere : public Shape{
     }
     return false;
   }
+
+  bool IntersectP(const Ray &ray) const override {
+    auto oc = ray.o - center;
+    auto a = Dot(ray.d, ray.d);
+    auto b = 2 * Dot(ray.d, oc);
+    auto c = Dot(oc, oc) - radius * radius;
+    auto delta = b * b - 4 * a * c;
+    if (delta < 0) {
+      return false;
+    }
+    auto t1 = (-b - std::sqrt(delta)) / (2 * a);
+    auto t2 = (-b + std::sqrt(delta)) / (2 * a);
+    return (t1 >= ray.time && t1 < ray.tmax) || (t2 >= ray.time && t2 < ray.tmax);
+  }
+
   Float Area() const override {
     return 4 * kPi * radius * radius;
   }

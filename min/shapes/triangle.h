@@ -151,6 +151,50 @@ class Triangle : public Shape {
     return true;
   }
 
+  bool IntersectP(const Ray &ray) const override {
+    const Point3f &p0 = mesh->p[v[0]];
+    const Point3f &p1 = mesh->p[v[1]];
+    const Point3f &p2 = mesh->p[v[2]];
+    Point3f p0t = p0 - Vector3f(ray.o);
+    Point3f p1t = p1 - Vector3f(ray.o);
+    Point3f p2t = p2 - Vector3f(ray.o);
+    auto rayd = Abs(ray.d);
+    int kz = rayd.x > rayd.y ? (rayd.x > rayd.z ? 0 : 2) : (rayd.y > rayd.z ? 1 : 2);
+    int kx = kz + 1;
+    if (kx == 3) kx = 0;
+    int ky = kx + 1;
+    if (ky == 3) ky = 0;
+    Vector3f d = Permute(ray.d, Vector3i(kx, ky, kz));
+    p0t = Permute(p0t, Vector3i(kx, ky, kz));
+    p1t = Permute(p1t, Vector3i(kx, ky, kz));
+    p2t = Permute(p2t, Vector3i(kx, ky, kz));
+    Float Sx = -d.x / d.z;
+    Float Sy = -d.y / d.z;
+    Float Sz = 1.f / d.z;
+    p0t.x += Sx * p0t.z;
+    p0t.y += Sy * p0t.z;
+    p1t.x += Sx * p1t.z;
+    p1t.y += Sy * p1t.z;
+    p2t.x += Sx * p2t.z;
+    p2t.y += Sy * p2t.z;
+    Float e0 = p1t.x * p2t.y - p1t.y * p2t.x;
+    Float e1 = p2t.x * p0t.y - p2t.y * p0t.x;
+    Float e2 = p0t.x * p1t.y - p0t.y * p1t.x;
+    if ((e0 < 0 || e1 < 0 || e2 < 0) && (e0 > 0 || e1 > 0 || e2 > 0))
+      return false;
+    Float det = e0 + e1 + e2;
+    if (det == 0) return false;
+    p0t.z *= Sz;
+    p1t.z *= Sz;
+    p2t.z *= Sz;
+    Float tScaled = e0 * p0t.z + e1 * p1t.z + e2 * p2t.z;
+    if (det < 0 && (tScaled >= 0 || tScaled < ray.tmax * det))
+      return false;
+    else if (det > 0 && (tScaled <= 0 || tScaled > ray.tmax * det))
+      return false;
+    // Fill in _SurfaceInteraction_ from triangle hit
+    return true;
+  }
   Float Area() const override {
     const Point3f &p0 = mesh->p[v[0]];
     const Point3f &p1 = mesh->p[v[1]];

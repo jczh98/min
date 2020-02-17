@@ -604,6 +604,44 @@ bool BVHAccel::Intersect(const Ray &ray, SurfaceIntersection &isect) const {
   }
   return hit;
 }
+
+bool BVHAccel::IntersectP(const Ray &ray) const {
+  if (!nodes) return false;
+  Vector3f invDir(1 / ray.d.x, 1 / ray.d.y, 1 / ray.d.z);
+  int dirIsNeg[3] = {invDir.x < 0, invDir.y < 0, invDir.z < 0};
+  // Follow ray through BVH nodes to find primitive intersections
+  int toVisitOffset = 0, currentNodeIndex = 0;
+  int nodesToVisit[64];
+  while (true) {
+    const LinearBVHNode *node = &nodes[currentNodeIndex];
+    // Check ray against BVH node
+    if (node->bounds.IntersectP(ray, invDir, dirIsNeg)) {
+      if (node->nPrimitives > 0) {
+        // Intersect ray with primitives in leaf BVH node
+        for (int i = 0; i < node->nPrimitives; ++i)
+          if (primitives[node->primitivesOffset + i]->IntersectP(
+              ray)) return true;
+        if (toVisitOffset == 0) break;
+        currentNodeIndex = nodesToVisit[--toVisitOffset];
+      } else {
+        // Put far BVH node on _nodesToVisit_ stack, advance to near
+        // node
+        if (dirIsNeg[node->axis]) {
+          nodesToVisit[toVisitOffset++] = currentNodeIndex + 1;
+          currentNodeIndex = node->secondChildOffset;
+        } else {
+          nodesToVisit[toVisitOffset++] = node->secondChildOffset;
+          currentNodeIndex = currentNodeIndex + 1;
+        }
+      }
+    } else {
+      if (toVisitOffset == 0) break;
+      currentNodeIndex = nodesToVisit[--toVisitOffset];
+    }
+  }
+  return false;
+}
+
 void BVHAccel::AddShape(const std::vector<std::shared_ptr<Shape>> &shape) {
   primitives.insert(primitives.end(), shape.begin(), shape.end());
 }

@@ -23,7 +23,14 @@ class NaiveAccelerator : public Accelerator {
     }
     return found_intersection;
   }
-
+  bool IntersectP(const Ray &ray) const override {
+    for (auto shape : primitives) {
+      if (shape->IntersectP(ray)) {
+        return true;
+      }
+    }
+    return false;
+  }
   Bounds3f WorldBound() const override {
     return bounds;
   }
