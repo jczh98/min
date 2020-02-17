@@ -9,7 +9,7 @@ struct Frame {
   Vector3 s, t;
   Normal3 n;
 
-  void ComputeCoordinateSystem(const Vector3 &a, Vector3 &b, Vector3 &c) {
+  static void ComputeCoordinateSystem(const Vector3 &a, Vector3 &b, Vector3 &c) {
     if (std::abs(a.x) > std::abs(a.y)) {
       Float inv_len = 1.0f / std::sqrt(a.x * a.x + a.z * a.z);
       c = Vector3f(-a.z * inv_len, 0.0f, a.x * inv_len);

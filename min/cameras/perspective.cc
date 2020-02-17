@@ -10,7 +10,7 @@ class PerspectiveCamera : public Camera {
   void initialize(const Json &json) override {
     fov = Value(json, "fov", 90.f);
     film = CreateInstance<Film>("film", json.at("film"));
-    camera2world = Value(json, "transform", Transform());
+    camera2world = Inverse(Value(json, "transform", Transform()));
     camera2screen = Perspective(fov, 1e-2f, 1000.0f);
     Float aspect_ration = Float(film->full_resolution.x) / Float(film->full_resolution.y);
     Bounds2f screen_window;

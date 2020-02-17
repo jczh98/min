@@ -35,7 +35,7 @@ class Sphere : public Shape{
       if (t1 < ray.tmax) {
         isect.time = t1;
         auto p = ray.o + t1 * ray.d;
-        isect.geo_frame = Frame(p - center);
+        isect.geo_frame = Frame(Normalize(p - center));
         isect.shading_frame = isect.geo_frame;
         isect.shape = this;
         return true;
@@ -46,7 +46,7 @@ class Sphere : public Shape{
       if (t2 < ray.tmax) {
         isect.time = t2;
         auto p = ray.o + t2 * ray.d;
-        isect.geo_frame = Frame(p - center);
+        isect.geo_frame = Frame(Normalize(p - center));
         isect.shading_frame = isect.geo_frame;
         isect.shape = this;
         return true;

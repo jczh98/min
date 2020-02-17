@@ -160,9 +160,9 @@ class Obj : public Aggregate {
     for (uint32_t i = 0; i < local_vertices.size(); ++i)
       positions[i] = local_positions.at(local_vertices[i].p - 1);
 
-    Normal3 *normals = nullptr;
+    Normal3f *normals = nullptr;
     if (!local_normals.empty()) {
-      normals = new Normal3[(int)local_vertices.size()];
+      normals = new Normal3f[(int)local_vertices.size()];
       for (uint32_t i = 0; i < local_vertices.size(); ++i)
         normals[i] = local_normals.at(local_vertices[i].n - 1);
     }

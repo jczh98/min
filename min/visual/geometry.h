@@ -26,7 +26,7 @@ class Ray {
   Point3 operator()(Float t) { return o + t * d; }
   Point3 o;
   Vector3 d;
-  Float tmax;
+  mutable Float tmax;
   Float time;
 };
 

@@ -10,7 +10,7 @@ using namespace min;
 
 int main() {
   try {
-    std::string tmp = "E:\\work\\min-ray\\assets\\bunny\\sphere.json";
+    std::string tmp = "E:\\work\\min-ray\\assets\\bunny\\test.json";
     std::ifstream is(tmp);
     Json j;
     is >> j;

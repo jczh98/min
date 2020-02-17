@@ -235,7 +235,7 @@ struct adl_serializer<Transform> {
       auto up = j.at("lookat").at("up").get<Vector3f>();
       transform = transform * LookAt(origin, target, up);
     }
-    v = Inverse(transform);
+    v = transform;
   }
 };
 

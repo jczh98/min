@@ -38,7 +38,6 @@ struct TriangleMesh {
       s.reset(new Vector3f[nVertices]);
       for (int i = 0; i < nVertices; ++i) s[i] = ObjectToWorld.ToVector(S[i]);
     }
-
     if (fIndices)
       face_indices = std::vector<int>(fIndices, fIndices + nTriangles);
   }
@@ -74,8 +73,12 @@ class Triangle : public Shape {
     return Union(Bounds3f(p0, p1), p2);
   }
   Bounds3f ObjectBound() const override {
-    return Bounds3f();
+    const Point3f &p0 = mesh->p[v[0]];
+    const Point3f &p1 = mesh->p[v[1]];
+    const Point3f &p2 = mesh->p[v[2]];
+    return Union(Bounds3f(world2object.ToPoint(p0), world2object.ToPoint(p1)), world2object.ToPoint(p2));
   }
+
   bool Intersect(const Ray &ray, SurfaceIntersection &isect) const override {
     const Point3f &p0 = mesh->p[v[0]];
     const Point3f &p1 = mesh->p[v[1]];
@@ -133,6 +136,7 @@ class Triangle : public Shape {
     isect.time = ray.time;
     isect.shape = this;
     isect.face_index = face_index;
+    ray.tmax = t;
     isect.geo_frame = Frame(Normalize(Cross((p0 - p2), (p1 - p2))));
     if (mesh->n) {
       auto ns = Normalize((b0 * mesh->n[v[0]] + b1 * mesh->n[v[1]] + b2 * mesh->n[v[2]]));

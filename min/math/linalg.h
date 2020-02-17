@@ -476,13 +476,13 @@ MIN_FORCE_INLINE VectorND<dim, T, ISE> Abs(
 }
 
 template <int dim, typename T, InstSetExt ISE>
-MIN_FORCE_INLINE VectorND<dim, T, ISE> MaxComp(
+MIN_FORCE_INLINE T MaxComp(
     const VectorND<dim, T, ISE> &a) {
   return a.MaxComp();
 }
 
 template <int dim, typename T, InstSetExt ISE>
-MIN_FORCE_INLINE VectorND<dim, T, ISE> MinComp(
+MIN_FORCE_INLINE T MinComp(
     const VectorND<dim, T, ISE> &a) {
   return a.MinComp();
 }
