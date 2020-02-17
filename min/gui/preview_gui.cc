@@ -339,6 +339,9 @@ void PreviewGUI::Draw() {
   glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
   glClear(GL_COLOR_BUFFER_BIT);
   // Draw contents
+  ImGui::Begin("ToneMapper");
+  ImGui::SliderFloat("float", &scale, 0.0f, 10.0f);
+  ImGui::End();
   const Vector2i &size = film->cropped_pixel_bounds.Diagonal();
   auto spectrums = film->GetImage();
   std::unique_ptr<uint8_t[]> rgb8(new uint8_t[3 * size.x * size.y]);

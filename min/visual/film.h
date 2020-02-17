@@ -111,13 +111,13 @@ class FilmTile {
     Point2i p1 = (Point2i)Floor(film_discrete + filter_radius) + Point2i(1, 1);
     p0 = Max(p0, pixel_bounds.pmin);
     p1 = Min(p1, pixel_bounds.pmax);
-    int *ifx = new int(p1.x - p0.x);
+    int *ifx = new int[p1.x - p0.x];
     for (int x = p0.x; x < p1.x; ++x) {
       Float fx = std::abs((x - film_discrete.x) * inv_filter_radius.x *
           filter_table_size);
       ifx[x - p0.x] = std::min<int>((int)std::floor(fx), filter_table_size - 1);
     }
-    int *ify = new int(p1.y - p0.y);
+    int *ify = new int[p1.y - p0.y];
     for (int y = p0.y; y < p1.y; ++y) {
       Float fy = std::abs((y - film_discrete.y) * inv_filter_radius.y *
           filter_table_size);

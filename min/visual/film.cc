@@ -56,8 +56,7 @@ void Film::MergeFilmTile(std::unique_ptr<FilmTile> tile) {
     // Merge _pixel_ into _Film::pixels_
     const FilmTilePixel &tilePixel = tile->GetPixel(pixel);
     Pixel &mergePixel = GetPixel(pixel);
-    Float xyz[3];
-    for (int i = 0; i < 3; ++i) mergePixel.value += tilePixel.contrib_sum;
+    mergePixel.value += tilePixel.contrib_sum;
     mergePixel.filter_weight_sum += tilePixel.filter_weight_sum;
   }
 }
@@ -76,7 +75,20 @@ std::vector<Spectrum> Film::GetImage(){
   int nPixels = cropped_pixel_bounds.Area();
   for (int i = 0; i < nPixels; ++i) {
     Pixel &p = pixels[i];
-    ret.emplace_back(p.value);
+    Spectrum rgb = p.value;
+    Float filter_weight_sum = p.filter_weight_sum;
+    // Normalize pixel with weight sum
+    if (filter_weight_sum != 0) {
+      Float inv_wt = (Float)1 / filter_weight_sum;
+      rgb[0] = std::max<Float>((Float)0, rgb[0] * inv_wt);
+      rgb[1] = std::max<Float>((Float)0, rgb[1] * inv_wt);
+      rgb[2] = std::max<Float>((Float)0, rgb[2] * inv_wt);
+    }
+    // Scale pixel value by _scale_
+    rgb[0] *= scale;
+    rgb[1] *= scale;
+    rgb[2] *= scale;
+    ret.emplace_back(rgb);
   }
   return ret;
 }
