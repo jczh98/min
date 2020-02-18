@@ -1,4 +1,5 @@
 #include "bvh.h"
+#include <min/visual/shape.h>
 
 namespace min {
 

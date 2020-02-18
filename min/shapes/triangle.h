@@ -136,6 +136,9 @@ class Triangle : public Shape {
     isect.time = ray.time;
     isect.shape = this;
     isect.face_index = face_index;
+    ShadingPoint sp;
+    sp.texcoords = uvHit;
+    isect.sp = sp;
     ray.tmax = t;
     isect.geo_frame = Frame(Normalize(Cross((p0 - p2), (p1 - p2))));
     if (mesh->n) {

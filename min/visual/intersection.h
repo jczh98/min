@@ -2,7 +2,7 @@
 
 #include "defs.h"
 #include "frame.h"
-#include "shape.h"
+#include "texture.h"
 
 namespace min {
 
@@ -11,11 +11,17 @@ class Intersection {
   Point3 p;
   Float time;
   Vector3 wo;
+  ShadingPoint sp;
   Frame geo_frame;
 
   Ray SpawnRay(const Vector3f &d) const {
     return Ray(p, d, kInfinity, time);
   }
+
+  Ray SpwanRayTo(const Point3 &p2) const {
+    return Ray(p, p2 - p, 1 - kShadowEpsilon, time);
+  }
+
 };
 
 class SurfaceIntersection : public Intersection {

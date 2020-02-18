@@ -16,6 +16,7 @@ bool Scene::IntersectP(const Ray &ray) const {
 
 void Scene::Build() {
   accelerator->Build();
+  MIN_INFO("Current have {} primitives and {} lights.", shapes.size(), lights.size());
 }
 MIN_IMPLEMENTATION(Scene, Scene, "scene")
 

@@ -1,6 +1,6 @@
 {
   "renderer":{
-    "type": "ao",
+    "type": "normals",
     "props": {
       "sampler": {
         "type": "random",
@@ -13,7 +13,7 @@
   "camera": {
     "type": "perspective",
     "props": {
-      "fov": 27.7856,
+      "fov": 20.7856,
       "film": {
         "filename": "E:\\work\\min-ray\\assets\\cornell_box\\test.png",
         "resolution": [800, 600],
@@ -44,7 +44,12 @@
         "bsdf": {
           "type": "diffuse",
           "props": {
-            "color": [0.725,0.71,0.68]
+            "spectrum": {
+              "type": "constant",
+              "props": {
+                "value": [0.725,0.71,0.68]
+              }
+            }
           }
         }
       }
@@ -56,7 +61,12 @@
         "bsdf": {
           "type": "diffuse",
           "props": {
-            "color": [0.161,0.133,0.427]
+            "spectrum": {
+              "type": "constant",
+              "props": {
+                "value": [0.161,0.133,0.427]
+              }
+            }
           }
         }
       }
@@ -68,7 +78,12 @@
         "bsdf": {
           "type": "diffuse",
           "props": {
-            "color": [0.630,0.065,0.05]
+            "spectrum": {
+              "type": "constant",
+              "props": {
+                "value": [0.630,0.065,0.05]
+              }
+            }
           }
         }
       }
@@ -80,7 +95,12 @@
         "bsdf": {
           "type": "diffuse",
           "props": {
-            "color": [0.630,0.065,0.05]
+            "spectrum": {
+              "type": "constant",
+              "props": {
+                "value": [0.630,0.065,0.05]
+              }
+            }
           }
         }
       }
@@ -92,7 +112,12 @@
         "bsdf": {
           "type": "diffuse",
           "props": {
-            "color": [0.630,0.065,0.05]
+            "spectrum": {
+              "type": "constant",
+              "props": {
+                "value": [0.630,0.065,0.05]
+              }
+            }
           }
         }
       }
@@ -102,9 +127,14 @@
       "props": {
         "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/light.obj",
         "light": {
-          "type": "area",
+          "type": "diffuse_area",
           "props": {
-            "radiance": [15,15,15]
+            "radiance": {
+              "type": "constant",
+              "props": {
+                "value": [15,15,15]
+              }
+            }
           }
         }
       }

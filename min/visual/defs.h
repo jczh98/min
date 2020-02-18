@@ -29,9 +29,13 @@ class FilmTile;
 class Intersection;
 class SurfaceIntersection;
 class Scene;
+class Shape;
+class VisibilityTester;
+class BSDFSample;
 
 namespace fs = std::filesystem;
 
+static constexpr Float kShadowEpsilon = 0.0001f;
 }
 
 

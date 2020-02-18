@@ -1,4 +1,5 @@
 #include <min/visual/accel.h>
+#include <min/visual/shape.h>
 
 namespace min {
 

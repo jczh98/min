@@ -10,7 +10,7 @@ using namespace min;
 
 int main() {
   try {
-    std::string tmp = "E:\\work\\min-ray\\assets\\bunny\\test.json";
+    std::string tmp = "E:\\work\\min-ray\\assets\\cornell_box\\test.json";
     std::ifstream is(tmp);
     Json j;
     is >> j;
@@ -22,6 +22,7 @@ int main() {
     for (auto jshape : j["shapes"]) {
       auto aggregate = CreateInstance<Aggregate>(jshape["type"], GetProps(jshape));
       scene->AddShape(aggregate->shapes);
+      scene->AddLights(aggregate->lights);
     }
     scene->Build();
     auto renderer = CreateInstance<Renderer>(j["renderer"]["type"], GetProps(j.at("renderer")));

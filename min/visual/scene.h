@@ -13,12 +13,24 @@ class Scene : public Unit{
  public:
   std::shared_ptr<Camera> camera;
   std::shared_ptr<Accelerator> accelerator;
+  std::vector<std::shared_ptr<Light>> lights;
+  std::vector<std::shared_ptr<Shape>> shapes;
+  ~Scene() {
+    lights.clear();
+    shapes.clear();
+  }
   const Bounds3f &WorldBound() { return world_bound; }
   bool Intersect(const Ray &ray, SurfaceIntersection &isect) const;
   bool IntersectP(const Ray &ray) const;
   void SetCamera(const std::shared_ptr<Camera> &camera) { this->camera = camera; }
   void SetAccelerator(const std::shared_ptr<Accelerator> &accel) { accelerator = accel; }
-  void AddShape(const std::vector<std::shared_ptr<Shape>> &shapes) { accelerator->AddShape(shapes); }
+  void AddShape(const std::vector<std::shared_ptr<Shape>> &shapes_) {
+    shapes.insert(shapes.end(), shapes_.begin(), shapes_.end());
+    accelerator->AddShape(shapes_);
+  }
+  void AddLights(const std::vector<std::shared_ptr<Light>> &lights_) {
+    lights.insert(lights.end(), lights_.begin(), lights_.end());
+  }
   void Build();
   void initialize(const Json &json) override;
 };
