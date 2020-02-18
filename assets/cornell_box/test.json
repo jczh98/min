@@ -1,11 +1,11 @@
 {
   "renderer":{
-    "type": "pt",
+    "type": "whitted",
     "props": {
       "sampler": {
         "type": "random",
         "props": {
-          "spp": 1
+          "spp": 10
         }
       }
     }

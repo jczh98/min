@@ -8,7 +8,11 @@ class DiffuseBSDF : public BSDF {
   std::shared_ptr<Texture> albedo;
  public:
   void initialize(const Json &json) override {
-    albedo = CreateInstance<Texture>(json["spectrum"]["type"], GetProps(json["spectrum"]));
+    if (json.contains("spectrum")) {
+      albedo = CreateInstance<Texture>(json["spectrum"]["type"], GetProps(json["spectrum"]));
+    } else {
+      albedo = CreateInstance<Texture>("constant", {});
+    }
   }
   Type GetBSDFType() const override {
     return kDiffuse;

@@ -183,6 +183,8 @@ class Obj : public Aggregate {
     std::shared_ptr<Light> light = nullptr;
     if (json.contains("bsdf")) {
       bsdf = CreateInstance<BSDF>(json["bsdf"]["type"], GetProps(json["bsdf"]));
+    } else {
+      bsdf = CreateInstance<BSDF>("diffuse", {});
     }
     if (json.contains("light")) {
       light = CreateInstance<Light>(json["light"]["type"], GetProps(json["light"]));
