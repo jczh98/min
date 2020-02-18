@@ -1,6 +1,6 @@
 {
   "renderer":{
-    "type": "normals",
+    "type": "pt",
     "props": {
       "sampler": {
         "type": "random",

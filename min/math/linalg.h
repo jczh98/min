@@ -416,6 +416,12 @@ MIN_FORCE_INLINE T Dot(const VectorND<dim, T, ISE> &a,
   return a.Dot(b);
 }
 
+template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE T AbsDot(const VectorND<dim, T, ISE> &a,
+                       const VectorND<dim, T, ISE> &b) {
+  return std::abs(a.Dot(b));
+}
+
 template <int dim, typename T>
 MIN_FORCE_INLINE VectorND<dim, T> Min(const VectorND<dim, T> &a,
                                      const VectorND<dim, T> &b) {

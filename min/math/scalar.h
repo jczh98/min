@@ -62,4 +62,17 @@ MIN_FORCE_INLINE Float Radians(Float deg) { return (kPi / 180) * deg; }
 
 MIN_FORCE_INLINE Float Degrees(Float rad) { return (180 / kPi) * rad; }
 
+template <typename T>
+MIN_FORCE_INLINE int FindInterval(int size, const T &pred) {
+  int first = 0, len = size;
+  while (len > 0) {
+    int half = len >> 1, middle = first + half;
+    if (pred(middle)) {
+      first = middle + 1;
+      len -= half + 1;
+    } else  len = half;
+  }
+  return Clamp(first - 1, 0, size - 2);
+}
+
 }

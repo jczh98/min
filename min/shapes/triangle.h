@@ -2,6 +2,7 @@
 
 #include <min/visual/shape.h>
 #include <min/visual/intersection.h>
+#include <min/visual/sampling.h>
 
 namespace min {
 
@@ -205,7 +206,13 @@ class Triangle : public Shape {
     return 0.5 * Cross(p1 - p0, p2 - p0).Length();
   }
   void Sample(const Point2f &u, SurfaceSample &sample) const override {
-
+    const Point3f &p0 = mesh->p[v[0]];
+    const Point3f &p1 = mesh->p[v[1]];
+    const Point3f &p2 = mesh->p[v[2]];
+    Point2f b = UniformSampleTriangle(u);
+    sample.p = b[0] * p0 + b[1] * p1 + (1 - b[0] - b[1]) * p2;
+    sample.ng = Normalize(Cross(p1 - p0, p2 - p0));
+    sample.pdf = 1 / Area();
   }
 };
 

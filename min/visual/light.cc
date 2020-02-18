@@ -3,8 +3,8 @@
 
 namespace min {
 
-bool VisibilityTester::Unoccluded(const Scene &scene) const {
-  return !scene.IntersectP(p0.SpwanRayTo(p1));
+bool VisibilityTester::Unoccluded(const std::shared_ptr<Scene> &scene) const {
+  return !scene->IntersectP(p0.SpwanRayTo(p1));
 }
 
 }

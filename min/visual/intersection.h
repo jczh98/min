@@ -3,6 +3,7 @@
 #include "defs.h"
 #include "frame.h"
 #include "texture.h"
+#include "bsdf.h"
 
 namespace min {
 
@@ -28,6 +29,7 @@ class SurfaceIntersection : public Intersection {
  public:
   Frame shading_frame;
   const Shape *shape = nullptr;
+  BSDF *bsdf = nullptr;
   int face_index = 0;
 
   Vector3f ToLocal(const Vector3f &d) const {

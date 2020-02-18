@@ -27,7 +27,11 @@ class DiffuseAreaLight : public Light {
     }
     sample.wi = Normalize(surface_sample.p - isect.p);
     tester = VisibilityTester(isect, surface_sample.p);
+    sample.pdf = surface_sample.pdf;
     sample.li = Dot(surface_sample.ng, -sample.wi) > 0 ? radiance->Evaluate(isect.sp) : Spectrum(0);
+  }
+  virtual Spectrum L(const Intersection &isect, const Vector3 &w) const {
+    return Dot(isect.geo_frame.n, w) > 0 ? radiance->Evaluate(isect.sp) : Spectrum(0);
   }
   Float PdfLi(const Intersection &isect, const Vector3 &wi) const override {
     return shape->Pdf(isect, wi);

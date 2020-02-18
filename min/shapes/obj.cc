@@ -190,8 +190,11 @@ class Obj : public Aggregate {
     for (auto &shape : shapes) {
       shape->bsdf = bsdf;
       shape->area_light = light;
+      if (light != nullptr) {
+        light->SetShape(shape);
+        lights.emplace_back(light);
+      }
     }
-    if (light != nullptr) lights.emplace_back(light);
     this->shapes = shapes;
   }
 };

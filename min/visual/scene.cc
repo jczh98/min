@@ -7,7 +7,11 @@ void Scene::initialize(const Json &json) {
 }
 
 bool Scene::Intersect(const Ray &ray, SurfaceIntersection &isect) const {
-  return accelerator->Intersect(ray, isect);
+  if (accelerator->Intersect(ray, isect)) {
+    isect.bsdf = isect.shape->bsdf.get();
+    return true;
+  }
+  return false;
 }
 
 bool Scene::IntersectP(const Ray &ray) const {
