@@ -10,8 +10,9 @@ namespace min {
 
 struct SurfaceSample {
   Float pdf;
+  Point3 ref;
   Point3 p;
-  Normal3 ng;
+  Normal3 normal;
 };
 
 class Shape : public Unit {

@@ -211,8 +211,18 @@ class Triangle : public Shape {
     const Point3f &p2 = mesh->p[v[2]];
     Point2f b = UniformSampleTriangle(u);
     sample.p = b[0] * p0 + b[1] * p1 + (1 - b[0] - b[1]) * p2;
-    sample.ng = Normalize(Cross(p1 - p0, p2 - p0));
+    sample.normal = Normalize(Cross(p1 - p0, p2 - p0));
+    if (mesh->n) {
+      Normal3f ns (b[0] * mesh->n[v[0]] + b[1] * mesh->n[v[1]] + (1 - b[0] - b[1]) * mesh->n[v[2]]);
+      sample.normal = Dot(sample.normal, ns) < 0.0f ? sample.normal : sample.normal;
+    }
     sample.pdf = 1 / Area();
+    Vector3 wi = sample.p - sample.ref;
+    if (wi.LengthSquared() == 0) sample.pdf = 0;
+    else {
+      sample.pdf *= (sample.ref - sample.p).LengthSquared() / AbsDot(sample.normal, -wi);
+      if (std::isinf(sample.pdf)) sample.pdf = 0.0f;
+    }
   }
 };
 

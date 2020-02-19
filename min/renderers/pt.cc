@@ -5,8 +5,32 @@
 namespace min {
 
 class PathTracer : public SampleRenderer {
+
+  Spectrum SpecularReflect(const Ray &ray, const SurfaceIntersection &isect,
+                           const std::shared_ptr<Scene> &scene, Sampler &sampler, int depth) const {
+    Vector3 wo = isect.wo, wi;
+    Float pdf;
+    wo = isect.ToLocal(wo);
+    BSDFSample bsdf_sample;
+    bsdf_sample.wo = wo;
+    isect.bsdf->Sample(sampler.Get2D(), isect.sp, bsdf_sample);
+    if (bsdf_sample.sampled_type == BSDF::Type(BSDF::Type::kReflection | BSDF::Type::kSpecular)) {
+      return Spectrum(0);
+    }
+    pdf = bsdf_sample.pdf;
+    wi = isect.ToWorld(bsdf_sample.wi);
+    Spectrum f = bsdf_sample.f;
+    const Normal3f &ns = isect.shading_frame.n;
+    if (pdf > 0 && !IsBlack(f) && AbsDot(wi, ns) != 0.0f) {
+      Ray rd = isect.SpawnRay(wi);
+      return f * Li(rd, scene, sampler, depth + 1) * AbsDot(wi, ns) / pdf;
+    } else {
+      return Spectrum(0);
+    }
+  }
+
   Spectrum UniformSampleOneLight(const SurfaceIntersection &it, const std::shared_ptr<Scene> &scene,
-      Sampler &sampler, const Distribution1D *light_distrib = nullptr) {
+      Sampler &sampler, const Distribution1D *light_distrib = nullptr) const {
     int n_lights = int(scene->lights.size());
     if (n_lights == 0) return Spectrum(0);
     int light_num;
@@ -26,7 +50,7 @@ class PathTracer : public SampleRenderer {
 
   Spectrum EstimateDirect(const std::shared_ptr<Scene> &scene, const SurfaceIntersection &it,
       const Point2f u_scattering, const Point2f u_light,
-      const Light &light,Sampler &sampler, bool specular = false) {
+      const Light &light,Sampler &sampler, bool specular = false) const {
     BSDF::Type bsdf_type = specular ? BSDF::Type::kAll : BSDF::Type::kAllButSpecular;
     Spectrum Ld(0);
     LightSample light_sample;
@@ -63,6 +87,7 @@ class PathTracer : public SampleRenderer {
       it.bsdf->Sample(u_scattering, it.sp, bsdf_sample);
       f = bsdf_sample.f * AbsDot(bsdf_sample.wi, it.shading_frame.n);
       sampled_specular = (bsdf_sample.sampled_type & BSDF::Type::kSpecular) != 0;
+      std::cout << sampled_specular << std::endl;
       if (!IsBlack(f) && bsdf_sample.pdf > 0) {
         Float weight = 1;
         if (!sampled_specular) {
@@ -91,7 +116,7 @@ class PathTracer : public SampleRenderer {
     return Li(ray, scene, sampler, 0);
   }
 
-  Spectrum Li(const Ray &ray, const std::shared_ptr<Scene> &scene, Sampler &sampler, int depth)  {
+  Spectrum Li(const Ray &ray, const std::shared_ptr<Scene> &scene, Sampler &sampler, int depth) const {
     Spectrum L(0);
     SurfaceIntersection isect;
     if (!scene->Intersect(ray, isect)) {
@@ -109,17 +134,7 @@ class PathTracer : public SampleRenderer {
       L += UniformSampleOneLight(isect, scene, sampler);
     }
     if (depth + 1 < 5) {
-      BSDFSample bsdf_sample;
-      bsdf_sample.wo = wo;
-      isect.bsdf->Sample(sampler.Get2D(), isect.sp, bsdf_sample);
-      Spectrum f = bsdf_sample.f;
-      Normal3 ns = isect.shading_frame.n;
-      if (bsdf_sample.pdf > 0.0f && !IsBlack(f) && AbsDot(bsdf_sample.wi, ns) != 0.0f) {
-        return bsdf_sample.f * Li(isect.SpawnRay(bsdf_sample.wi), scene, sampler, depth + 1) *
-            AbsDot(bsdf_sample.wi, isect.shading_frame.n) / bsdf_sample.pdf;
-      } else {
-        return Spectrum(0);
-      }
+      L += SpecularReflect(ray, isect, scene, sampler, depth);
     }
     return L;
   }
