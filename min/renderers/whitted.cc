@@ -12,7 +12,7 @@ class Whitted : public SampleRenderer {
     BSDFSample bsdf_sample;
     bsdf_sample.wo = wo;
     isect.bsdf->Sample(sampler.Get2D(), isect.sp, bsdf_sample);
-    if (bsdf_sample.sampled_type == BSDF::Type(BSDF::Type::kReflection | BSDF::Type::kSpecular)) {
+    if (bsdf_sample.sampled_type != BSDF::Type(BSDF::Type::kReflection | BSDF::Type::kSpecular)) {
       return Spectrum(0);
     }
     pdf = bsdf_sample.pdf;

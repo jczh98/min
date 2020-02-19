@@ -14,7 +14,7 @@ class PathTracer : public SampleRenderer {
     BSDFSample bsdf_sample;
     bsdf_sample.wo = wo;
     isect.bsdf->Sample(sampler.Get2D(), isect.sp, bsdf_sample);
-    if (bsdf_sample.sampled_type == BSDF::Type(BSDF::Type::kReflection | BSDF::Type::kSpecular)) {
+    if (bsdf_sample.sampled_type != BSDF::Type(BSDF::Type::kReflection | BSDF::Type::kSpecular)) {
       return Spectrum(0);
     }
     pdf = bsdf_sample.pdf;
@@ -61,8 +61,8 @@ class PathTracer : public SampleRenderer {
     if (light_sample.pdf > 0 && !IsBlack(Li)) {
       // Compute BSDF
       Spectrum f;
-      f = it.bsdf->Evaluate(it.sp, it.wo, light_sample.wi) * AbsDot(light_sample.wi, it.shading_frame.n);
-      scattering_pdf = it.bsdf->EvaluatePdf(it.sp, it.wo, light_sample.wi);
+      f = it.bsdf->Evaluate(it.sp, it.ToLocal(it.wo), it.ToLocal(light_sample.wi)) * AbsDot(light_sample.wi, it.shading_frame.n);
+      scattering_pdf = it.bsdf->EvaluatePdf(it.sp, it.ToLocal(it.wo), it.ToLocal(light_sample.wi));
       if (!IsBlack(f)) {
         if (!tester.Unoccluded(scene)) {
           Li = Spectrum(0);
@@ -83,25 +83,24 @@ class PathTracer : public SampleRenderer {
       Spectrum f;
       bool sampled_specular = false;
       BSDFSample bsdf_sample;
-      bsdf_sample.wo = it.wo;
+      bsdf_sample.wo = it.ToLocal(it.wo);
       it.bsdf->Sample(u_scattering, it.sp, bsdf_sample);
-      f = bsdf_sample.f * AbsDot(bsdf_sample.wi, it.shading_frame.n);
+      f = bsdf_sample.f * AbsDot(it.ToWorld(bsdf_sample.wi), it.shading_frame.n);
       sampled_specular = (bsdf_sample.sampled_type & BSDF::Type::kSpecular) != 0;
-      std::cout << sampled_specular << std::endl;
       if (!IsBlack(f) && bsdf_sample.pdf > 0) {
         Float weight = 1;
         if (!sampled_specular) {
-          Float light_pdf = light.PdfLi(it, bsdf_sample.wi);
+          Float light_pdf = light.PdfLi(it, it.ToWorld(bsdf_sample.wi));
           if (light_pdf == 0) return Ld;
           weight = PowerHeuristic(1, bsdf_sample.pdf, 1, light_pdf);
         }
         SurfaceIntersection light_isect;
-        Ray ray = it.SpawnRay(bsdf_sample.wi);
+        Ray ray = it.SpawnRay(it.ToWorld(bsdf_sample.wi));
         bool found_intersection = scene->Intersect(ray, light_isect);
         Spectrum Li(0);
         if (found_intersection) {
           if (light_isect.shape->area_light.get() == &light) {
-            Li = light.L(light_isect, -bsdf_sample.wi);
+            Li = light.L(light_isect, -it.ToWorld(bsdf_sample.wi));
           }
         } else {
           Li = light.Le(ray);
