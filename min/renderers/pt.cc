@@ -6,28 +6,8 @@ namespace min {
 
 class PathTracer : public SampleRenderer {
 
-  Spectrum SpecularReflect(const Ray &ray, const SurfaceIntersection &isect,
-                           const std::shared_ptr<Scene> &scene, Sampler &sampler, int depth) const {
-    Vector3 wo = isect.wo, wi;
-    Float pdf;
-    wo = isect.ToLocal(wo);
-    BSDFSample bsdf_sample;
-    bsdf_sample.wo = wo;
-    isect.bsdf->Sample(sampler.Get2D(), isect.sp, bsdf_sample);
-    if (bsdf_sample.sampled_type != BSDF::Type(BSDF::Type::kReflection | BSDF::Type::kSpecular)) {
-      return Spectrum(0);
-    }
-    pdf = bsdf_sample.pdf;
-    wi = isect.ToWorld(bsdf_sample.wi);
-    Spectrum f = bsdf_sample.f;
-    const Normal3f &ns = isect.shading_frame.n;
-    if (pdf > 0 && !IsBlack(f) && AbsDot(wi, ns) != 0.0f) {
-      Ray rd = isect.SpawnRay(wi);
-      return f * Li(rd, scene, sampler, depth + 1) * AbsDot(wi, ns) / pdf;
-    } else {
-      return Spectrum(0);
-    }
-  }
+  int max_depth = 5;
+  Float threshold = 1.0;
 
   Spectrum UniformSampleOneLight(const SurfaceIntersection &it, const std::shared_ptr<Scene> &scene,
       Sampler &sampler, const Distribution1D *light_distrib = nullptr) const {
@@ -111,29 +91,56 @@ class PathTracer : public SampleRenderer {
     return Ld;
   }
  public:
-  Spectrum Li(const Ray &ray, const std::shared_ptr<Scene> &scene, Sampler &sampler) override {
-    return Li(ray, scene, sampler, 0);
-  }
+  Spectrum Li(const Ray &r, const std::shared_ptr<Scene> &scene, Sampler &sampler) override {
+    Spectrum L(0), beta(1);
+    Ray ray(r);
+    bool specular = false;
+    int depth;
+    for (depth = 0;;++depth) {
+      SurfaceIntersection isect;
+      bool found_intersection = scene->Intersect(ray, isect);
+      if (depth == 0 || specular) {
+        if (found_intersection) {
+          if (isect.shape->area_light) {
+            L += beta * isect.shape->area_light->L(isect, -ray.d);
+          }
+        } else {
+          // Count background light
+        }
+      }
+      if (!found_intersection || depth >= max_depth) break;
+      if (!isect.bsdf) {
+        ray = isect.SpawnRay(ray.d);
+        depth--;
+        continue;
+      }
+      const Distribution1D *distrib = nullptr;
+      // Sample from lights
+      if (!isect.bsdf->IsSpecular()) {
+        Spectrum Ld = beta * UniformSampleOneLight(isect, scene, sampler, distrib);
+        L += Ld;
+      }
+      // Sample BSDF
+      Vector3 wo = -ray.d, wi;
+      Float pdf;
+      BSDFSample bsdf_sample;
+      bsdf_sample.wo = isect.ToLocal(wo);
+      isect.bsdf->Sample(sampler.Get2D(), isect.sp, bsdf_sample);
+      Spectrum f = bsdf_sample.f;
+      wi = isect.ToWorld(bsdf_sample.wi);
+      pdf = bsdf_sample.pdf;
+      if (IsBlack(f) || pdf == 0.0f) break;
+      beta *= f * AbsDot(wi, isect.shading_frame.n) / pdf;
+      specular = (bsdf_sample.sampled_type & BSDF::Type::kSpecular) != 0;
+      ray = isect.SpawnRay(wi);
 
-  Spectrum Li(const Ray &ray, const std::shared_ptr<Scene> &scene, Sampler &sampler, int depth) const {
-    Spectrum L(0);
-    SurfaceIntersection isect;
-    if (!scene->Intersect(ray, isect)) {
-      for (const auto &light : scene->lights) L += light->Le(ray);
-      return L;
-    }
-    if (!isect.bsdf) {
-      return Li(isect.SpawnRay(ray.d), scene, sampler, depth);
-    }
-    Vector3 wo = isect.wo;
-    if (isect.shape->area_light) {
-      L += isect.shape->area_light->L(isect, wo);
-    }
-    if (scene->lights.size() > 0) {
-      L += UniformSampleOneLight(isect, scene, sampler);
-    }
-    if (depth + 1 < 5) {
-      L += SpecularReflect(ray, isect, scene, sampler, depth);
+      // Russian roulette
+      Spectrum rr = beta;
+      if (beta.MaxComp() < threshold && depth > 3) {
+        Float q = std::max((Float)0.05, 1 - rr.MaxComp());
+        if (sampler.Get1D() < q) break;
+        beta /= 1 - q;
+      }
     }
     return L;
   }
