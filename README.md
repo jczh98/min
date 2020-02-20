@@ -1,7 +1,7 @@
 # min-ray
 ## Build
 - Install `vcpkg`
-- `vcpkg install tbb nlohmann-json fmt glfw3 spdlog eigen3 lodepng`
+- `vcpkg install tbb nlohmann-json fmt glfw3 spdlog gtest lodepng`
 - `git clone --recursive https://github.com/neverfelly/min-ray.git`
 - Typing command line
 ```shell script
@@ -11,5 +11,3 @@ cmake -DCMAKE_TOOLCHAIN_FILE=${vcpkg_root}/scripts/buildsystems/vcpkg.cmake ..
 make -j8
 ```
 ## Gallery
-CornellBox PathTracer 256spp
-![cbox](gallery/cornellbox_pt_256spp.png)
