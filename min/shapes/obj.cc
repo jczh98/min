@@ -180,19 +180,16 @@ class Obj : public Aggregate {
         positions, nullptr, normals, texcoords);
     MIN_DEBUG("Done. (V={}, F={})", n_vex, n_tri);
     std::shared_ptr<BSDF> bsdf = nullptr;
-    std::shared_ptr<Light> light = nullptr;
     if (json.contains("bsdf")) {
       bsdf = CreateInstance<BSDF>(json["bsdf"]["type"], GetProps(json["bsdf"]));
     } else {
       bsdf = CreateInstance<BSDF>("diffuse", {});
     }
-    if (json.contains("light")) {
-      light = CreateInstance<Light>(json["light"]["type"], GetProps(json["light"]));
-    }
     for (auto &shape : shapes) {
       shape->bsdf = bsdf;
-      shape->area_light = light;
-      if (light != nullptr) {
+      if (json.contains("light")) {
+        auto light = CreateInstance<Light>(json["light"]["type"], GetProps(json["light"]));
+        shape->area_light = light;
         light->SetShape(shape);
         lights.emplace_back(light);
       }

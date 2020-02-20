@@ -6,7 +6,7 @@ class FloatTexture : public Texture {
   Float value = 1;
  public:
   void initialize(const Json &json) override {
-    value = Value(json, "value", 1.0f);
+    value = Value(json, "value", 0.5f);
   }
   Spectrum Evaluate(const ShadingPoint &sp) const override {
     return Spectrum(value);
@@ -18,7 +18,7 @@ class ConstantTexture : public Texture {
   Spectrum value;
  public:
   void initialize(const Json &json) override {
-    value = Value(json, "value", Spectrum(0.5f));
+    value = Value(json, "value", Spectrum(0.f));
   }
   Spectrum Evaluate(const ShadingPoint &sp) const override {
     return value;

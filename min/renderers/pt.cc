@@ -31,28 +31,33 @@ class PathTracer : public SampleRenderer {
   Spectrum EstimateDirect(const std::shared_ptr<Scene> &scene, const SurfaceIntersection &it,
       const Point2f u_scattering, const Point2f u_light,
       const Light &light,Sampler &sampler, bool specular = false) const {
-    BSDF::Type bsdf_type = specular ? BSDF::Type::kAll : BSDF::Type::kAllButSpecular;
     Spectrum Ld(0);
+    Vector3 wi;
+    Float light_pdf = 0, scattering_pdf = 0;
     LightSample light_sample;
     VisibilityTester tester;
     light.SampleLi(u_light, it, light_sample, tester);
+    wi = light_sample.wi;
+    light_pdf = light_sample.pdf;
     Spectrum Li = light_sample.li;
-    Float scattering_pdf = 0;
-    if (light_sample.pdf > 0 && !IsBlack(Li)) {
+    if (light_pdf > 0 && !IsBlack(Li)) {
       // Compute BSDF
       Spectrum f;
-      f = it.bsdf->Evaluate(it.sp, it.ToLocal(it.wo), it.ToLocal(light_sample.wi)) * AbsDot(light_sample.wi, it.shading_frame.n);
-      scattering_pdf = it.bsdf->EvaluatePdf(it.sp, it.ToLocal(it.wo), it.ToLocal(light_sample.wi));
+      f = it.bsdf->Evaluate(it.sp, it.ToLocal(it.wo), it.ToLocal(wi))
+          * AbsDot(wi, it.shading_frame.n);
+      scattering_pdf = it.bsdf->EvaluatePdf(it.sp, it.ToLocal(it.wo), it.ToLocal(wi));
       if (!IsBlack(f)) {
         if (!tester.Unoccluded(scene)) {
+          // TODO: Current visibility makes scene darker and I don't know how to fix it right now.
           Li = Spectrum(0);
         }
+        // Light contribution
         if (!IsBlack(Li)) {
           if (IsDeltaLight(light.flags)) {
             Ld += f * Li / light_sample.pdf;
           } else {
-            Float weight = PowerHeuristic(1, light_sample.pdf, 1, scattering_pdf);
-            Ld += f * Li * weight / light_sample.pdf;
+            Float weight = PowerHeuristic(1, light_pdf, 1, scattering_pdf);
+            Ld += f * Li* weight / light_pdf;
           }
         }
       }
@@ -65,27 +70,29 @@ class PathTracer : public SampleRenderer {
       BSDFSample bsdf_sample;
       bsdf_sample.wo = it.ToLocal(it.wo);
       it.bsdf->Sample(u_scattering, it.sp, bsdf_sample);
-      f = bsdf_sample.f * AbsDot(it.ToWorld(bsdf_sample.wi), it.shading_frame.n);
+      wi = it.ToWorld(bsdf_sample.wi);
+      scattering_pdf = bsdf_sample.pdf;
+      f = bsdf_sample.f * AbsDot(wi, it.shading_frame.n);
       sampled_specular = (bsdf_sample.sampled_type & BSDF::Type::kSpecular) != 0;
-      if (!IsBlack(f) && bsdf_sample.pdf > 0) {
+      if (!IsBlack(f) && scattering_pdf > 0) {
         Float weight = 1;
         if (!sampled_specular) {
-          Float light_pdf = light.PdfLi(it, it.ToWorld(bsdf_sample.wi));
+          Float light_pdf = light.PdfLi(it, wi);
           if (light_pdf == 0) return Ld;
-          weight = PowerHeuristic(1, bsdf_sample.pdf, 1, light_pdf);
+          weight = PowerHeuristic(1, scattering_pdf, 1, light_pdf);
         }
         SurfaceIntersection light_isect;
-        Ray ray = it.SpawnRay(it.ToWorld(bsdf_sample.wi));
+        Ray ray = it.SpawnRay(wi);
         bool found_intersection = scene->Intersect(ray, light_isect);
         Spectrum Li(0);
         if (found_intersection) {
           if (light_isect.shape->area_light.get() == &light) {
-            Li = light.L(light_isect, -it.ToWorld(bsdf_sample.wi));
+            Li = light.L(light_isect, -wi);
           }
         } else {
           Li = light.Le(ray);
         }
-        if (!IsBlack(Li)) Ld += f * Li * weight / bsdf_sample.pdf;
+        if (!IsBlack(Li)) Ld += f * Li * weight / scattering_pdf;
       }
     }
     return Ld;

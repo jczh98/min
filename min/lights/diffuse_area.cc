@@ -22,7 +22,7 @@ class DiffuseAreaLight : public Light {
     surface_sample.ref = isect.p;
     shape->Sample(u, surface_sample);
     if (surface_sample.pdf == 0 || (surface_sample.p - isect.p).LengthSquared() == 0) {
-      surface_sample.pdf = 0;
+      sample.li = Spectrum(0);
       sample.pdf = 0;
       return;
     }

@@ -220,6 +220,7 @@ class Triangle : public Shape {
     Vector3 wi = sample.p - sample.ref;
     if (wi.LengthSquared() == 0) sample.pdf = 0;
     else {
+      wi = Normalize(wi);
       sample.pdf *= (sample.ref - sample.p).LengthSquared() / AbsDot(sample.normal, -wi);
       if (std::isinf(sample.pdf)) sample.pdf = 0.0f;
     }
