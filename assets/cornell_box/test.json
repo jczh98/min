@@ -5,7 +5,7 @@
       "sampler": {
         "type": "random",
         "props": {
-          "spp": 10
+          "spp": 1
         }
       }
     }
@@ -93,7 +93,7 @@
       "props": {
         "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/sphere1.obj",
         "material": {
-          "type": "diffuse",
+          "type": "mirror",
           "props": {
             "spectrum": {
               "type": "constant",
