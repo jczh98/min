@@ -1,5 +1,5 @@
 #include <min/visual/aggregate.h>
-#include <min/visual/bsdf.h>
+#include <min/visual/material.h>
 #include <min/visual/light.h>
 #include <fstream>
 #include <sstream>
@@ -179,14 +179,14 @@ class Obj : public Aggregate {
     auto shapes = CreateTriangleMesh(Transform(), Transform(), n_tri, vertex_indices, n_vex,
         positions, nullptr, normals, texcoords);
     MIN_DEBUG("Done. (V={}, F={})", n_vex, n_tri);
-    std::shared_ptr<BSDF> bsdf = nullptr;
-    if (json.contains("bsdf")) {
-      bsdf = CreateInstance<BSDF>(json["bsdf"]["type"], GetProps(json["bsdf"]));
+    std::shared_ptr<Material> material = nullptr;
+    if (json.contains("material")) {
+      material = CreateInstance<Material>(json["material"]["type"], GetProps(json["material"]));
     } else {
-      bsdf = CreateInstance<BSDF>("diffuse", {});
+      material = CreateInstance<Material>("diffuse", {});
     }
     for (auto &shape : shapes) {
-      shape->bsdf = bsdf;
+      shape->material = material;
       if (json.contains("light")) {
         auto light = CreateInstance<Light>(json["light"]["type"], GetProps(json["light"]));
         shape->area_light = light;

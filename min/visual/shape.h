@@ -4,7 +4,7 @@
 #include "geometry.h"
 #include "transform.h"
 #include "light.h"
-#include "bsdf.h"
+#include "material.h"
 
 namespace min {
 
@@ -20,7 +20,7 @@ class Shape : public Unit {
   Transform object2world, world2object;
  public:
   std::shared_ptr<Light> area_light = nullptr;
-  std::shared_ptr<BSDF> bsdf = nullptr;
+  std::shared_ptr<Material> material = nullptr;
   Shape(const Transform &object2world, const Transform &world2object) : object2world(object2world), world2object(world2object) {}
   virtual Bounds3f WorldBound() const = 0;
   virtual Bounds3f ObjectBound() const = 0;

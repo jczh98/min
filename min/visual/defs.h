@@ -36,6 +36,21 @@ class BSDFSample;
 namespace fs = std::filesystem;
 
 static constexpr Float kShadowEpsilon = 0.0001f;
+
+#ifndef HAVE_HEX_FP_CONSTANTS
+static const double kDoubleOneMinusEpsilon = 0.99999999999999989;
+static const float kFloatOneMinusEpsilon = 0.99999994;
+#else
+static const double kDoubleOneMinusEpsilon = 0x1.fffffffffffffp-1;
+static const float kFloatOneMinusEpsilon = 0x1.fffffep-1;
+#endif
+
+#ifdef MIN_USE_DOUBLE
+static const Float kOneMinusEpsilon = kDoubleOneMinusEpsilon;
+#else
+static const Float kOneMinusEpsilon = kFloatOneMinusEpsilon;
+#endif
+
 }
 
 

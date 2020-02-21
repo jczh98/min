@@ -196,7 +196,6 @@ class Triangle : public Shape {
       return false;
     else if (det > 0 && (tScaled <= 0 || tScaled > ray.tmax * det))
       return false;
-    // Fill in _SurfaceInteraction_ from triangle hit
     return true;
   }
   Float Area() const override {

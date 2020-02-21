@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-namespace min::ray {
+namespace min {
 
 namespace fs = std::filesystem;
 

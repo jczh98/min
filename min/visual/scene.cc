@@ -8,7 +8,6 @@ void Scene::initialize(const Json &json) {
 
 bool Scene::Intersect(const Ray &ray, SurfaceIntersection &isect) const {
   if (accelerator->Intersect(ray, isect)) {
-    isect.bsdf = isect.shape->bsdf.get();
     return true;
   }
   return false;

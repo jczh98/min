@@ -31,6 +31,7 @@ class PathTracer : public SampleRenderer {
   Spectrum EstimateDirect(const std::shared_ptr<Scene> &scene, const SurfaceIntersection &it,
       const Point2f u_scattering, const Point2f u_light,
       const Light &light,Sampler &sampler, bool specular = false) const {
+    BxDF::Type bsdf_flags = specular ? BxDF::Type::kAll : BxDF::Type::kAllButSpecular;
     Spectrum Ld(0);
     Vector3 wi;
     Float light_pdf = 0, scattering_pdf = 0;
@@ -43,12 +44,11 @@ class PathTracer : public SampleRenderer {
     if (light_pdf > 0 && !IsBlack(Li)) {
       // Compute BSDF
       Spectrum f;
-      f = it.bsdf->Evaluate(it.sp, it.ToLocal(it.wo), it.ToLocal(wi))
+      f = it.bsdf->Evaluate(it.wo, wi, bsdf_flags)
           * AbsDot(wi, it.shading_frame.n);
-      scattering_pdf = it.bsdf->EvaluatePdf(it.sp, it.ToLocal(it.wo), it.ToLocal(wi));
+      scattering_pdf = it.bsdf->Pdf(it.wo, wi, bsdf_flags);
       if (!IsBlack(f)) {
         if (!tester.Unoccluded(scene)) {
-          // TODO: Current visibility makes scene darker and I don't know how to fix it right now.
           Li = Spectrum(0);
         }
         // Light contribution
@@ -68,12 +68,11 @@ class PathTracer : public SampleRenderer {
       Spectrum f;
       bool sampled_specular = false;
       BSDFSample bsdf_sample;
-      bsdf_sample.wo = it.ToLocal(it.wo);
-      it.bsdf->Sample(u_scattering, it.sp, bsdf_sample);
-      wi = it.ToWorld(bsdf_sample.wi);
+      it.bsdf->Sample(u_scattering, it.wo, bsdf_sample, bsdf_flags);
+      wi = bsdf_sample.wi;
       scattering_pdf = bsdf_sample.pdf;
       f = bsdf_sample.f * AbsDot(wi, it.shading_frame.n);
-      sampled_specular = (bsdf_sample.sampled_type & BSDF::Type::kSpecular) != 0;
+      sampled_specular = (bsdf_sample.sampled_type & BxDF::Type::kSpecular) != 0;
       if (!IsBlack(f) && scattering_pdf > 0) {
         Float weight = 1;
         if (!sampled_specular) {
@@ -116,6 +115,7 @@ class PathTracer : public SampleRenderer {
         }
       }
       if (!found_intersection || depth >= max_depth) break;
+      isect.ComputeScatteringEvents();
       if (!isect.bsdf) {
         ray = isect.SpawnRay(ray.d);
         depth--;
@@ -123,7 +123,7 @@ class PathTracer : public SampleRenderer {
       }
       const Distribution1D *distrib = nullptr;
       // Sample from lights
-      if (!isect.bsdf->IsSpecular()) {
+      if (isect.bsdf->NumComponents(BxDF::Type(BxDF::Type::kAllButSpecular)) > 0) {
         Spectrum Ld = beta * UniformSampleOneLight(isect, scene, sampler, distrib);
         L += Ld;
       }
@@ -131,14 +131,13 @@ class PathTracer : public SampleRenderer {
       Vector3 wo = -ray.d, wi;
       Float pdf;
       BSDFSample bsdf_sample;
-      bsdf_sample.wo = isect.ToLocal(wo);
-      isect.bsdf->Sample(sampler.Get2D(), isect.sp, bsdf_sample);
+      isect.bsdf->Sample(sampler.Get2D(), isect.wo, bsdf_sample);
       Spectrum f = bsdf_sample.f;
-      wi = isect.ToWorld(bsdf_sample.wi);
       pdf = bsdf_sample.pdf;
+      wi = bsdf_sample.wi;
       if (IsBlack(f) || pdf == 0.0f) break;
       beta *= f * AbsDot(wi, isect.shading_frame.n) / pdf;
-      specular = (bsdf_sample.sampled_type & BSDF::Type::kSpecular) != 0;
+      specular = (bsdf_sample.sampled_type & BxDF::Type::kSpecular) != 0;
       ray = isect.SpawnRay(wi);
 
       // Russian roulette

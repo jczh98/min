@@ -5,7 +5,7 @@
       "sampler": {
         "type": "random",
         "props": {
-          "spp": 1
+          "spp": 10
         }
       }
     }
@@ -41,7 +41,7 @@
       "type": "obj",
       "props": {
         "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/walls.obj",
-        "bsdf": {
+        "material": {
           "type": "diffuse",
           "props": {
             "spectrum": {
@@ -58,7 +58,7 @@
       "type": "obj",
       "props": {
         "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/rightwall.obj",
-        "bsdf": {
+        "material": {
           "type": "diffuse",
           "props": {
             "spectrum": {
@@ -75,7 +75,7 @@
       "type": "obj",
       "props": {
         "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/leftwall.obj",
-        "bsdf": {
+        "material": {
           "type": "diffuse",
           "props": {
             "spectrum": {
@@ -92,7 +92,7 @@
       "type": "obj",
       "props": {
         "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/sphere1.obj",
-        "bsdf": {
+        "material": {
           "type": "diffuse",
           "props": {
             "spectrum": {
@@ -109,7 +109,7 @@
       "type": "obj",
       "props": {
         "filename": "E:\\work\\min-ray\\assets\\cornell_box\\meshes/sphere2.obj",
-        "bsdf": {
+        "material": {
           "type": "diffuse",
           "props": {
             "spectrum": {
