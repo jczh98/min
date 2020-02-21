@@ -3,6 +3,7 @@
 #include <min/common/util.h>
 #include <min/common/interface.h>
 #include <min/common/json.h>
+#include <min/common/resolver.h>
 #include <min/math/math.h>
 #include <filesystem>
 
@@ -50,6 +51,11 @@ static const Float kOneMinusEpsilon = kDoubleOneMinusEpsilon;
 #else
 static const Float kOneMinusEpsilon = kFloatOneMinusEpsilon;
 #endif
+
+inline Resolver *GetFileResolver() {
+  static Resolver *resolver = new Resolver;
+  return resolver;
+}
 
 }
 

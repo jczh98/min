@@ -9,9 +9,9 @@ void Film::initialize(const Json &json) {
   auto scal = Value(json, "scale", 1.0f);
   auto diagona = Value(json, "diagonal", 35.0f);
   auto max_sample_luminanc = Value(json, "max_sample_luminance", kInfinity);
-  auto filenam = Value<std::string>(json, "filename", "");
+  auto filenam = GetFileResolver()->Resolve(Value<std::string>(json, "filename", "out.png"));
   auto filt = CreateInstanceUnique<Filter>(json["filter"]["type"], GetProps(json["filter"]));
-  Initialize(resolution, crop_window, std::move(filt), diagona, filenam, scal, max_sample_luminanc);
+  Initialize(resolution, crop_window, std::move(filt), diagona, filenam.string(), scal, max_sample_luminanc);
 }
 
 Bounds2i Film::GetSampleBounds() const {

@@ -80,7 +80,7 @@ class Obj : public Aggregate {
  public:
   void initialize(const Json &json) override {
     typedef std::unordered_map<OBJVertex, uint32_t, OBJVertexHash> VertexMap;
-    fs::path filename = json.at("filename").get<std::string>();
+    fs::path filename = GetFileResolver()->Resolve(json.at("filename").get<std::string>());
     std::ifstream is(filename.string());
     if (is.fail())
     MIN_ERROR("Unable to open OBJ file {}!", filename.string());

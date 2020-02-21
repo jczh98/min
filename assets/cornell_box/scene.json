@@ -1,47 +1,55 @@
 {
-  "renderer": {
-    "type": "blockwise",
+  "renderer":{
+    "type": "pt",
     "props": {
-      "integrator": {
-        "type": "path"
-      },
-      "spp": 1
+      "sampler": {
+        "type": "random",
+        "props": {
+          "spp": 1
+        }
+      }
     }
-  },
-  "accelerator": {
-    "type": "bvh"
   },
   "camera": {
     "type": "perspective",
     "props": {
-      "fov": 27.7856,
+      "fov": 20.7856,
+      "film": {
+        "filename": "scene.png",
+        "resolution": [800, 600],
+        "filter": {
+          "type": "box"
+        }
+      },
       "transform": {
-        "scale": [-1,1,1],
         "lookat": {
           "target": [0, 0.893051, 4.41198],
           "origin": [0, 0.919769, 5.41159],
           "up": [0, 1, 0]
         }
-      },
-      "height": 600,
-      "width": 800,
-      "filter": {
-        "type": "box"
       }
     }
   },
-  "sampler": {
-    "type": "independent"
+  "accelerator": {
+    "type": "bvh",
+    "props": {
+      "maxnodeprims": 4
+    }
   },
-  "meshes": [
+  "shapes": [
     {
       "type": "obj",
       "props": {
         "filename": "meshes/walls.obj",
-        "bsdf": {
+        "material": {
           "type": "diffuse",
           "props": {
-            "color": [0.725,0.71,0.68]
+            "spectrum": {
+              "type": "constant",
+              "props": {
+                "value": [0.725,0.71,0.68]
+              }
+            }
           }
         }
       }
@@ -50,10 +58,15 @@
       "type": "obj",
       "props": {
         "filename": "meshes/rightwall.obj",
-        "bsdf": {
+        "material": {
           "type": "diffuse",
           "props": {
-            "color": [0.161,0.133,0.427]
+            "spectrum": {
+              "type": "constant",
+              "props": {
+                "value": [0.161,0.133,0.427]
+              }
+            }
           }
         }
       }
@@ -62,10 +75,15 @@
       "type": "obj",
       "props": {
         "filename": "meshes/leftwall.obj",
-        "bsdf": {
+        "material": {
           "type": "diffuse",
           "props": {
-            "color": [0.630,0.065,0.05]
+            "spectrum": {
+              "type": "constant",
+              "props": {
+                "value": [0.630,0.065,0.05]
+              }
+            }
           }
         }
       }
@@ -74,10 +92,15 @@
       "type": "obj",
       "props": {
         "filename": "meshes/sphere1.obj",
-        "bsdf": {
-          "type": "diffuse",
+        "material": {
+          "type": "mirror",
           "props": {
-            "color": [0.630,0.065,0.05]
+            "spectrum": {
+              "type": "constant",
+              "props": {
+                "value": [0.630,0.065,0.05]
+              }
+            }
           }
         }
       }
@@ -86,10 +109,15 @@
       "type": "obj",
       "props": {
         "filename": "meshes/sphere2.obj",
-        "bsdf": {
+        "material": {
           "type": "diffuse",
           "props": {
-            "color": [0.630,0.065,0.05]
+            "spectrum": {
+              "type": "constant",
+              "props": {
+                "value": [0.630,0.065,0.05]
+              }
+            }
           }
         }
       }
@@ -99,9 +127,14 @@
       "props": {
         "filename": "meshes/light.obj",
         "light": {
-          "type": "area",
+          "type": "diffuse_area",
           "props": {
-            "radiance": [15,15,15]
+            "radiance": {
+              "type": "constant",
+              "props": {
+                "value": [15,15,15]
+              }
+            }
           }
         }
       }
