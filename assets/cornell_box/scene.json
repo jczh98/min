@@ -5,7 +5,7 @@
       "sampler": {
         "type": "random",
         "props": {
-          "spp": 1
+          "spp": 10
         }
       }
     }
@@ -132,7 +132,7 @@
             "radiance": {
               "type": "constant",
               "props": {
-                "value": [15,15,15]
+                "value": [40,40,40]
               }
             }
           }
