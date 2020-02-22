@@ -417,6 +417,12 @@ MIN_FORCE_INLINE T Dot(const VectorND<dim, T, ISE> &a,
 }
 
 template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE VectorND<dim, T, ISE> Faceforward(const VectorND<dim, T, ISE> &a,
+                       const VectorND<dim, T, ISE> &b) {
+  return (Dot(a, b) < 0.f) ? -a : a;
+}
+
+template <int dim, typename T, InstSetExt ISE>
 MIN_FORCE_INLINE T AbsDot(const VectorND<dim, T, ISE> &a,
                        const VectorND<dim, T, ISE> &b) {
   return std::abs(a.Dot(b));

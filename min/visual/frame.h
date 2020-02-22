@@ -42,7 +42,7 @@ struct Frame {
   }
 
   static float SinTheta(const Vector3f &v) {
-    float temp = SinTheta2(v);
+    float temp = Sin2Theta(v);
     if (temp <= 0.0f)
       return 0.0f;
     return std::sqrt(temp);
@@ -55,8 +55,12 @@ struct Frame {
     return std::sqrt(temp) / v.z;
   }
 
-  static float SinTheta2(const Vector3f &v) {
-    return 1.0f - v.z * v.z;
+  static float Sin2Theta(const Vector3f &v) {
+    return std::max<Float>(0.f, 1.0f - v.z * v.z);
+  }
+
+  static float Cos2Theta(const Vector3f &v) {
+    return v.z * v.z;
   }
 
   static float SinPhi(const Vector3f &v) {
@@ -73,12 +77,12 @@ struct Frame {
     return Clamp(v.x / sinTheta, -1.0f, 1.0f);
   }
 
-  static float SinPhi2(const Vector3f &v) {
-    return Clamp(v.y * v.y / SinTheta2(v), 0.0f, 1.0f);
+  static float Sin2Phi(const Vector3f &v) {
+    return Clamp(v.y * v.y / Sin2Theta(v), 0.0f, 1.0f);
   }
 
-  static float CosPhi2(const Vector3f &v) {
-    return Clamp(v.x * v.x / SinTheta2(v), 0.0f, 1.0f);
+  static float Cos2Phi(const Vector3f &v) {
+    return Clamp(v.x * v.x / Sin2Theta(v), 0.0f, 1.0f);
   }
 
   bool operator==(const Frame &frame) const {
