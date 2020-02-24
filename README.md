@@ -11,6 +11,6 @@ cmake -DCMAKE_TOOLCHAIN_FILE=${vcpkg_root}/scripts/buildsystems/vcpkg.cmake ..
 make -j8
 ```
 ## Gallery
-CornellBox PathTracer 256spp
+CornellBox PathTracer 128spp
 ![cbox](gallery/cornellbox_pt_128spp.png)
 
