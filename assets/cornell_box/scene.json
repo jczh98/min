@@ -116,13 +116,13 @@
             "roughness_x": {
               "type": "float",
               "props": {
-                "value": 0
+                "value": 0.5
               }
             },
             "roughness_y": {
               "type": "float",
               "props": {
-                "value": 0
+                "value": 0.5
               }
             },
             "spectrum": {
