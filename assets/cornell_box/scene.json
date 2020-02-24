@@ -5,7 +5,7 @@
       "sampler": {
         "type": "random",
         "props": {
-          "spp": 10
+          "spp": 1
         }
       }
     }
@@ -93,8 +93,38 @@
       "props": {
         "filename": "meshes/sphere1.obj",
         "material": {
-          "type": "mirror",
+          "type": "glass",
           "props": {
+            "kr": {
+              "type": "constant",
+              "props": {
+                "value": [1,1,1]
+              }
+            },
+            "kt": {
+              "type": "constant",
+              "props": {
+                "value": [1,1,1]
+              }
+            },
+            "eta": {
+              "type": "float",
+              "props": {
+                "value": 1.5
+              }
+            },
+            "roughness_x": {
+              "type": "float",
+              "props": {
+                "value": 0
+              }
+            },
+            "roughness_y": {
+              "type": "float",
+              "props": {
+                "value": 0
+              }
+            },
             "spectrum": {
               "type": "constant",
               "props": {
@@ -132,7 +162,7 @@
             "radiance": {
               "type": "constant",
               "props": {
-                "value": [40,40,40]
+                "value": [15,15,15]
               }
             }
           }

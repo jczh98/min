@@ -127,12 +127,46 @@ class Triangle : public Shape {
     Float b2 = e2 * invDet;
     Float t = tScaled * invDet;
 
+    // Ensure that computed triangle $t$ is conservatively greater than zero
+
+    // Compute $\delta_z$ term for triangle $t$ error bounds
+    Float maxZt = MaxComp(Abs(Vector3f(p0t.z, p1t.z, p2t.z)));
+    Float deltaZ = Gamma(3) * maxZt;
+
+    // Compute $\delta_x$ and $\delta_y$ terms for triangle $t$ error bounds
+    Float maxXt = MaxComp(Abs(Vector3f(p0t.x, p1t.x, p2t.x)));
+    Float maxYt = MaxComp(Abs(Vector3f(p0t.y, p1t.y, p2t.y)));
+    Float deltaX = Gamma(5) * (maxXt + maxZt);
+    Float deltaY = Gamma(5) * (maxYt + maxZt);
+
+    // Compute $\delta_e$ term for triangle $t$ error bounds
+    Float deltaE =
+        2 * (Gamma(2) * maxXt * maxYt + deltaY * maxXt + deltaX * maxYt);
+
+    // Compute $\delta_t$ term for triangle $t$ error bounds and check _t_
+    Float maxE = MaxComp(Abs(Vector3f(e0, e1, e2)));
+    Float deltaT = 3 *
+        (Gamma(3) * maxE * maxZt + deltaE * maxZt + deltaZ * maxE) *
+        std::abs(invDet);
+    if (t <= deltaT) return false;
+
     Point2f uv[3];
     GetUVs(uv);
+
+    // Compute error bounds for triangle intersection
+    Float xAbsSum =
+        (std::abs(b0 * p0.x) + std::abs(b1 * p1.x) + std::abs(b2 * p2.x));
+    Float yAbsSum =
+        (std::abs(b0 * p0.y) + std::abs(b1 * p1.y) + std::abs(b2 * p2.y));
+    Float zAbsSum =
+        (std::abs(b0 * p0.z) + std::abs(b1 * p1.z) + std::abs(b2 * p2.z));
+    Vector3f pError = Gamma(7) * Vector3f(xAbsSum, yAbsSum, zAbsSum);
+
     Point3f pHit = b0 * p0 + b1 * p1 + b2 * p2;
     Point2f uvHit = b0 * uv[0] + b1 * uv[1] + b2 * uv[2];
     // Fill in _SurfaceInteraction_ from triangle hit
     isect.p = pHit;
+    isect.error = pError;
     isect.wo = -ray.d;
     isect.time = ray.time;
     isect.shape = this;
@@ -149,6 +183,7 @@ class Triangle : public Shape {
       } else {
         isect.shading_frame = isect.geo_frame;
       }
+      isect.geo_frame = Frame(Faceforward(isect.geo_frame.n, isect.shading_frame.n));
     } else {
       isect.shading_frame = isect.geo_frame;
     }
@@ -196,6 +231,35 @@ class Triangle : public Shape {
       return false;
     else if (det > 0 && (tScaled <= 0 || tScaled > ray.tmax * det))
       return false;
+    // Compute barycentric coordinates and $t$ value for triangle intersection
+    Float invDet = 1 / det;
+    Float b0 = e0 * invDet;
+    Float b1 = e1 * invDet;
+    Float b2 = e2 * invDet;
+    Float t = tScaled * invDet;
+
+    // Ensure that computed triangle $t$ is conservatively greater than zero
+
+    // Compute $\delta_z$ term for triangle $t$ error bounds
+    Float maxZt = MaxComp(Abs(Vector3f(p0t.z, p1t.z, p2t.z)));
+    Float deltaZ = Gamma(3) * maxZt;
+
+    // Compute $\delta_x$ and $\delta_y$ terms for triangle $t$ error bounds
+    Float maxXt = MaxComp(Abs(Vector3f(p0t.x, p1t.x, p2t.x)));
+    Float maxYt = MaxComp(Abs(Vector3f(p0t.y, p1t.y, p2t.y)));
+    Float deltaX = Gamma(5) * (maxXt + maxZt);
+    Float deltaY = Gamma(5) * (maxYt + maxZt);
+
+    // Compute $\delta_e$ term for triangle $t$ error bounds
+    Float deltaE =
+        2 * (Gamma(2) * maxXt * maxYt + deltaY * maxXt + deltaX * maxYt);
+
+    // Compute $\delta_t$ term for triangle $t$ error bounds and check _t_
+    Float maxE = MaxComp(Abs(Vector3f(e0, e1, e2)));
+    Float deltaT = 3 *
+        (Gamma(3) * maxE * maxZt + deltaE * maxZt + deltaZ * maxE) *
+        std::abs(invDet);
+    if (t <= deltaT) return false;
     return true;
   }
   Float Area() const override {

@@ -102,6 +102,7 @@ class PathTracer : public SampleRenderer {
     Ray ray(r);
     bool specular = false;
     int depth;
+    Float eta_scale = 1.0f;
     for (depth = 0;;++depth) {
       SurfaceIntersection isect;
       bool found_intersection = scene->Intersect(ray, isect);
@@ -138,10 +139,13 @@ class PathTracer : public SampleRenderer {
       if (IsBlack(f) || pdf == 0.0f) break;
       beta *= f * AbsDot(wi, isect.shading_frame.n) / pdf;
       specular = (bsdf_sample.sampled_type & BxDF::Type::kSpecular) != 0;
+      if ((bsdf_sample.sampled_type & BxDF::Type::kSpecular) && (bsdf_sample.sampled_type & BxDF::Type::kTransmission)) {
+        Float eta = isect.bsdf->eta;
+        eta_scale *= (Dot(wo, isect.geo_frame.n) > 0) ? (eta * eta) : 1 / (eta * eta);
+      }
       ray = isect.SpawnRay(wi);
-
       // Russian roulette
-      Spectrum rr = beta;
+      Spectrum rr = beta * eta_scale;
       if (beta.MaxComp() < threshold && depth > 3) {
         Float q = std::max((Float)0.05, 1 - rr.MaxComp());
         if (sampler.Get1D() < q) break;

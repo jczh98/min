@@ -41,6 +41,10 @@ struct Frame {
     return v.z;
   }
 
+  static float AbsCosTheta(const Vector3f &v) {
+    return std::abs(v.z);
+  }
+
   static float SinTheta(const Vector3f &v) {
     float temp = Sin2Theta(v);
     if (temp <= 0.0f)

@@ -11,18 +11,28 @@ class Intersection {
  public:
   Point3 p;
   Float time;
+  Vector3 error;
   Vector3 wo;
   ShadingPoint sp;
   Frame geo_frame;
 
   Ray SpawnRay(const Vector3f &d) const {
-    return Ray(p, d, kInfinity, time);
+    Point3 origin = OffsetRayOrigin(p, error, geo_frame.n, d);
+    return Ray(origin, d, kInfinity, time);
   }
 
   Ray SpwanRayTo(const Point3 &p2) const {
-    return Ray(p, p2 - p, 1 - kShadowEpsilon, time);
+    Vector3 d = p2 - p;
+    Point3 origin = OffsetRayOrigin(p, error, geo_frame.n, d);
+    return Ray(origin, d, 1 - kShadowEpsilon, time);
   }
 
+  Ray SpwanRayTo(const Intersection &it) const {
+    Point3 origin = OffsetRayOrigin(p, error, geo_frame.n, it.p - p);
+    Point3 target = OffsetRayOrigin(it.p, it.error, it.geo_frame.n, origin - it.p);
+    Vector3 d = target - origin;
+    return Ray(origin, d, 1 - kShadowEpsilon, time);
+  }
 };
 
 class SurfaceIntersection : public Intersection {

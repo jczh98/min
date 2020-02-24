@@ -35,7 +35,7 @@ struct BSDFSample {
 
 class BSDF {
  public:
-  BSDF(const Frame geo_frame, const Frame shading_frame) : geo_frame(geo_frame), shading_frame(shading_frame) {}
+  BSDF(const Frame geo_frame, const Frame shading_frame, Float eta = 1.0f) : geo_frame(geo_frame), shading_frame(shading_frame), eta(eta) {}
   void Add(const std::shared_ptr<BxDF> &b) {
     MIN_ASSERT(num_bxdfs <= kMaxBxDFs);
     num_bxdfs++;
@@ -93,9 +93,10 @@ class BSDF {
       sample.f = Spectrum(0);
       return;
     }
+    sample.pdf = 0.f;
     sample.sampled_type = bxdf->type;
     bxdf->Sample(u_remapped, wo, sample);
-    if (sample.pdf == 0) {
+    if (sample.pdf == 0.f) {
       sample.sampled_type = BxDF::Type::kNone;
       sample.f = Spectrum(0);
       return;
@@ -111,7 +112,7 @@ class BSDF {
       }
     }
     if (matching_comps > 1) sample.pdf /= matching_comps;
-    if (!bxdf->type & BxDF::Type::kSpecular) {
+    if (!(bxdf->type & BxDF::Type::kSpecular)) {
       bool reflect = Dot(sample.wi, geo_frame.n) * Dot(wow, geo_frame.n) > 0;
       sample.f = Spectrum(0);
       for (int i = 0; i < num_bxdfs; i++) {
@@ -138,6 +139,7 @@ class BSDF {
     Float v = matching_comps > 0 ? pdf / matching_comps : 0;
     return v;
   }
+  const Float eta;
  private:
   const Frame shading_frame, geo_frame;
   int num_bxdfs = 0;

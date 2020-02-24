@@ -374,6 +374,18 @@ struct VectorND : public VectorNDBase<dim__, T, ISE> {
 
 template<int dim, typename T, InstSetExt ISE>
 MIN_FORCE_INLINE VectorND<dim, T, ISE> operator
++(T a, const VectorND<dim, T, ISE> &v) {
+  return VectorND<dim, T, ISE>(a) + v;
+}
+
+template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE VectorND<dim, T, ISE> operator+(const VectorND<dim, T, ISE> &v,
+                                                 T a) {
+  return a + v;
+}
+
+template<int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE VectorND<dim, T, ISE> operator
 *(T a, const VectorND<dim, T, ISE> &v) {
   return VectorND<dim, T, ISE>(a) * v;
 }
@@ -502,6 +514,16 @@ template <int dim, typename T, InstSetExt ISE>
 MIN_FORCE_INLINE T MinComp(
     const VectorND<dim, T, ISE> &a) {
   return a.MinComp();
+}
+
+template <int dim, typename T, InstSetExt ISE>
+MIN_FORCE_INLINE VectorND<dim, T, ISE> Sqrt(
+    const VectorND<dim, T, ISE> &a) {
+  VectorND<dim, T, ISE> ret;
+  for (int i = 0; i < dim; i++) {
+    ret[i] = std::sqrt(a[i]);
+  }
+  return ret;
 }
 
 template <typename T, int dim, InstSetExt ISE = kDefaultInstructionSet>
