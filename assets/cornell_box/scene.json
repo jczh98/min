@@ -143,8 +143,9 @@
           "type": "diffuse",
           "props": {
             "spectrum": {
-              "type": "constant",
+              "type": "image",
               "props": {
+                "filename": "texture.png",
                 "value": [0.630,0.065,0.05]
               }
             }

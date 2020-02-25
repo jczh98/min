@@ -57,6 +57,7 @@ class Triangle : public Shape {
       uv[0] = Point2(0, 0);
       uv[1] = Point2(1, 0);
       uv[2] = Point2(1, 1);
+      std::cout << uv[0].ToString() << std::endl;
     }
   }
  public:

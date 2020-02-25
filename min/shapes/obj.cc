@@ -175,7 +175,9 @@ class Obj : public Aggregate {
       for (uint32_t i = 0; i < local_vertices.size(); ++i)
         texcoords[i] = local_texcoords.at(local_vertices[i].uv - 1);
     }
-
+    if (filename.string().find("leftwall") != std::string::npos) {
+      std::cout << (texcoords == nullptr) << std::endl;
+    }
     auto shapes = CreateTriangleMesh(Transform(), Transform(), n_tri, vertex_indices, n_vex,
         positions, nullptr, normals, texcoords);
     MIN_DEBUG("Done. (V={}, F={})", n_vex, n_tri);

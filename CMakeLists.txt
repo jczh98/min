@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.10)
 
-project(min-ray)
+project(min)
 
 enable_testing()
 
@@ -60,7 +60,7 @@ file(GLOB IMGUI_SRC
         external/imgui/*.h
         )
 
-set(MIN_RAY_LIBS
+set(MIN_LIBS
         glad glfw
         fmt::fmt
         nlohmann_json nlohmann_json::nlohmann_json
@@ -70,24 +70,24 @@ set(MIN_RAY_LIBS
         TBB::tbb
         )
 
-file(GLOB MIN_RAY_CORE
+file(GLOB MIN_CORE
         min/*/*.h
         min/*/*.cc
         )
 
-add_executable(min-ray
-        ${MIN_RAY_CORE}
+add_executable(min
+        ${MIN_CORE}
         ${IMGUI_SRC}
         min/main.cc
         )
 
-target_link_libraries(min-ray
+target_link_libraries(min
         PRIVATE
-        ${MIN_RAY_LIBS})
+        ${MIN_LIBS})
 
 # Tests
 add_executable(tests min/tests.cc)
 add_test(tests tests)
 target_link_libraries(tests
         PRIVATE
-        ${MIN_RAY_LIBS})
+        ${MIN_LIBS})
