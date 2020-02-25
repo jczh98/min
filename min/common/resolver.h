@@ -29,6 +29,12 @@ class Resolver {
   const fs::path &operator[](size_t index) const { return paths[index]; }
   fs::path &operator[](size_t index) { return paths[index]; }
 
+  // We assume that current queue head is our working directory
+  // and we use this function to generate arbitrary path in current work path
+  fs::path ConcateWork(const fs::path &path) const {
+    return *paths.begin() / path;
+  }
+
   fs::path Resolve(const fs::path &path) const {
     for (const_iterator it = paths.begin(); it != paths.end(); it++) {
       fs::path combined = *it / path;

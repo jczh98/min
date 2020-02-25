@@ -34,10 +34,12 @@ struct LightRaySample {
 };
 
 class Light : public Unit{
+ protected:
   Transform light2world, world2light;
  public:
   int flags;
   int n_samples;
+  virtual void Preprocess(const Scene &scene) {}
   virtual void SampleLi(const Point2f &u, const Intersection &isect, LightSample &sample, VisibilityTester &tester) const = 0;
   virtual Float PdfLi(const Intersection &isect, const Vector3 &wi) const = 0;
   virtual void SampleLe(const Point2f &u1, const Point2f &u2, LightRaySample &sample) const = 0;

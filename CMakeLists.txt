@@ -40,6 +40,7 @@ find_library(lodepng lodepng REQUIRED)
 find_path(lodepng_INCLUDES lodepng.h)
 find_package(GTest CONFIG REQUIRED)
 find_package(TBB CONFIG REQUIRED)
+find_package(tinyobjloader CONFIG REQUIRED)
 
 add_subdirectory(external/glad)
 
@@ -68,6 +69,7 @@ set(MIN_LIBS
         ${lodepng}
         GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
         TBB::tbb
+        tinyobjloader::tinyobjloader
         )
 
 file(GLOB MIN_CORE

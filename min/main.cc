@@ -10,7 +10,7 @@ using namespace min;
 
 int main() {
   try {
-    std::string tmp = "E:\\work\\min-ray\\assets\\cornell_box\\scene.json";
+    std::string tmp = "E:\\work\\min-ray\\assets\\mitsuba\\scene.json";
     fs::path path(tmp);
     GetFileResolver()->Prepend(path.parent_path());
     std::ifstream is(tmp);

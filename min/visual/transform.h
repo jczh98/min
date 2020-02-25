@@ -235,6 +235,10 @@ struct adl_serializer<Transform> {
       auto up = j.at("lookat").at("up").get<Vector3f>();
       transform = transform * LookAt(origin, target, up);
     }
+    if (j.contains("translation")) {
+      auto translation = j.at("translation").get<Vector3>();
+      transform = transform * Translate(translation);
+    }
     v = transform;
   }
 };
