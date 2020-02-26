@@ -181,12 +181,12 @@ typedef Bounds3<int> Bounds3i;
 
 template <typename T>
 bool InsideExclusive(const TPoint2<T> &p, const Bounds2<T> &b) {
-  return p.x >= pmin.x && p.x < b.pmax.x && p.y >= pmin.y && p.y < pmax.y;
+  return p.x >= b.pmin.x && p.x < b.pmax.x && p.y >= b.pmin.y && p.y < b.pmax.y;
 }
 
 template <typename T>
 bool InsideExclusive(const TPoint3<T> &p, const Bounds3<T> &b) {
-  return p.x >= pmin.x && p.x < b.pmax.x && p.y >= pmin.y && p.y < pmax.y && p.z >= pmin.z && p.z < pmax.z;
+  return p.x >= b.pmin.x && p.x < b.pmax.x && p.y >= b.pmin.y && p.y < b.pmax.y && p.z >= b.pmin.z && p.z < b.pmax.z;
 }
 
 class Bounds2iIterator : public std::forward_iterator_tag {
@@ -233,6 +233,11 @@ inline Bounds2iIterator end(const Bounds2i &b) {
   Point2i pend(b.pmin.x, b.pmax.y);
   if (b.pmin.x >= b.pmax.x || b.pmin.y >= b.pmax.y) pend = b.pmin;
   return Bounds2iIterator(b, pend);
+}
+
+template <typename T>
+bool Inside(const TPoint3<T> &p, const Bounds3<T> &b) {
+  return p.x >= b.pmin.x && p.x <= b.pmax.x && p.y >= b.pmin.y && p.y <= b.pmax.y && p.z >= b.pmin.z && p.z <= b.pmax.z;
 }
 
 template <typename T>

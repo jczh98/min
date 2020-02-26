@@ -1,12 +1,16 @@
 #pragma once
 
+#include <cstddef>
+
 namespace min {
 
-void *AllocAligned(size_t size);
+void *AllocAligned_(size_t size);
 template <typename T>
 T *AllocAligned(size_t count) {
-  return (T *)AllocAligned(count * size(T));
+  return (T *)AllocAligned_(count * sizeof(T));
 }
+
+void FreeAligned(void *ptr);
 
 }
 

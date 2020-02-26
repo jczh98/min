@@ -112,7 +112,9 @@ class PathTracer : public SampleRenderer {
             L += beta * isect.shape->area_light->L(isect, -ray.d);
           }
         } else {
-          // Count background light
+          for (const auto &light : scene->infinite_lights) {
+            L += beta * light->Le(ray);
+          }
         }
       }
       if (!found_intersection || depth >= max_depth) break;

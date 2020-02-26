@@ -21,6 +21,12 @@ int main() {
     auto accel = CreateInstance<Accelerator>(j["accelerator"]["type"], GetProps(j["accelerator"]));
     scene->SetCamera(camera);
     scene->SetAccelerator(accel);
+    if (j.contains("lights")) {
+      for (auto jlight : j["lights"]) {
+        auto light = CreateInstance<Light>(jlight["type"], GetProps(jlight));
+        scene->AddLight(light);
+      }
+    }
     for (auto jshape : j["shapes"]) {
       auto aggregate = CreateInstance<Aggregate>(jshape["type"], GetProps(jshape));
       scene->AddShape(aggregate->shapes);

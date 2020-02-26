@@ -36,11 +36,19 @@
       "maxnodeprims": 4
     }
   },
+  "lights": [
+    {
+      "type": "infinite",
+      "props": {
+        "radiance": [5, 5, 5]
+      }
+    }
+  ],
   "shapes": [
     {
       "type": "obj",
       "props": {
-        "filename": "meshes/mitsuba-sphere.obj",
+        "filename": "meshes/mitsuba.obj",
         "material": {
           "type": "diffuse",
           "props": {
@@ -48,26 +56,6 @@
               "type": "constant",
               "props": {
                 "value": [0.630,0.065,0.05]
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "obj",
-      "props": {
-        "transform": {
-          "translation": [2, 1, 3]
-        },
-        "filename": "meshes/sphere1.obj",
-        "light": {
-          "type": "diffuse_area",
-          "props": {
-            "radiance": {
-              "type": "constant",
-              "props": {
-                "value": [45,45,45]
               }
             }
           }
