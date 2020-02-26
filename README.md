@@ -1,7 +1,7 @@
 # min-ray
 ## Build
 - Install `vcpkg`
-- `vcpkg install tbb nlohmann-json fmt glfw3 spdlog gtest lodepng`
+- `vcpkg install tbb nlohmann-json fmt glfw3 spdlog gtest lodepng tinyobjloader openexr`
 - `git clone --recursive https://github.com/neverfelly/min-ray.git`
 - Typing command line
 ```shell script
