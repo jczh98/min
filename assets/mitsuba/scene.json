@@ -40,7 +40,7 @@
     {
       "type": "infinite",
       "props": {
-        "radiance": [5, 5, 5]
+        "filename": "envmap.exr"
       }
     }
   ],
@@ -48,7 +48,7 @@
     {
       "type": "obj",
       "props": {
-        "filename": "meshes/mitsuba.obj",
+        "filename": "meshes/mitsuba-sphere.obj",
         "material": {
           "type": "diffuse",
           "props": {

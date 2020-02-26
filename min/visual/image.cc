@@ -4,8 +4,51 @@
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+#include <OpenEXR/ImfRgba.h>
+#include <OpenEXR/half.h>
+#include <OpenEXR/ImfRgbaFile.h>
 
 namespace min {
+
+static Vector3 *ReadImageEXR(const std::string &name, int &width, int &height,
+                          Bounds2i *dataWindow = nullptr, Bounds2i *displayWindow = nullptr) {
+  using namespace Imf;
+  using namespace Imath;
+  try {
+    RgbaInputFile file(name.c_str());
+    Box2i dw = file.dataWindow();
+
+    // OpenEXR uses inclusive pixel bounds; adjust to non-inclusive
+    // (the convention pbrt uses) in the values returned.
+    if (dataWindow)
+      *dataWindow = Bounds2i(Point2i(dw.min.x, dw.min.y), Point2i{dw.max.x + 1, dw.max.y + 1});
+    if (displayWindow) {
+      Box2i dispw = file.displayWindow();
+      *displayWindow = Bounds2i{Point2i{dispw.min.x, dispw.min.y},
+                                Point2i{dispw.max.x + 1, dispw.max.y + 1}};
+    }
+    width = dw.max.x - dw.min.x + 1;
+    height = dw.max.y - dw.min.y + 1;
+
+    std::vector<Rgba> pixels(width * height);
+    file.setFrameBuffer(&pixels[0] - dw.min.x - dw.min.y * width, 1,
+                        width);
+    file.readPixels(dw.min.y, dw.max.y);
+
+    Vector3 *ret = new Vector3[width * height];
+    for (int i = 0; i < width * height; ++i) {
+      Float frgb[3] = {pixels[i].r, pixels[i].g, pixels[i].b};
+      ret[i] = Vector3(frgb[0], frgb[1], frgb[2]);
+    }
+    MIN_INFO("Read EXR image {} ({} x {})", name, width, height);
+    return ret;
+  } catch (const std::exception &e) {
+    MIN_ERROR("Unable to read image file \"{}\": {}", name, e.what());
+  }
+
+  return NULL;
+}
+
 
 static Vector3 *ReadImagePNG(const std::string &name, int &width, int &height) {
   unsigned char *rgb;
@@ -62,6 +105,8 @@ void WriteImage(const std::string &name,
 std::unique_ptr<Vector3[]> ReadImage(const std::string &name, int &width, int &height) {
   if (HasExtension(name, "png")) {
     return std::unique_ptr<Vector3[]>(ReadImagePNG(name, width, height));
+  } else if (HasExtension(name, "exr")) {
+    return std::unique_ptr<Vector3[]>(ReadImageEXR(name, width, height));
   }
   MIN_ERROR("Unable to load image {}", name);
   return nullptr;

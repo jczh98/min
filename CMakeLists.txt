@@ -32,6 +32,8 @@ else ()
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/")
 endif ()
 
+add_definitions(-D OPENEXR_DLL)
+
 find_package(glfw3 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
@@ -41,6 +43,7 @@ find_path(lodepng_INCLUDES lodepng.h)
 find_package(GTest CONFIG REQUIRED)
 find_package(TBB CONFIG REQUIRED)
 find_package(tinyobjloader CONFIG REQUIRED)
+find_package(OpenEXR)
 
 add_subdirectory(external/glad)
 
@@ -50,6 +53,7 @@ include_directories(
         external/imgui/examples
         ${lodepng_INCLUDES}
         ${Stb_INCLUDE_DIR}
+        ${OpenEXR_INCLUDE_DIRS}
 )
 
 file(GLOB IMGUI_SRC
@@ -70,6 +74,7 @@ set(MIN_LIBS
         GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
         TBB::tbb
         tinyobjloader::tinyobjloader
+        ${OpenEXR_LIBRARIES}
         )
 
 file(GLOB MIN_CORE
