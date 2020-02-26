@@ -21,6 +21,12 @@ static constexpr Float kSqrt2 = 1.41421356237309504880;
 static constexpr Float kMachineEpsilon = std::numeric_limits<Float>::epsilon() * 0.5;
 
 template<typename T>
+MIN_FORCE_INLINE T Mod(const T &a, const T &b) noexcept {
+  T result = a - (a / b) * b;
+  return (T)((result < 0) ? result + b : result);
+}
+
+template<typename T>
 MIN_FORCE_INLINE T Clamp(const T &a, const T &min, const T &max) noexcept {
   if (a < min)
     return min;
@@ -62,6 +68,11 @@ MIN_FORCE_INLINE Float Radians(Float deg) { return (kPi / 180) * deg; }
 
 MIN_FORCE_INLINE Float Degrees(Float rad) { return (180 / kPi) * rad; }
 
+MIN_FORCE_INLINE Float Log2(Float x) {
+  const Float inv_log2 = 1.442695040888963387004650940071;
+  return std::log(x) * inv_log2;
+}
+
 template <typename T>
 MIN_FORCE_INLINE int FindInterval(int size, const T &pred) {
   int first = 0, len = size;
@@ -73,6 +84,31 @@ MIN_FORCE_INLINE int FindInterval(int size, const T &pred) {
     } else  len = half;
   }
   return Clamp(first - 1, 0, size - 2);
+}
+
+template <typename T>
+MIN_FORCE_INLINE constexpr bool IsPowerOf2(T v) {
+  return v && !(v & (v - 1));
+}
+
+MIN_FORCE_INLINE constexpr int32_t RoundUpPow2(int32_t v) {
+  v--;
+  v |= v >> 1;
+  v |= v >> 2;
+  v |= v >> 4;
+  v |= v >> 8;
+  v |= v >> 16;
+  return v + 1;
+}
+
+MIN_FORCE_INLINE int Log2Int(uint32_t v) {
+#if defined(MIN_COMPILER_MSVC)
+  unsigned long lz = 0;
+  if (_BitScanReverse(&lz, v)) return lz;
+  return 0;
+#else
+  return 31 - __builtin_clz(v);
+#endif
 }
 
 }
