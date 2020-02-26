@@ -71,15 +71,6 @@ static Vector3 *ReadImagePNG(const std::string &name, int &width, int &height) {
   return ret;
 }
 
-inline bool HasExtension(const std::string &value, const std::string &ending) {
-  if (ending.size() > value.size()) {
-    return false;
-  }
-  return std::equal(
-      ending.rbegin(), ending.rend(), value.rbegin(),
-      [](char a, char b) { return std::tolower(a) == std::tolower(b); });
-}
-
 void WriteImage(const std::string &name,
                 const Float *rgb,
                 const Bounds2i &output_bounds,

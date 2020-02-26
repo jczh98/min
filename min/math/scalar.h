@@ -64,6 +64,11 @@ MIN_FORCE_INLINE Float GammaCorrect(Float value) {
   return 1.055f * std::pow(value, Float(1.0f / 2.4f)) - 0.055f;
 }
 
+MIN_FORCE_INLINE Float InverseGammaCorrect(Float value) {
+  if (value <= 0.04045f) return value * 1.f / 12.92f;
+  return std::pow((value + 0.055f) * 1.f / 1.055f, (Float)2.4f);
+}
+
 MIN_FORCE_INLINE Float Radians(Float deg) { return (kPi / 180) * deg; }
 
 MIN_FORCE_INLINE Float Degrees(Float rad) { return (180 / kPi) * rad; }
